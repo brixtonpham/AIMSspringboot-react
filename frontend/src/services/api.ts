@@ -1,19 +1,20 @@
 import axios from 'axios';
-import { 
-  Product, 
-  Book, 
-  CD, 
-  DVD, 
-  User, 
-  Order, 
+import {
+  Product,
+  Book,
+  CD,
+  DVD,
+  User,
+  Order,
   Invoice,
-  ApiResponse, 
+  ApiResponse,
   ProductSearchParams,
   CreateOrderRequest,
   CreateUserRequest,
   UpdateUserProfileRequest,
   LoginRequest,
-  LoginResponse
+  LoginResponse,
+  UserProfile
 } from '../types/api';
 
 // Create axios instance with base configuration
@@ -254,43 +255,83 @@ export const invoiceApi = {
     api.patch(`/invoices/${id}/refund`, null, { params: { reason } }),
 };
 
-// Authentication API (mock for now since backend doesn't have auth yet)
+// Authentication API
 export const authApi = {
-  login: async (loginData: LoginRequest): Promise<LoginResponse> => {
-    // Mock login - in real app this would authenticate with backend
-    const mockUser: User = {
-      userId: 1,
-      name: 'John Doe',
-      email: loginData.email,
-      role: 'CUSTOMER',
-      isActive: true,
-    };
-    
-    const mockToken = 'mock-jwt-token';
-    localStorage.setItem('authToken', mockToken);
-    
-    return {
-      user: mockUser,
-      token: mockToken,
-    };
+  login: async (credentials: LoginRequest): Promise<LoginResponse> => {
+    try {
+      const response = await fetch('http://localhost:8080/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(credentials),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Login failed' }));
+        throw new Error(errorData.message || 'Invalid credentials');
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Network error occurred during login');
+    }
+  },
+
+  getCurrentUser: async (): Promise<UserProfile> => {
+    try {
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        throw new Error('Not authenticated');
+      }
+
+      const response = await fetch('http://localhost:8080/api/auth/me', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          localStorage.removeItem('auth_token');
+          throw new Error('Session expired');
+        }
+        throw new Error('Failed to get user information');
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Network error occurred while fetching user data');
+    }
   },
 
   logout: async (): Promise<void> => {
-    localStorage.removeItem('authToken');
-  },
-
-  getCurrentUser: async (): Promise<User | null> => {
-    const token = localStorage.getItem('authToken');
-    if (!token) return null;
-    
-    // Mock user data - in real app would validate token with backend
-    return {
-      userId: 1,
-      name: 'John Doe',
-      email: 'john@example.com',
-      role: 'CUSTOMER',
-      isActive: true,
-    };
+    try {
+      const token = localStorage.getItem('auth_token');
+      if (token) {
+        await fetch('http://localhost:8080/api/auth/logout', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+      }
+    } catch (error) {
+      console.warn('Logout request failed:', error);
+    } finally {
+      localStorage.removeItem('auth_token');
+    }
   },
 };
 

@@ -1,74 +1,75 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { AuthState, User, LoginRequest } from '../types/api';
+import { UserProfile, LoginRequest } from '../types/api';
 import { authApi } from '../services/api';
 
-interface AuthStore extends AuthState {
-  login: (credentials: LoginRequest) => Promise<void>;
-  logout: () => void;
-  checkAuth: () => Promise<void>;
-  setUser: (user: User) => void;
+interface AuthState {
+  user: UserProfile | null;
+  isAuthenticated: boolean;
+  login: (credentials: LoginRequest) => Promise<UserProfile>;
+  logout: () => Promise<void>;
+  getCurrentUser: () => Promise<void>;
+  initializeAuth: () => Promise<void>;
 }
 
-export const useAuthStore = create<AuthStore>()(
+export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
       user: null,
       isAuthenticated: false,
-      token: null,
 
-      login: async (credentials: LoginRequest) => {
+      login: async (credentials: LoginRequest): Promise<UserProfile> => {
         try {
           const response = await authApi.login(credentials);
-          set({
-            user: response.user,
-            isAuthenticated: true,
-            token: response.token,
-          });
+          localStorage.setItem('auth_token', response.token);
+          set({ user: response.user, isAuthenticated: true });
+          return response.user;
         } catch (error) {
-          console.error('Login failed:', error);
+          // Clear any existing auth state on login failure
+          localStorage.removeItem('auth_token');
+          set({ user: null, isAuthenticated: false });
           throw error;
         }
       },
 
-      logout: () => {
-        authApi.logout();
-        set({
-          user: null,
-          isAuthenticated: false,
-          token: null,
-        });
-      },
-
-      checkAuth: async () => {
+      logout: async () => {
         try {
-          const user = await authApi.getCurrentUser();
-          if (user) {
-            set({
-              user,
-              isAuthenticated: true,
-              token: localStorage.getItem('authToken'),
-            });
-          } else {
-            get().logout();
-          }
+          await authApi.logout();
         } catch (error) {
-          console.error('Auth check failed:', error);
-          get().logout();
+          console.error('Logout API call failed:', error);
+        } finally {
+          // Always clear the state and token
+          localStorage.removeItem('auth_token');
+          set({ user: null, isAuthenticated: false });
         }
       },
 
-      setUser: (user: User) => {
-        set({ user });
+      getCurrentUser: async () => {
+        try {
+          const user = await authApi.getCurrentUser();
+          set({ user, isAuthenticated: true });
+        } catch (error) {
+          localStorage.removeItem('auth_token');
+          set({ user: null, isAuthenticated: false });
+          throw error;
+        }
+      },
+
+      initializeAuth: async () => {
+        const token = localStorage.getItem('auth_token');
+        if (token) {
+          try {
+            await get().getCurrentUser();
+          } catch (error) {
+            console.warn('Failed to initialize auth:', error);
+            // Auth state already cleared by getCurrentUser
+          }
+        }
       },
     }),
     {
       name: 'auth-storage',
-      partialize: (state) => ({
-        user: state.user,
-        isAuthenticated: state.isAuthenticated,
-        token: state.token,
-      }),
+      partialize: (state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }),
     }
   )
 );

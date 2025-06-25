@@ -172,9 +172,16 @@ export interface CartItemWithProduct {
 
 // Authentication types
 export interface AuthState {
-  user: User | null;
+  user: UserProfile | null;
   isAuthenticated: boolean;
   token: string | null;
+}
+
+export interface UserProfile {
+  id: string;
+  email: string;
+  name: string;
+  role: 'ADMIN' | 'CUSTOMER' | 'MANAGER' | 'EMPLOYEE';
 }
 
 export interface LoginRequest {
@@ -183,6 +190,6 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  user: User;
+  user: UserProfile;
   token: string;
 }
