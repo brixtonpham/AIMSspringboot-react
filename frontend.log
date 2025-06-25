@@ -7,3 +7,4 @@
 
   ➜  Local:   http://localhost:5173/
   ➜  Network: use --host to expose
+5:46:40 PM [vite] (client) hmr update /src/components/ProductGrid.tsx, /src/index.css

@@ -864,3 +864,1524 @@ Hibernate:
 2025-06-25T17:41:42.137+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-5] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
 2025-06-25T17:41:42.137+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-5] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [ApiResponse(success=true, message=Found 0 products matching criteria, data=[], errorCode=null, times (truncated)...]
 2025-06-25T17:41:42.137+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-06-25T17:43:26.656+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : GET "/api/products/search?title=&type=", parameters={masked}
+2025-06-25T17:43:26.657+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-7] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.itss.ecommerce.controller.ProductController#searchProducts(String, String, Integer, Integer, Boolean)
+2025-06-25T17:43:26.658+07:00  INFO 85138 --- [demo] [nio-8080-exec-7] c.i.e.controller.ProductController       : GET /api/products/search - Searching products with criteria
+2025-06-25T17:43:26.659+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-7] c.itss.ecommerce.service.ProductService  : Searching products with criteria - title: , type: , minPrice: null, maxPrice: null, inStock: null
+2025-06-25T17:43:26.660+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        p1_0.product_id,
+        p1_0.type,
+        p1_0.barcode,
+        p1_0.category,
+        p1_0.condition,
+        p1_0.created_at,
+        p1_0.dimensions,
+        p1_0.image_url,
+        p1_0.import_date,
+        p1_0.introduction,
+        p1_0.price,
+        p1_0.product_value,
+        p1_0.quantity,
+        p1_0.rush_order_supported,
+        p1_0.title,
+        p1_0.updated_at,
+        p1_0.weight,
+        p1_1.authors,
+        p1_1.cover_type,
+        p1_1.genre,
+        p1_1.page_count,
+        p1_1.publication_date,
+        p1_1.publishers,
+        p1_2.artists,
+        p1_2.genre,
+        p1_2.record_label,
+        p1_2.release_date,
+        p1_2.track_list,
+        p1_3.directors,
+        p1_3.duration_minutes,
+        p1_3.dvd_type,
+        p1_3.genre,
+        p1_3.rating,
+        p1_3.release_date,
+        p1_3.studio,
+        p1_4.artist,
+        p1_4.music_type,
+        p1_4.record_label,
+        p1_4.release_date,
+        p1_4.rpm,
+        p1_4.size_inches,
+        p1_4.sleeve_condition,
+        p1_4.tracklist,
+        p1_4.vinyl_condition 
+    from
+        products p1_0 
+    left join
+        books p1_1 
+            on p1_0.product_id=p1_1.product_id 
+    left join
+        cds p1_2 
+            on p1_0.product_id=p1_2.product_id 
+    left join
+        dvds p1_3 
+            on p1_0.product_id=p1_3.product_id 
+    left join
+        lp p1_4 
+            on p1_0.product_id=p1_4.product_id 
+    where
+        (
+            ? is null 
+            or lower(p1_0.title) like lower(('%'||?||'%'))
+        ) 
+        and (
+            ? is null 
+            or p1_0.type=?
+        ) 
+        and (
+            ? is null 
+            or p1_0.price>=?
+        ) 
+        and (
+            ? is null 
+            or p1_0.price<=?
+        ) 
+        and (
+            ? is null 
+            or (
+                ?=1 
+                and p1_0.quantity>0
+            ) 
+            or (
+                ?=0
+            )
+        )
+Hibernate: 
+    select
+        p1_0.product_id,
+        p1_0.type,
+        p1_0.barcode,
+        p1_0.category,
+        p1_0.condition,
+        p1_0.created_at,
+        p1_0.dimensions,
+        p1_0.image_url,
+        p1_0.import_date,
+        p1_0.introduction,
+        p1_0.price,
+        p1_0.product_value,
+        p1_0.quantity,
+        p1_0.rush_order_supported,
+        p1_0.title,
+        p1_0.updated_at,
+        p1_0.weight,
+        p1_1.authors,
+        p1_1.cover_type,
+        p1_1.genre,
+        p1_1.page_count,
+        p1_1.publication_date,
+        p1_1.publishers,
+        p1_2.artists,
+        p1_2.genre,
+        p1_2.record_label,
+        p1_2.release_date,
+        p1_2.track_list,
+        p1_3.directors,
+        p1_3.duration_minutes,
+        p1_3.dvd_type,
+        p1_3.genre,
+        p1_3.rating,
+        p1_3.release_date,
+        p1_3.studio,
+        p1_4.artist,
+        p1_4.music_type,
+        p1_4.record_label,
+        p1_4.release_date,
+        p1_4.rpm,
+        p1_4.size_inches,
+        p1_4.sleeve_condition,
+        p1_4.tracklist,
+        p1_4.vinyl_condition 
+    from
+        products p1_0 
+    left join
+        books p1_1 
+            on p1_0.product_id=p1_1.product_id 
+    left join
+        cds p1_2 
+            on p1_0.product_id=p1_2.product_id 
+    left join
+        dvds p1_3 
+            on p1_0.product_id=p1_3.product_id 
+    left join
+        lp p1_4 
+            on p1_0.product_id=p1_4.product_id 
+    where
+        (
+            ? is null 
+            or lower(p1_0.title) like lower(('%'||?||'%'))
+        ) 
+        and (
+            ? is null 
+            or p1_0.type=?
+        ) 
+        and (
+            ? is null 
+            or p1_0.price>=?
+        ) 
+        and (
+            ? is null 
+            or p1_0.price<=?
+        ) 
+        and (
+            ? is null 
+            or (
+                ?=1 
+                and p1_0.quantity>0
+            ) 
+            or (
+                ?=0
+            )
+        )
+2025-06-25T17:43:26.662+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-7] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-25T17:43:26.662+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-7] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [ApiResponse(success=true, message=Found 0 products matching criteria, data=[], errorCode=null, times (truncated)...]
+2025-06-25T17:43:26.663+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-06-25T17:43:36.029+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : GET "/api/products/search?title=&type=", parameters={masked}
+2025-06-25T17:43:36.029+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-8] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.itss.ecommerce.controller.ProductController#searchProducts(String, String, Integer, Integer, Boolean)
+2025-06-25T17:43:36.030+07:00  INFO 85138 --- [demo] [nio-8080-exec-8] c.i.e.controller.ProductController       : GET /api/products/search - Searching products with criteria
+2025-06-25T17:43:36.030+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-8] c.itss.ecommerce.service.ProductService  : Searching products with criteria - title: , type: , minPrice: null, maxPrice: null, inStock: null
+2025-06-25T17:43:36.031+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-8] org.hibernate.SQL                        : 
+    select
+        p1_0.product_id,
+        p1_0.type,
+        p1_0.barcode,
+        p1_0.category,
+        p1_0.condition,
+        p1_0.created_at,
+        p1_0.dimensions,
+        p1_0.image_url,
+        p1_0.import_date,
+        p1_0.introduction,
+        p1_0.price,
+        p1_0.product_value,
+        p1_0.quantity,
+        p1_0.rush_order_supported,
+        p1_0.title,
+        p1_0.updated_at,
+        p1_0.weight,
+        p1_1.authors,
+        p1_1.cover_type,
+        p1_1.genre,
+        p1_1.page_count,
+        p1_1.publication_date,
+        p1_1.publishers,
+        p1_2.artists,
+        p1_2.genre,
+        p1_2.record_label,
+        p1_2.release_date,
+        p1_2.track_list,
+        p1_3.directors,
+        p1_3.duration_minutes,
+        p1_3.dvd_type,
+        p1_3.genre,
+        p1_3.rating,
+        p1_3.release_date,
+        p1_3.studio,
+        p1_4.artist,
+        p1_4.music_type,
+        p1_4.record_label,
+        p1_4.release_date,
+        p1_4.rpm,
+        p1_4.size_inches,
+        p1_4.sleeve_condition,
+        p1_4.tracklist,
+        p1_4.vinyl_condition 
+    from
+        products p1_0 
+    left join
+        books p1_1 
+            on p1_0.product_id=p1_1.product_id 
+    left join
+        cds p1_2 
+            on p1_0.product_id=p1_2.product_id 
+    left join
+        dvds p1_3 
+            on p1_0.product_id=p1_3.product_id 
+    left join
+        lp p1_4 
+            on p1_0.product_id=p1_4.product_id 
+    where
+        (
+            ? is null 
+            or lower(p1_0.title) like lower(('%'||?||'%'))
+        ) 
+        and (
+            ? is null 
+            or p1_0.type=?
+        ) 
+        and (
+            ? is null 
+            or p1_0.price>=?
+        ) 
+        and (
+            ? is null 
+            or p1_0.price<=?
+        ) 
+        and (
+            ? is null 
+            or (
+                ?=1 
+                and p1_0.quantity>0
+            ) 
+            or (
+                ?=0
+            )
+        )
+Hibernate: 
+    select
+        p1_0.product_id,
+        p1_0.type,
+        p1_0.barcode,
+        p1_0.category,
+        p1_0.condition,
+        p1_0.created_at,
+        p1_0.dimensions,
+        p1_0.image_url,
+        p1_0.import_date,
+        p1_0.introduction,
+        p1_0.price,
+        p1_0.product_value,
+        p1_0.quantity,
+        p1_0.rush_order_supported,
+        p1_0.title,
+        p1_0.updated_at,
+        p1_0.weight,
+        p1_1.authors,
+        p1_1.cover_type,
+        p1_1.genre,
+        p1_1.page_count,
+        p1_1.publication_date,
+        p1_1.publishers,
+        p1_2.artists,
+        p1_2.genre,
+        p1_2.record_label,
+        p1_2.release_date,
+        p1_2.track_list,
+        p1_3.directors,
+        p1_3.duration_minutes,
+        p1_3.dvd_type,
+        p1_3.genre,
+        p1_3.rating,
+        p1_3.release_date,
+        p1_3.studio,
+        p1_4.artist,
+        p1_4.music_type,
+        p1_4.record_label,
+        p1_4.release_date,
+        p1_4.rpm,
+        p1_4.size_inches,
+        p1_4.sleeve_condition,
+        p1_4.tracklist,
+        p1_4.vinyl_condition 
+    from
+        products p1_0 
+    left join
+        books p1_1 
+            on p1_0.product_id=p1_1.product_id 
+    left join
+        cds p1_2 
+            on p1_0.product_id=p1_2.product_id 
+    left join
+        dvds p1_3 
+            on p1_0.product_id=p1_3.product_id 
+    left join
+        lp p1_4 
+            on p1_0.product_id=p1_4.product_id 
+    where
+        (
+            ? is null 
+            or lower(p1_0.title) like lower(('%'||?||'%'))
+        ) 
+        and (
+            ? is null 
+            or p1_0.type=?
+        ) 
+        and (
+            ? is null 
+            or p1_0.price>=?
+        ) 
+        and (
+            ? is null 
+            or p1_0.price<=?
+        ) 
+        and (
+            ? is null 
+            or (
+                ?=1 
+                and p1_0.quantity>0
+            ) 
+            or (
+                ?=0
+            )
+        )
+2025-06-25T17:43:36.032+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-8] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-25T17:43:36.032+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-8] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [ApiResponse(success=true, message=Found 0 products matching criteria, data=[], errorCode=null, times (truncated)...]
+2025-06-25T17:43:36.033+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-06-25T17:43:38.127+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : GET "/api/products/search?title=&type=", parameters={masked}
+2025-06-25T17:43:38.127+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-9] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.itss.ecommerce.controller.ProductController#searchProducts(String, String, Integer, Integer, Boolean)
+2025-06-25T17:43:38.128+07:00  INFO 85138 --- [demo] [nio-8080-exec-9] c.i.e.controller.ProductController       : GET /api/products/search - Searching products with criteria
+2025-06-25T17:43:38.129+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-9] c.itss.ecommerce.service.ProductService  : Searching products with criteria - title: , type: , minPrice: null, maxPrice: null, inStock: null
+2025-06-25T17:43:38.129+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-9] org.hibernate.SQL                        : 
+    select
+        p1_0.product_id,
+        p1_0.type,
+        p1_0.barcode,
+        p1_0.category,
+        p1_0.condition,
+        p1_0.created_at,
+        p1_0.dimensions,
+        p1_0.image_url,
+        p1_0.import_date,
+        p1_0.introduction,
+        p1_0.price,
+        p1_0.product_value,
+        p1_0.quantity,
+        p1_0.rush_order_supported,
+        p1_0.title,
+        p1_0.updated_at,
+        p1_0.weight,
+        p1_1.authors,
+        p1_1.cover_type,
+        p1_1.genre,
+        p1_1.page_count,
+        p1_1.publication_date,
+        p1_1.publishers,
+        p1_2.artists,
+        p1_2.genre,
+        p1_2.record_label,
+        p1_2.release_date,
+        p1_2.track_list,
+        p1_3.directors,
+        p1_3.duration_minutes,
+        p1_3.dvd_type,
+        p1_3.genre,
+        p1_3.rating,
+        p1_3.release_date,
+        p1_3.studio,
+        p1_4.artist,
+        p1_4.music_type,
+        p1_4.record_label,
+        p1_4.release_date,
+        p1_4.rpm,
+        p1_4.size_inches,
+        p1_4.sleeve_condition,
+        p1_4.tracklist,
+        p1_4.vinyl_condition 
+    from
+        products p1_0 
+    left join
+        books p1_1 
+            on p1_0.product_id=p1_1.product_id 
+    left join
+        cds p1_2 
+            on p1_0.product_id=p1_2.product_id 
+    left join
+        dvds p1_3 
+            on p1_0.product_id=p1_3.product_id 
+    left join
+        lp p1_4 
+            on p1_0.product_id=p1_4.product_id 
+    where
+        (
+            ? is null 
+            or lower(p1_0.title) like lower(('%'||?||'%'))
+        ) 
+        and (
+            ? is null 
+            or p1_0.type=?
+        ) 
+        and (
+            ? is null 
+            or p1_0.price>=?
+        ) 
+        and (
+            ? is null 
+            or p1_0.price<=?
+        ) 
+        and (
+            ? is null 
+            or (
+                ?=1 
+                and p1_0.quantity>0
+            ) 
+            or (
+                ?=0
+            )
+        )
+Hibernate: 
+    select
+        p1_0.product_id,
+        p1_0.type,
+        p1_0.barcode,
+        p1_0.category,
+        p1_0.condition,
+        p1_0.created_at,
+        p1_0.dimensions,
+        p1_0.image_url,
+        p1_0.import_date,
+        p1_0.introduction,
+        p1_0.price,
+        p1_0.product_value,
+        p1_0.quantity,
+        p1_0.rush_order_supported,
+        p1_0.title,
+        p1_0.updated_at,
+        p1_0.weight,
+        p1_1.authors,
+        p1_1.cover_type,
+        p1_1.genre,
+        p1_1.page_count,
+        p1_1.publication_date,
+        p1_1.publishers,
+        p1_2.artists,
+        p1_2.genre,
+        p1_2.record_label,
+        p1_2.release_date,
+        p1_2.track_list,
+        p1_3.directors,
+        p1_3.duration_minutes,
+        p1_3.dvd_type,
+        p1_3.genre,
+        p1_3.rating,
+        p1_3.release_date,
+        p1_3.studio,
+        p1_4.artist,
+        p1_4.music_type,
+        p1_4.record_label,
+        p1_4.release_date,
+        p1_4.rpm,
+        p1_4.size_inches,
+        p1_4.sleeve_condition,
+        p1_4.tracklist,
+        p1_4.vinyl_condition 
+    from
+        products p1_0 
+    left join
+        books p1_1 
+            on p1_0.product_id=p1_1.product_id 
+    left join
+        cds p1_2 
+            on p1_0.product_id=p1_2.product_id 
+    left join
+        dvds p1_3 
+            on p1_0.product_id=p1_3.product_id 
+    left join
+        lp p1_4 
+            on p1_0.product_id=p1_4.product_id 
+    where
+        (
+            ? is null 
+            or lower(p1_0.title) like lower(('%'||?||'%'))
+        ) 
+        and (
+            ? is null 
+            or p1_0.type=?
+        ) 
+        and (
+            ? is null 
+            or p1_0.price>=?
+        ) 
+        and (
+            ? is null 
+            or p1_0.price<=?
+        ) 
+        and (
+            ? is null 
+            or (
+                ?=1 
+                and p1_0.quantity>0
+            ) 
+            or (
+                ?=0
+            )
+        )
+2025-06-25T17:43:38.131+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-9] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-25T17:43:38.131+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-9] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [ApiResponse(success=true, message=Found 0 products matching criteria, data=[], errorCode=null, times (truncated)...]
+2025-06-25T17:43:38.132+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-06-25T17:43:47.779+07:00 DEBUG 85138 --- [demo] [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/api/products", parameters={}
+2025-06-25T17:43:47.780+07:00 DEBUG 85138 --- [demo] [io-8080-exec-10] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.itss.ecommerce.controller.ProductController#getAllProducts()
+2025-06-25T17:43:47.781+07:00  INFO 85138 --- [demo] [io-8080-exec-10] c.i.e.controller.ProductController       : GET /api/products - Fetching all products
+2025-06-25T17:43:47.782+07:00 DEBUG 85138 --- [demo] [io-8080-exec-10] c.itss.ecommerce.service.ProductService  : Fetching all products
+2025-06-25T17:43:47.784+07:00 DEBUG 85138 --- [demo] [io-8080-exec-10] org.hibernate.SQL                        : 
+    select
+        p1_0.product_id,
+        p1_0.type,
+        p1_0.barcode,
+        p1_0.category,
+        p1_0.condition,
+        p1_0.created_at,
+        p1_0.dimensions,
+        p1_0.image_url,
+        p1_0.import_date,
+        p1_0.introduction,
+        p1_0.price,
+        p1_0.product_value,
+        p1_0.quantity,
+        p1_0.rush_order_supported,
+        p1_0.title,
+        p1_0.updated_at,
+        p1_0.weight,
+        p1_1.authors,
+        p1_1.cover_type,
+        p1_1.genre,
+        p1_1.page_count,
+        p1_1.publication_date,
+        p1_1.publishers,
+        p1_2.artists,
+        p1_2.genre,
+        p1_2.record_label,
+        p1_2.release_date,
+        p1_2.track_list,
+        p1_3.directors,
+        p1_3.duration_minutes,
+        p1_3.dvd_type,
+        p1_3.genre,
+        p1_3.rating,
+        p1_3.release_date,
+        p1_3.studio,
+        p1_4.artist,
+        p1_4.music_type,
+        p1_4.record_label,
+        p1_4.release_date,
+        p1_4.rpm,
+        p1_4.size_inches,
+        p1_4.sleeve_condition,
+        p1_4.tracklist,
+        p1_4.vinyl_condition 
+    from
+        products p1_0 
+    left join
+        books p1_1 
+            on p1_0.product_id=p1_1.product_id 
+    left join
+        cds p1_2 
+            on p1_0.product_id=p1_2.product_id 
+    left join
+        dvds p1_3 
+            on p1_0.product_id=p1_3.product_id 
+    left join
+        lp p1_4 
+            on p1_0.product_id=p1_4.product_id
+Hibernate: 
+    select
+        p1_0.product_id,
+        p1_0.type,
+        p1_0.barcode,
+        p1_0.category,
+        p1_0.condition,
+        p1_0.created_at,
+        p1_0.dimensions,
+        p1_0.image_url,
+        p1_0.import_date,
+        p1_0.introduction,
+        p1_0.price,
+        p1_0.product_value,
+        p1_0.quantity,
+        p1_0.rush_order_supported,
+        p1_0.title,
+        p1_0.updated_at,
+        p1_0.weight,
+        p1_1.authors,
+        p1_1.cover_type,
+        p1_1.genre,
+        p1_1.page_count,
+        p1_1.publication_date,
+        p1_1.publishers,
+        p1_2.artists,
+        p1_2.genre,
+        p1_2.record_label,
+        p1_2.release_date,
+        p1_2.track_list,
+        p1_3.directors,
+        p1_3.duration_minutes,
+        p1_3.dvd_type,
+        p1_3.genre,
+        p1_3.rating,
+        p1_3.release_date,
+        p1_3.studio,
+        p1_4.artist,
+        p1_4.music_type,
+        p1_4.record_label,
+        p1_4.release_date,
+        p1_4.rpm,
+        p1_4.size_inches,
+        p1_4.sleeve_condition,
+        p1_4.tracklist,
+        p1_4.vinyl_condition 
+    from
+        products p1_0 
+    left join
+        books p1_1 
+            on p1_0.product_id=p1_1.product_id 
+    left join
+        cds p1_2 
+            on p1_0.product_id=p1_2.product_id 
+    left join
+        dvds p1_3 
+            on p1_0.product_id=p1_3.product_id 
+    left join
+        lp p1_4 
+            on p1_0.product_id=p1_4.product_id
+2025-06-25T17:43:47.789+07:00 DEBUG 85138 --- [demo] [io-8080-exec-10] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-25T17:43:47.791+07:00 DEBUG 85138 --- [demo] [io-8080-exec-10] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [ApiResponse(success=true, message=Retrieved 9 products, data=[ProductDTO(productId=1, title=The Grea (truncated)...]
+2025-06-25T17:43:47.795+07:00 DEBUG 85138 --- [demo] [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-06-25T17:43:55.539+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/api/products/search?title=&type=cd", parameters={masked}
+2025-06-25T17:43:55.539+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.itss.ecommerce.controller.ProductController#searchProducts(String, String, Integer, Integer, Boolean)
+2025-06-25T17:43:55.540+07:00  INFO 85138 --- [demo] [nio-8080-exec-1] c.i.e.controller.ProductController       : GET /api/products/search - Searching products with criteria
+2025-06-25T17:43:55.541+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-1] c.itss.ecommerce.service.ProductService  : Searching products with criteria - title: , type: cd, minPrice: null, maxPrice: null, inStock: null
+2025-06-25T17:43:55.542+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        p1_0.product_id,
+        p1_0.type,
+        p1_0.barcode,
+        p1_0.category,
+        p1_0.condition,
+        p1_0.created_at,
+        p1_0.dimensions,
+        p1_0.image_url,
+        p1_0.import_date,
+        p1_0.introduction,
+        p1_0.price,
+        p1_0.product_value,
+        p1_0.quantity,
+        p1_0.rush_order_supported,
+        p1_0.title,
+        p1_0.updated_at,
+        p1_0.weight,
+        p1_1.authors,
+        p1_1.cover_type,
+        p1_1.genre,
+        p1_1.page_count,
+        p1_1.publication_date,
+        p1_1.publishers,
+        p1_2.artists,
+        p1_2.genre,
+        p1_2.record_label,
+        p1_2.release_date,
+        p1_2.track_list,
+        p1_3.directors,
+        p1_3.duration_minutes,
+        p1_3.dvd_type,
+        p1_3.genre,
+        p1_3.rating,
+        p1_3.release_date,
+        p1_3.studio,
+        p1_4.artist,
+        p1_4.music_type,
+        p1_4.record_label,
+        p1_4.release_date,
+        p1_4.rpm,
+        p1_4.size_inches,
+        p1_4.sleeve_condition,
+        p1_4.tracklist,
+        p1_4.vinyl_condition 
+    from
+        products p1_0 
+    left join
+        books p1_1 
+            on p1_0.product_id=p1_1.product_id 
+    left join
+        cds p1_2 
+            on p1_0.product_id=p1_2.product_id 
+    left join
+        dvds p1_3 
+            on p1_0.product_id=p1_3.product_id 
+    left join
+        lp p1_4 
+            on p1_0.product_id=p1_4.product_id 
+    where
+        (
+            ? is null 
+            or lower(p1_0.title) like lower(('%'||?||'%'))
+        ) 
+        and (
+            ? is null 
+            or p1_0.type=?
+        ) 
+        and (
+            ? is null 
+            or p1_0.price>=?
+        ) 
+        and (
+            ? is null 
+            or p1_0.price<=?
+        ) 
+        and (
+            ? is null 
+            or (
+                ?=1 
+                and p1_0.quantity>0
+            ) 
+            or (
+                ?=0
+            )
+        )
+Hibernate: 
+    select
+        p1_0.product_id,
+        p1_0.type,
+        p1_0.barcode,
+        p1_0.category,
+        p1_0.condition,
+        p1_0.created_at,
+        p1_0.dimensions,
+        p1_0.image_url,
+        p1_0.import_date,
+        p1_0.introduction,
+        p1_0.price,
+        p1_0.product_value,
+        p1_0.quantity,
+        p1_0.rush_order_supported,
+        p1_0.title,
+        p1_0.updated_at,
+        p1_0.weight,
+        p1_1.authors,
+        p1_1.cover_type,
+        p1_1.genre,
+        p1_1.page_count,
+        p1_1.publication_date,
+        p1_1.publishers,
+        p1_2.artists,
+        p1_2.genre,
+        p1_2.record_label,
+        p1_2.release_date,
+        p1_2.track_list,
+        p1_3.directors,
+        p1_3.duration_minutes,
+        p1_3.dvd_type,
+        p1_3.genre,
+        p1_3.rating,
+        p1_3.release_date,
+        p1_3.studio,
+        p1_4.artist,
+        p1_4.music_type,
+        p1_4.record_label,
+        p1_4.release_date,
+        p1_4.rpm,
+        p1_4.size_inches,
+        p1_4.sleeve_condition,
+        p1_4.tracklist,
+        p1_4.vinyl_condition 
+    from
+        products p1_0 
+    left join
+        books p1_1 
+            on p1_0.product_id=p1_1.product_id 
+    left join
+        cds p1_2 
+            on p1_0.product_id=p1_2.product_id 
+    left join
+        dvds p1_3 
+            on p1_0.product_id=p1_3.product_id 
+    left join
+        lp p1_4 
+            on p1_0.product_id=p1_4.product_id 
+    where
+        (
+            ? is null 
+            or lower(p1_0.title) like lower(('%'||?||'%'))
+        ) 
+        and (
+            ? is null 
+            or p1_0.type=?
+        ) 
+        and (
+            ? is null 
+            or p1_0.price>=?
+        ) 
+        and (
+            ? is null 
+            or p1_0.price<=?
+        ) 
+        and (
+            ? is null 
+            or (
+                ?=1 
+                and p1_0.quantity>0
+            ) 
+            or (
+                ?=0
+            )
+        )
+2025-06-25T17:43:55.545+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-25T17:43:55.546+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [ApiResponse(success=true, message=Found 3 products matching criteria, data=[ProductDTO(productId=4,  (truncated)...]
+2025-06-25T17:43:55.547+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-06-25T17:44:46.817+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/api/products/search?title=&type=cd", parameters={masked}
+2025-06-25T17:44:46.818+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.itss.ecommerce.controller.ProductController#searchProducts(String, String, Integer, Integer, Boolean)
+2025-06-25T17:44:46.819+07:00  INFO 85138 --- [demo] [nio-8080-exec-2] c.i.e.controller.ProductController       : GET /api/products/search - Searching products with criteria
+2025-06-25T17:44:46.820+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-2] c.itss.ecommerce.service.ProductService  : Searching products with criteria - title: , type: cd, minPrice: null, maxPrice: null, inStock: null
+2025-06-25T17:44:46.821+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        p1_0.product_id,
+        p1_0.type,
+        p1_0.barcode,
+        p1_0.category,
+        p1_0.condition,
+        p1_0.created_at,
+        p1_0.dimensions,
+        p1_0.image_url,
+        p1_0.import_date,
+        p1_0.introduction,
+        p1_0.price,
+        p1_0.product_value,
+        p1_0.quantity,
+        p1_0.rush_order_supported,
+        p1_0.title,
+        p1_0.updated_at,
+        p1_0.weight,
+        p1_1.authors,
+        p1_1.cover_type,
+        p1_1.genre,
+        p1_1.page_count,
+        p1_1.publication_date,
+        p1_1.publishers,
+        p1_2.artists,
+        p1_2.genre,
+        p1_2.record_label,
+        p1_2.release_date,
+        p1_2.track_list,
+        p1_3.directors,
+        p1_3.duration_minutes,
+        p1_3.dvd_type,
+        p1_3.genre,
+        p1_3.rating,
+        p1_3.release_date,
+        p1_3.studio,
+        p1_4.artist,
+        p1_4.music_type,
+        p1_4.record_label,
+        p1_4.release_date,
+        p1_4.rpm,
+        p1_4.size_inches,
+        p1_4.sleeve_condition,
+        p1_4.tracklist,
+        p1_4.vinyl_condition 
+    from
+        products p1_0 
+    left join
+        books p1_1 
+            on p1_0.product_id=p1_1.product_id 
+    left join
+        cds p1_2 
+            on p1_0.product_id=p1_2.product_id 
+    left join
+        dvds p1_3 
+            on p1_0.product_id=p1_3.product_id 
+    left join
+        lp p1_4 
+            on p1_0.product_id=p1_4.product_id 
+    where
+        (
+            ? is null 
+            or lower(p1_0.title) like lower(('%'||?||'%'))
+        ) 
+        and (
+            ? is null 
+            or p1_0.type=?
+        ) 
+        and (
+            ? is null 
+            or p1_0.price>=?
+        ) 
+        and (
+            ? is null 
+            or p1_0.price<=?
+        ) 
+        and (
+            ? is null 
+            or (
+                ?=1 
+                and p1_0.quantity>0
+            ) 
+            or (
+                ?=0
+            )
+        )
+Hibernate: 
+    select
+        p1_0.product_id,
+        p1_0.type,
+        p1_0.barcode,
+        p1_0.category,
+        p1_0.condition,
+        p1_0.created_at,
+        p1_0.dimensions,
+        p1_0.image_url,
+        p1_0.import_date,
+        p1_0.introduction,
+        p1_0.price,
+        p1_0.product_value,
+        p1_0.quantity,
+        p1_0.rush_order_supported,
+        p1_0.title,
+        p1_0.updated_at,
+        p1_0.weight,
+        p1_1.authors,
+        p1_1.cover_type,
+        p1_1.genre,
+        p1_1.page_count,
+        p1_1.publication_date,
+        p1_1.publishers,
+        p1_2.artists,
+        p1_2.genre,
+        p1_2.record_label,
+        p1_2.release_date,
+        p1_2.track_list,
+        p1_3.directors,
+        p1_3.duration_minutes,
+        p1_3.dvd_type,
+        p1_3.genre,
+        p1_3.rating,
+        p1_3.release_date,
+        p1_3.studio,
+        p1_4.artist,
+        p1_4.music_type,
+        p1_4.record_label,
+        p1_4.release_date,
+        p1_4.rpm,
+        p1_4.size_inches,
+        p1_4.sleeve_condition,
+        p1_4.tracklist,
+        p1_4.vinyl_condition 
+    from
+        products p1_0 
+    left join
+        books p1_1 
+            on p1_0.product_id=p1_1.product_id 
+    left join
+        cds p1_2 
+            on p1_0.product_id=p1_2.product_id 
+    left join
+        dvds p1_3 
+            on p1_0.product_id=p1_3.product_id 
+    left join
+        lp p1_4 
+            on p1_0.product_id=p1_4.product_id 
+    where
+        (
+            ? is null 
+            or lower(p1_0.title) like lower(('%'||?||'%'))
+        ) 
+        and (
+            ? is null 
+            or p1_0.type=?
+        ) 
+        and (
+            ? is null 
+            or p1_0.price>=?
+        ) 
+        and (
+            ? is null 
+            or p1_0.price<=?
+        ) 
+        and (
+            ? is null 
+            or (
+                ?=1 
+                and p1_0.quantity>0
+            ) 
+            or (
+                ?=0
+            )
+        )
+2025-06-25T17:44:46.824+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json;q=0.8', given [text/html, application/xhtml+xml, image/avif, image/webp, image/apng, application/xml;q=0.9, */*;q=0.8, application/signed-exchange;v=b3;q=0.7] and supported [application/json, application/*+json]
+2025-06-25T17:44:46.825+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [ApiResponse(success=true, message=Found 3 products matching criteria, data=[ProductDTO(productId=4,  (truncated)...]
+2025-06-25T17:44:46.826+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-06-25T17:44:46.934+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/favicon.ico", parameters={}
+2025-06-25T17:44:46.937+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-3] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/], classpath [resources/], classpath [static/], classpath [public/], ServletContext [/]]
+2025-06-25T17:44:46.939+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-3] o.s.w.s.r.ResourceHttpRequestHandler     : Resource not found
+2025-06-25T17:44:46.941+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-3] .m.m.a.ExceptionHandlerExceptionResolver : Using @ExceptionHandler com.itss.ecommerce.exception.GlobalExceptionHandler#handleGenericException(Exception)
+2025-06-25T17:44:46.941+07:00 ERROR 85138 --- [demo] [nio-8080-exec-3] c.i.e.exception.GlobalExceptionHandler   : Unexpected error
+
+org.springframework.web.servlet.resource.NoResourceFoundException: No static resource favicon.ico.
+	at org.springframework.web.servlet.resource.ResourceHttpRequestHandler.handleRequest(ResourceHttpRequestHandler.java:585) ~[spring-webmvc-6.2.5.jar:6.2.5]
+	at org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter.handle(HttpRequestHandlerAdapter.java:52) ~[spring-webmvc-6.2.5.jar:6.2.5]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089) ~[spring-webmvc-6.2.5.jar:6.2.5]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979) ~[spring-webmvc-6.2.5.jar:6.2.5]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014) ~[spring-webmvc-6.2.5.jar:6.2.5]
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903) ~[spring-webmvc-6.2.5.jar:6.2.5]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564) ~[tomcat-embed-core-10.1.39.jar:6.0]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885) ~[spring-webmvc-6.2.5.jar:6.2.5]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658) ~[tomcat-embed-core-10.1.39.jar:6.0]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51) ~[tomcat-embed-websocket-10.1.39.jar:10.1.39]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-6.2.5.jar:6.2.5]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.5.jar:6.2.5]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-6.2.5.jar:6.2.5]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.5.jar:6.2.5]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201) ~[spring-web-6.2.5.jar:6.2.5]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.5.jar:6.2.5]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:905) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1743) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+
+2025-06-25T17:44:46.945+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-3] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json;q=0.8', given [image/avif, image/webp, image/apng, image/svg+xml, image/*, */*;q=0.8] and supported [application/json, application/*+json]
+2025-06-25T17:44:46.945+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-3] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [ApiResponse(success=false, message=An internal server error occurred, data=null, errorCode=INTERNAL_ (truncated)...]
+2025-06-25T17:44:46.948+07:00  WARN 85138 --- [demo] [nio-8080-exec-3] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.web.servlet.resource.NoResourceFoundException: No static resource favicon.ico.]
+2025-06-25T17:44:46.948+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 500 INTERNAL_SERVER_ERROR
+2025-06-25T17:44:54.940+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/api/products", parameters={}
+2025-06-25T17:44:54.941+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-4] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.itss.ecommerce.controller.ProductController#getAllProducts()
+2025-06-25T17:44:54.941+07:00  INFO 85138 --- [demo] [nio-8080-exec-4] c.i.e.controller.ProductController       : GET /api/products - Fetching all products
+2025-06-25T17:44:54.941+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-4] c.itss.ecommerce.service.ProductService  : Fetching all products
+2025-06-25T17:44:54.943+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        p1_0.product_id,
+        p1_0.type,
+        p1_0.barcode,
+        p1_0.category,
+        p1_0.condition,
+        p1_0.created_at,
+        p1_0.dimensions,
+        p1_0.image_url,
+        p1_0.import_date,
+        p1_0.introduction,
+        p1_0.price,
+        p1_0.product_value,
+        p1_0.quantity,
+        p1_0.rush_order_supported,
+        p1_0.title,
+        p1_0.updated_at,
+        p1_0.weight,
+        p1_1.authors,
+        p1_1.cover_type,
+        p1_1.genre,
+        p1_1.page_count,
+        p1_1.publication_date,
+        p1_1.publishers,
+        p1_2.artists,
+        p1_2.genre,
+        p1_2.record_label,
+        p1_2.release_date,
+        p1_2.track_list,
+        p1_3.directors,
+        p1_3.duration_minutes,
+        p1_3.dvd_type,
+        p1_3.genre,
+        p1_3.rating,
+        p1_3.release_date,
+        p1_3.studio,
+        p1_4.artist,
+        p1_4.music_type,
+        p1_4.record_label,
+        p1_4.release_date,
+        p1_4.rpm,
+        p1_4.size_inches,
+        p1_4.sleeve_condition,
+        p1_4.tracklist,
+        p1_4.vinyl_condition 
+    from
+        products p1_0 
+    left join
+        books p1_1 
+            on p1_0.product_id=p1_1.product_id 
+    left join
+        cds p1_2 
+            on p1_0.product_id=p1_2.product_id 
+    left join
+        dvds p1_3 
+            on p1_0.product_id=p1_3.product_id 
+    left join
+        lp p1_4 
+            on p1_0.product_id=p1_4.product_id
+Hibernate: 
+    select
+        p1_0.product_id,
+        p1_0.type,
+        p1_0.barcode,
+        p1_0.category,
+        p1_0.condition,
+        p1_0.created_at,
+        p1_0.dimensions,
+        p1_0.image_url,
+        p1_0.import_date,
+        p1_0.introduction,
+        p1_0.price,
+        p1_0.product_value,
+        p1_0.quantity,
+        p1_0.rush_order_supported,
+        p1_0.title,
+        p1_0.updated_at,
+        p1_0.weight,
+        p1_1.authors,
+        p1_1.cover_type,
+        p1_1.genre,
+        p1_1.page_count,
+        p1_1.publication_date,
+        p1_1.publishers,
+        p1_2.artists,
+        p1_2.genre,
+        p1_2.record_label,
+        p1_2.release_date,
+        p1_2.track_list,
+        p1_3.directors,
+        p1_3.duration_minutes,
+        p1_3.dvd_type,
+        p1_3.genre,
+        p1_3.rating,
+        p1_3.release_date,
+        p1_3.studio,
+        p1_4.artist,
+        p1_4.music_type,
+        p1_4.record_label,
+        p1_4.release_date,
+        p1_4.rpm,
+        p1_4.size_inches,
+        p1_4.sleeve_condition,
+        p1_4.tracklist,
+        p1_4.vinyl_condition 
+    from
+        products p1_0 
+    left join
+        books p1_1 
+            on p1_0.product_id=p1_1.product_id 
+    left join
+        cds p1_2 
+            on p1_0.product_id=p1_2.product_id 
+    left join
+        dvds p1_3 
+            on p1_0.product_id=p1_3.product_id 
+    left join
+        lp p1_4 
+            on p1_0.product_id=p1_4.product_id
+2025-06-25T17:44:54.946+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-4] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json;q=0.8', given [text/html, application/xhtml+xml, image/avif, image/webp, image/apng, application/xml;q=0.9, */*;q=0.8, application/signed-exchange;v=b3;q=0.7] and supported [application/json, application/*+json]
+2025-06-25T17:44:54.947+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-4] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [ApiResponse(success=true, message=Retrieved 9 products, data=[ProductDTO(productId=1, title=The Grea (truncated)...]
+2025-06-25T17:44:54.948+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-06-25T17:44:55.046+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : GET "/favicon.ico", parameters={}
+2025-06-25T17:44:55.047+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-5] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/], classpath [resources/], classpath [static/], classpath [public/], ServletContext [/]]
+2025-06-25T17:44:55.048+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-5] o.s.w.s.r.ResourceHttpRequestHandler     : Resource not found
+2025-06-25T17:44:55.049+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-5] .m.m.a.ExceptionHandlerExceptionResolver : Using @ExceptionHandler com.itss.ecommerce.exception.GlobalExceptionHandler#handleGenericException(Exception)
+2025-06-25T17:44:55.049+07:00 ERROR 85138 --- [demo] [nio-8080-exec-5] c.i.e.exception.GlobalExceptionHandler   : Unexpected error
+
+org.springframework.web.servlet.resource.NoResourceFoundException: No static resource favicon.ico.
+	at org.springframework.web.servlet.resource.ResourceHttpRequestHandler.handleRequest(ResourceHttpRequestHandler.java:585) ~[spring-webmvc-6.2.5.jar:6.2.5]
+	at org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter.handle(HttpRequestHandlerAdapter.java:52) ~[spring-webmvc-6.2.5.jar:6.2.5]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089) ~[spring-webmvc-6.2.5.jar:6.2.5]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979) ~[spring-webmvc-6.2.5.jar:6.2.5]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014) ~[spring-webmvc-6.2.5.jar:6.2.5]
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903) ~[spring-webmvc-6.2.5.jar:6.2.5]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564) ~[tomcat-embed-core-10.1.39.jar:6.0]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885) ~[spring-webmvc-6.2.5.jar:6.2.5]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658) ~[tomcat-embed-core-10.1.39.jar:6.0]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51) ~[tomcat-embed-websocket-10.1.39.jar:10.1.39]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-6.2.5.jar:6.2.5]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.5.jar:6.2.5]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-6.2.5.jar:6.2.5]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.5.jar:6.2.5]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201) ~[spring-web-6.2.5.jar:6.2.5]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.5.jar:6.2.5]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:905) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1743) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63) ~[tomcat-embed-core-10.1.39.jar:10.1.39]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+
+2025-06-25T17:44:55.050+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-5] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json;q=0.8', given [image/avif, image/webp, image/apng, image/svg+xml, image/*, */*;q=0.8] and supported [application/json, application/*+json]
+2025-06-25T17:44:55.050+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-5] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [ApiResponse(success=false, message=An internal server error occurred, data=null, errorCode=INTERNAL_ (truncated)...]
+2025-06-25T17:44:55.051+07:00  WARN 85138 --- [demo] [nio-8080-exec-5] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.web.servlet.resource.NoResourceFoundException: No static resource favicon.ico.]
+2025-06-25T17:44:55.051+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 500 INTERNAL_SERVER_ERROR
+2025-06-25T17:47:35.984+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : GET "/api/products", parameters={}
+2025-06-25T17:47:35.985+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-8] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.itss.ecommerce.controller.ProductController#getAllProducts()
+2025-06-25T17:47:35.985+07:00  INFO 85138 --- [demo] [nio-8080-exec-8] c.i.e.controller.ProductController       : GET /api/products - Fetching all products
+2025-06-25T17:47:35.986+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-8] c.itss.ecommerce.service.ProductService  : Fetching all products
+2025-06-25T17:47:35.987+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-8] org.hibernate.SQL                        : 
+    select
+        p1_0.product_id,
+        p1_0.type,
+        p1_0.barcode,
+        p1_0.category,
+        p1_0.condition,
+        p1_0.created_at,
+        p1_0.dimensions,
+        p1_0.image_url,
+        p1_0.import_date,
+        p1_0.introduction,
+        p1_0.price,
+        p1_0.product_value,
+        p1_0.quantity,
+        p1_0.rush_order_supported,
+        p1_0.title,
+        p1_0.updated_at,
+        p1_0.weight,
+        p1_1.authors,
+        p1_1.cover_type,
+        p1_1.genre,
+        p1_1.page_count,
+        p1_1.publication_date,
+        p1_1.publishers,
+        p1_2.artists,
+        p1_2.genre,
+        p1_2.record_label,
+        p1_2.release_date,
+        p1_2.track_list,
+        p1_3.directors,
+        p1_3.duration_minutes,
+        p1_3.dvd_type,
+        p1_3.genre,
+        p1_3.rating,
+        p1_3.release_date,
+        p1_3.studio,
+        p1_4.artist,
+        p1_4.music_type,
+        p1_4.record_label,
+        p1_4.release_date,
+        p1_4.rpm,
+        p1_4.size_inches,
+        p1_4.sleeve_condition,
+        p1_4.tracklist,
+        p1_4.vinyl_condition 
+    from
+        products p1_0 
+    left join
+        books p1_1 
+            on p1_0.product_id=p1_1.product_id 
+    left join
+        cds p1_2 
+            on p1_0.product_id=p1_2.product_id 
+    left join
+        dvds p1_3 
+            on p1_0.product_id=p1_3.product_id 
+    left join
+        lp p1_4 
+            on p1_0.product_id=p1_4.product_id
+Hibernate: 
+    select
+        p1_0.product_id,
+        p1_0.type,
+        p1_0.barcode,
+        p1_0.category,
+        p1_0.condition,
+        p1_0.created_at,
+        p1_0.dimensions,
+        p1_0.image_url,
+        p1_0.import_date,
+        p1_0.introduction,
+        p1_0.price,
+        p1_0.product_value,
+        p1_0.quantity,
+        p1_0.rush_order_supported,
+        p1_0.title,
+        p1_0.updated_at,
+        p1_0.weight,
+        p1_1.authors,
+        p1_1.cover_type,
+        p1_1.genre,
+        p1_1.page_count,
+        p1_1.publication_date,
+        p1_1.publishers,
+        p1_2.artists,
+        p1_2.genre,
+        p1_2.record_label,
+        p1_2.release_date,
+        p1_2.track_list,
+        p1_3.directors,
+        p1_3.duration_minutes,
+        p1_3.dvd_type,
+        p1_3.genre,
+        p1_3.rating,
+        p1_3.release_date,
+        p1_3.studio,
+        p1_4.artist,
+        p1_4.music_type,
+        p1_4.record_label,
+        p1_4.release_date,
+        p1_4.rpm,
+        p1_4.size_inches,
+        p1_4.sleeve_condition,
+        p1_4.tracklist,
+        p1_4.vinyl_condition 
+    from
+        products p1_0 
+    left join
+        books p1_1 
+            on p1_0.product_id=p1_1.product_id 
+    left join
+        cds p1_2 
+            on p1_0.product_id=p1_2.product_id 
+    left join
+        dvds p1_3 
+            on p1_0.product_id=p1_3.product_id 
+    left join
+        lp p1_4 
+            on p1_0.product_id=p1_4.product_id
+2025-06-25T17:47:35.989+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-8] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-25T17:47:35.989+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-8] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [ApiResponse(success=true, message=Retrieved 9 products, data=[ProductDTO(productId=1, title=The Grea (truncated)...]
+2025-06-25T17:47:35.990+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-06-25T17:47:40.964+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : GET "/api/products", parameters={}
+2025-06-25T17:47:40.965+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-9] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.itss.ecommerce.controller.ProductController#getAllProducts()
+2025-06-25T17:47:40.966+07:00  INFO 85138 --- [demo] [nio-8080-exec-9] c.i.e.controller.ProductController       : GET /api/products - Fetching all products
+2025-06-25T17:47:40.966+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-9] c.itss.ecommerce.service.ProductService  : Fetching all products
+2025-06-25T17:47:40.968+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-9] org.hibernate.SQL                        : 
+    select
+        p1_0.product_id,
+        p1_0.type,
+        p1_0.barcode,
+        p1_0.category,
+        p1_0.condition,
+        p1_0.created_at,
+        p1_0.dimensions,
+        p1_0.image_url,
+        p1_0.import_date,
+        p1_0.introduction,
+        p1_0.price,
+        p1_0.product_value,
+        p1_0.quantity,
+        p1_0.rush_order_supported,
+        p1_0.title,
+        p1_0.updated_at,
+        p1_0.weight,
+        p1_1.authors,
+        p1_1.cover_type,
+        p1_1.genre,
+        p1_1.page_count,
+        p1_1.publication_date,
+        p1_1.publishers,
+        p1_2.artists,
+        p1_2.genre,
+        p1_2.record_label,
+        p1_2.release_date,
+        p1_2.track_list,
+        p1_3.directors,
+        p1_3.duration_minutes,
+        p1_3.dvd_type,
+        p1_3.genre,
+        p1_3.rating,
+        p1_3.release_date,
+        p1_3.studio,
+        p1_4.artist,
+        p1_4.music_type,
+        p1_4.record_label,
+        p1_4.release_date,
+        p1_4.rpm,
+        p1_4.size_inches,
+        p1_4.sleeve_condition,
+        p1_4.tracklist,
+        p1_4.vinyl_condition 
+    from
+        products p1_0 
+    left join
+        books p1_1 
+            on p1_0.product_id=p1_1.product_id 
+    left join
+        cds p1_2 
+            on p1_0.product_id=p1_2.product_id 
+    left join
+        dvds p1_3 
+            on p1_0.product_id=p1_3.product_id 
+    left join
+        lp p1_4 
+            on p1_0.product_id=p1_4.product_id
+Hibernate: 
+    select
+        p1_0.product_id,
+        p1_0.type,
+        p1_0.barcode,
+        p1_0.category,
+        p1_0.condition,
+        p1_0.created_at,
+        p1_0.dimensions,
+        p1_0.image_url,
+        p1_0.import_date,
+        p1_0.introduction,
+        p1_0.price,
+        p1_0.product_value,
+        p1_0.quantity,
+        p1_0.rush_order_supported,
+        p1_0.title,
+        p1_0.updated_at,
+        p1_0.weight,
+        p1_1.authors,
+        p1_1.cover_type,
+        p1_1.genre,
+        p1_1.page_count,
+        p1_1.publication_date,
+        p1_1.publishers,
+        p1_2.artists,
+        p1_2.genre,
+        p1_2.record_label,
+        p1_2.release_date,
+        p1_2.track_list,
+        p1_3.directors,
+        p1_3.duration_minutes,
+        p1_3.dvd_type,
+        p1_3.genre,
+        p1_3.rating,
+        p1_3.release_date,
+        p1_3.studio,
+        p1_4.artist,
+        p1_4.music_type,
+        p1_4.record_label,
+        p1_4.release_date,
+        p1_4.rpm,
+        p1_4.size_inches,
+        p1_4.sleeve_condition,
+        p1_4.tracklist,
+        p1_4.vinyl_condition 
+    from
+        products p1_0 
+    left join
+        books p1_1 
+            on p1_0.product_id=p1_1.product_id 
+    left join
+        cds p1_2 
+            on p1_0.product_id=p1_2.product_id 
+    left join
+        dvds p1_3 
+            on p1_0.product_id=p1_3.product_id 
+    left join
+        lp p1_4 
+            on p1_0.product_id=p1_4.product_id
+2025-06-25T17:47:40.971+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-9] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-25T17:47:40.972+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-9] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [ApiResponse(success=true, message=Retrieved 9 products, data=[ProductDTO(productId=1, title=The Grea (truncated)...]
+2025-06-25T17:47:40.974+07:00 DEBUG 85138 --- [demo] [nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : Completed 200 OK

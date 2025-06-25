@@ -16,7 +16,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ type, searchParams }) 
     queryFn: async () => {
       if (type) {
         return await productApi.getByType(type);
-      } else if (searchParams) {
+      } else if (searchParams && Object.values(searchParams).some(value => value !== undefined && value !== '')) {
         return await productApi.search(searchParams);
       } else {
         return await productApi.getAll();
