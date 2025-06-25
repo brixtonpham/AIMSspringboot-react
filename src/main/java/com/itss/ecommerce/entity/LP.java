@@ -29,7 +29,7 @@ public class LP extends Product {
     @Column(name = "rpm")
     private Integer rpm; // Records per minute (33, 45, 78)
     
-    @Column(name = "size_inches")`
+    @Column(name = "size_inches")
     private Double sizeInches; // 7", 10", 12"
     
     @Column(name = "vinyl_condition")
@@ -37,4 +37,9 @@ public class LP extends Product {
     
     @Column(name = "sleeve_condition")
     private String sleeveCondition;
+    
+    @Override
+    public String getProductType() {
+        return "lp";
+    }
 }
