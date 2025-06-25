@@ -17,7 +17,8 @@ import java.time.LocalDateTime;
 @JsonSubTypes({
     @JsonSubTypes.Type(value = Book.class, name = "book"),
     @JsonSubTypes.Type(value = CD.class, name = "cd"),
-    @JsonSubTypes.Type(value = DVD.class, name = "dvd")
+    @JsonSubTypes.Type(value = DVD.class, name = "dvd"),
+    @JsonSubTypes.Type(value = LP.class, name = "lp")
 })
 @Data
 @NoArgsConstructor
@@ -32,14 +33,27 @@ public abstract class Product {
     @Column(name = "title", nullable = false, length = 255)
     private String title;
     
+    @Column(name = "category", nullable = false)
+    private String category;
+    
     @Column(name = "price", nullable = false)
     private Integer price;
+    
+    @Column(name = "product_value", nullable = false)
+    private Integer productValue; // Used for price validation (30%-150% of this value)
     
     @Column(name = "weight")
     private Float weight;
     
     @Column(name = "rush_order_supported")
     private Boolean rushOrderSupported = false;
+    
+    // Physical product attributes
+    @Column(name = "dimensions")
+    private String dimensions; // e.g., "20x15x3 cm"
+    
+    @Column(name = "condition")
+    private String condition; // New, Used - Like New, Used - Very Good, etc.
     
     @Column(name = "image_url", length = 500)
     private String imageUrl;
@@ -112,5 +126,17 @@ public abstract class Product {
      */
     public Integer calculateTotalPrice(int requestedQuantity) {
         return price * requestedQuantity;
+    }
+    
+    /**
+     * Helper method to validate price against product value
+     */
+    public boolean isPriceValid() {
+        if (productValue == null || price == null) {
+            return false;
+        }
+        double minPrice = productValue * 0.3;
+        double maxPrice = productValue * 1.5;
+        return price >= minPrice && price <= maxPrice;
     }
 }

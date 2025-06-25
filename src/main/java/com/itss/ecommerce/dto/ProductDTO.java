@@ -18,9 +18,20 @@ public class ProductDTO {
     @Size(max = 255, message = "Title must not exceed 255 characters")
     private String title;
     
+    @NotBlank(message = "Category is required")
+    private String category;
+    
     @NotNull(message = "Price is required")
     @Positive(message = "Price must be positive")
     private Integer price;
+    
+    @NotNull(message = "Product value is required")
+    @Positive(message = "Product value must be positive")
+    private Integer productValue; // Used for price validation (30%-150% of this value)
+    
+    // Physical product attributes
+    private String dimensions; // e.g., "20x15x3 cm"
+    private String condition; // New, Used - Like New, Used - Very Good, etc.
     
     @PositiveOrZero(message = "Weight cannot be negative")
     private Float weight;
