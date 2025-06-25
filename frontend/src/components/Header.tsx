@@ -9,7 +9,8 @@ import {
   User, 
   Search, 
   Menu,
-  LogOut
+  LogOut,
+  Shield
 } from 'lucide-react';
 
 export const Header: React.FC = () => {
@@ -67,6 +68,14 @@ export const Header: React.FC = () => {
             {/* User Menu */}
             {isAuthenticated ? (
               <div className="flex items-center space-x-2">
+                {(user?.role === 'ADMIN' || user?.role === 'MANAGER') && (
+                  <Link to="/admin">
+                    <Button variant="ghost" size="sm">
+                      <Shield className="w-4 h-4 mr-2" />
+                      Admin
+                    </Button>
+                  </Link>
+                )}
                 <Link to="/profile">
                   <Button variant="ghost" size="sm">
                     <User className="w-4 h-4 mr-2" />

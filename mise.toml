@@ -1,3 +1,4 @@
 [tools]
 java = "21"
 maven = "latest"
+node = "20.19.2"

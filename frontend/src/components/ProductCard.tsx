@@ -1,10 +1,11 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Product } from '../types/api';
 import { useCartStore } from '../stores/cartStore';
 import { formatPrice } from '../lib/utils';
-import { ShoppingCart, Package } from 'lucide-react';
+import { ShoppingCart, Package, Eye } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
@@ -59,7 +60,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             </div>
           )}
         </div>
-        <CardTitle className="text-lg line-clamp-2">{product.title}</CardTitle>
+        <CardTitle className="text-lg line-clamp-2">
+          <Link 
+            to={`/products/${product.productId}`}
+            className="hover:text-primary transition-colors"
+          >
+            {product.title}
+          </Link>
+        </CardTitle>
       </CardHeader>
 
       <CardContent className="flex-1">
@@ -108,21 +116,29 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       </CardContent>
 
       <CardFooter className="pt-3">
-        <div className="w-full">
+        <div className="w-full space-y-2">
           {itemQuantity > 0 && (
-            <div className="text-sm text-center mb-2 text-green-600">
+            <div className="text-sm text-center text-green-600">
               {itemQuantity} in cart
             </div>
           )}
-          <Button
-            onClick={handleAddToCart}
-            disabled={product.quantity === 0}
-            className="w-full"
-            size="sm"
-          >
-            <ShoppingCart className="w-4 h-4 mr-2" />
-            {product.quantity === 0 ? 'Out of Stock' : 'Add to Cart'}
-          </Button>
+          <div className="flex gap-2">
+            <Link to={`/products/${product.productId}`} className="flex-1">
+              <Button variant="outline" size="sm" className="w-full">
+                <Eye className="w-4 h-4 mr-2" />
+                View
+              </Button>
+            </Link>
+            <Button
+              onClick={handleAddToCart}
+              disabled={product.quantity === 0}
+              className="flex-1"
+              size="sm"
+            >
+              <ShoppingCart className="w-4 h-4 mr-2" />
+              {product.quantity === 0 ? 'Out of Stock' : 'Add to Cart'}
+            </Button>
+          </div>
         </div>
       </CardFooter>
     </Card>
