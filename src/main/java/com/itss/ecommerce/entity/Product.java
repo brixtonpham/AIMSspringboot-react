@@ -69,7 +69,12 @@ public abstract class Product {
     
     @Column(name = "type", insertable = false, updatable = false)
     private String type;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user; // User who created the product
     
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     

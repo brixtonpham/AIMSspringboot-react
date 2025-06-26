@@ -35,6 +35,18 @@ public class User {
     @Column(name = "role")
     private UserRole role = UserRole.CUSTOMER;
     
+    @Column(name = "province")
+    private String province;
+
+    @Column(name = "district")
+    private String district;
+
+    @Column(name = "ward")
+    private String ward;
+    
+    @Column(name = "address", nullable = true)
+    private String address;
+
     @Column(name = "registration_date")
     private LocalDateTime registrationDate;
     

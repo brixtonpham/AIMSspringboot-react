@@ -110,9 +110,10 @@ export interface DeliveryInformationDTO {
   name: string;
   phone: string;
   email: string;
-  address: string;
-  ward: string;
   province: string;
+  district: string;
+  ward: string;
+  address: string;
   deliveryMessage?: string;
   deliveryFee?: number;
 }

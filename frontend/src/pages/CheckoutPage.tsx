@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { Truck, CreditCard, MapPin, Phone, Mail, User, Check } from 'lucide-react';
@@ -15,12 +15,17 @@ interface CheckoutFormData {
   customerName: string;
   customerEmail: string;
   customerPhone: string;
-  customerWard: string;
   customerProvince: string;
+  customerDistrict: string;
+  customerWard: string;
   customerAddress: string;
   paymentMethod: 'CREDIT_CARD' | 'CASH_ON_DELIVERY' | 'VNPAY';
   rushDelivery: boolean;
 }
+
+type LocationData = Record<string, Record<string, string[]>>;
+
+
 
 const CheckoutPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -28,6 +33,14 @@ const CheckoutPage: React.FC = () => {
   const { items, total, clearCart } = useCartStore();
   const { user } = useAuthStore();
   const navigate = useNavigate();
+
+  const [locations, setLocations] = useState<LocationData>({});
+
+  useEffect(() => {
+    fetch('/vietnam_locations.json')
+      .then(res => res.json())
+      .then(setLocations);
+  }, []);
 
   const form = useForm<CheckoutFormData>({
     defaultValues: {
@@ -76,15 +89,15 @@ const CheckoutPage: React.FC = () => {
           name: data.customerName,
           email: data.customerEmail,
           phone: data.customerPhone,
-          address: data.customerAddress,
-          ward: data.customerWard,
           province: data.customerProvince,
+          district: data.customerDistrict,
+          ward: data.customerWard,
+          address: data.customerAddress,
           deliveryFee: deliveryFee,
         },
       };
 
       const response = await orderApi.create(orderData);
-      clearCart();
 
       if (data.paymentMethod === 'VNPAY') {
         const paymentRequest = {
@@ -97,6 +110,7 @@ const CheckoutPage: React.FC = () => {
         // Use paymentApi instead of fetch
         const { paymentUrl } = await paymentApi.createVNPayPayment(paymentRequest);
         window.location.href = paymentUrl;
+        clearCart();
         return;
       }
 
@@ -245,16 +259,26 @@ const CheckoutPage: React.FC = () => {
 
                       <FormField
                         control={form.control}
-                        name="customerWard"
-                        rules={{ required: 'Ward is required' }}
+                        name="customerProvince"
+                        rules={{ required: 'Province/City is required' }}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Ward</FormLabel>
+                            <FormLabel>Province/City</FormLabel>
                             <FormControl>
-                              <div className="relative">
-                                <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                                <Input {...field} placeholder="Enter your ward" className="pl-10" />
-                              </div>
+                              <select
+                                {...field}
+                                className="pl-3 pr-8 py-2 border rounded w-full"
+                                onChange={e => {
+                                  field.onChange(e);
+                                  form.setValue('customerDistrict', '');
+                                  form.setValue('customerWard', '');
+                                }}
+                              >
+                                <option value="">Select province/city</option>
+                                {Object.keys(locations).map(province => (
+                                  <option key={province} value={province}>{province}</option>
+                                ))}
+                              </select>
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -263,16 +287,53 @@ const CheckoutPage: React.FC = () => {
 
                       <FormField
                         control={form.control}
-                        name="customerProvince"
-                        rules={{ required: 'Province/City is required' }}
+                        name="customerDistrict"
+                        rules={{ required: 'District is required' }}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Province/City</FormLabel>
+                            <FormLabel>District</FormLabel>
                             <FormControl>
-                              <div className="relative">
-                                <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                                <Input {...field} placeholder="Enter your province or city" className="pl-10" />
-                              </div>
+                              <select
+                                {...field}
+                                className="pl-3 pr-8 py-2 border rounded w-full"
+                                disabled={!form.watch('customerProvince')}
+                                onChange={e => {
+                                  field.onChange(e);
+                                  form.setValue('customerWard', '');
+                                }}
+                              >
+                                <option value="">Select district</option>
+                                {form.watch('customerProvince') &&
+                                  Object.keys(locations[form.watch('customerProvince')] || {}).map(district => (
+                                    <option key={district} value={district}>{district}</option>
+                                  ))}
+                              </select>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="customerWard"
+                        rules={{ required: 'Ward is required' }}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Ward</FormLabel>
+                            <FormControl>
+                              <select
+                                {...field}
+                                className="pl-3 pr-8 py-2 border rounded w-full"
+                                disabled={!form.watch('customerDistrict')}
+                              >
+                                <option value="">Select ward</option>
+                                {form.watch('customerProvince') &&
+                                  form.watch('customerDistrict') &&
+                                  (locations[form.watch('customerProvince')]?.[form.watch('customerDistrict')] || []).map(ward => (
+                                    <option key={ward} value={ward}>{ward}</option>
+                                  ))}
+                              </select>
                             </FormControl>
                             <FormMessage />
                           </FormItem>
