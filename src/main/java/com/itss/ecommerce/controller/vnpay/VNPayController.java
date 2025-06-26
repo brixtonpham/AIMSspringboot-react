@@ -40,29 +40,6 @@ public class VNPayController {
     }
 
     /**
-     * View Controllers for rendering JSP pages
-     */
-
-    /**
-     * API endpoint for application info
-     * 
-     * @return application information
-     */
-    @GetMapping("/")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> index() {
-        Map<String, Object> info = new HashMap<>();
-        info.put("application", "AIMS VNPay Integration");
-        info.put("status", "running");
-        info.put("endpoints", Map.of(
-                "payment", "/api/payment",
-                "query", "/api/payment/query",
-                "refund", "/api/payment/refund",
-                "ipn", "/ipn"));
-        return ResponseEntity.ok(info);
-    }
-
-    /**
      * API endpoint for payment form information
      * 
      * @return payment form info
