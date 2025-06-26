@@ -7,14 +7,14 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 @Entity
-@Table(name = "dvds")
+@Table(name = "dvd")
+@PrimaryKeyJoinColumn(name = "product_id")
 @DiscriminatorValue("dvd")
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class DVD extends Product {
-    
     
     @Column(name = "release_date")
     private String releaseDate;

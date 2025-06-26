@@ -30,6 +30,10 @@ public class DeliveryInformationDTO {
     @Size(max = 1000, message = "Address must not exceed 1000 characters")
     private String address;
     
+    @NotBlank(message = "Ward is required")
+    @Size(max = 100, message = "Ward must not exceed 100 characters")
+    private String ward;
+    
     @NotBlank(message = "Province is required")
     @Size(max = 100, message = "Province must not exceed 100 characters")
     private String province;
@@ -52,10 +56,14 @@ public class DeliveryInformationDTO {
      * Get full address for display
      */
     public String getFullAddress() {
-        if (address == null && province == null) return "";
-        if (address == null) return province;
-        if (province == null) return address;
-        return address + ", " + province;
+        if (address == null && ward == null && province == null) return "";
+        if (address == null && ward == null) return province;
+        if (address == null && province == null) return ward;
+        if (ward == null && province == null) return address;
+        if (address == null) return ward + ", " + province;
+        if (ward == null) return address + ", " + province;
+        if (province == null) return address + ", " + ward;
+        return address + ", " + ward + ", " + province;
     }
     
     /**
@@ -66,6 +74,7 @@ public class DeliveryInformationDTO {
                phone != null && !phone.trim().isEmpty() &&
                email != null && !email.trim().isEmpty() &&
                address != null && !address.trim().isEmpty() &&
+               ward != null && !ward.trim().isEmpty() &&
                province != null && !province.trim().isEmpty();
     }
     

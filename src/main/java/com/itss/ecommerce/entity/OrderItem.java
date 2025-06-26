@@ -6,20 +6,20 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 @Entity
-@Table(name = "orderlines")
+@Table(name = "order_item")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderLine {
+public class OrderItem {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "orderline_id")
-    private Long orderLineId;
+    @Column(name = "order_item_id")
+    private Long orderItemId;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
-    private Order order;
+    private OrderItemList order;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
@@ -27,7 +27,7 @@ public class OrderLine {
     
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private OrderLineStatus status = OrderLineStatus.PENDING;
+    private OrderItemStatus status = OrderItemStatus.PENDING;
     
     @Column(name = "rush_order_using")
     private Boolean rushOrder = false;
@@ -44,18 +44,18 @@ public class OrderLine {
     @Column(name = "instructions", columnDefinition = "TEXT")
     private String instructions;
     
-    public enum OrderLineStatus {
+    public enum OrderItemStatus {
         PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED
     }
     
     /**
      * Create order line with product and quantity
      */
-    public void createOrderLine(Product product, int quantity) {
+    public void createOrderItem(Product product, int quantity) {
         this.product = product;
         this.quantity = quantity;
         this.totalFee = product.calculateTotalPrice(quantity);
-        this.status = OrderLineStatus.PENDING;
+        this.status = OrderItemStatus.PENDING;
     }
     
     /**
@@ -88,7 +88,7 @@ public class OrderLine {
      * Check if order line can be cancelled
      */
     public boolean canBeCancelled() {
-        return status == OrderLineStatus.PENDING || status == OrderLineStatus.CONFIRMED;
+        return status == OrderItemStatus.PENDING || status == OrderItemStatus.CONFIRMED;
     }
     
     /**
@@ -98,6 +98,6 @@ public class OrderLine {
         if (!canBeCancelled()) {
             throw new IllegalStateException("Order line cannot be cancelled in status: " + status);
         }
-        status = OrderLineStatus.CANCELLED;
+        status = OrderItemStatus.CANCELLED;
     }
 }

@@ -82,7 +82,7 @@
                             <div class="transaction-detail">
                                 <span class="detail-label">Thời gian thanh toán:</span>
                                 <span>
-                                    <fmt:formatDate value="${payment.paymentDate.toLocalDate()}" pattern="dd/MM/yyyy HH:mm:ss"/>
+                                    {paymentDateStr}
                                 </span>
                             </div>
                         </div>

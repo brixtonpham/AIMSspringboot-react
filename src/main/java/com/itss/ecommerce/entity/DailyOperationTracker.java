@@ -13,7 +13,7 @@ public class DailyOperationTracker {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long operationId;
     
     @Column(name = "user_id", nullable = false)
     private Long userId;

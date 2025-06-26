@@ -7,12 +7,14 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 @Entity
-@Table(name = "cds")
+@Table(name = "cd")
 @DiscriminatorValue("cd")
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@PrimaryKeyJoinColumn(name = "product_id")
+
 public class CD extends Product {
     
     

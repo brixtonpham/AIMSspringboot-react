@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderDTO {
+public class OrderItemListDTO {
     
     private Long orderId;
     
@@ -36,7 +36,7 @@ public class OrderDTO {
     
     // Related entities
     private DeliveryInformationDTO deliveryInfo;
-    private List<OrderLineDTO> orderLines;
+    private List<OrderItemDTO> orderItems;
     private InvoiceDTO invoice;
     
     // Additional computed fields
@@ -50,9 +50,9 @@ public class OrderDTO {
      * Get total number of items in order
      */
     public Integer getTotalItemCount() {
-        if (orderLines == null) return 0;
-        return orderLines.stream()
-                .mapToInt(OrderLineDTO::getQuantity)
+        if (orderItems == null) return 0;
+        return orderItems.stream()
+                .mapToInt(OrderItemDTO::getQuantity)
                 .sum();
     }
     
@@ -60,8 +60,8 @@ public class OrderDTO {
      * Check if order has rush delivery items
      */
     public Boolean getHasRushItems() {
-        if (orderLines == null) return false;
-        return orderLines.stream()
+        if (orderItems == null) return false;
+        return orderItems.stream()
                 .anyMatch(ol -> Boolean.TRUE.equals(ol.getRushOrder()));
     }
     

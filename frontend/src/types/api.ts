@@ -104,6 +104,18 @@ export interface DeliveryInformation {
   deliveryFee: number;
 }
 
+export interface DeliveryInformationDTO {
+  deliveryId?: number;
+  name: string;
+  phone: string;
+  email: string;
+  address: string;
+  ward: string;
+  province: string;
+  deliveryMessage?: string;
+  deliveryFee?: number;
+}
+
 // Invoice types
 export interface Invoice {
   invoiceId: number;
@@ -119,8 +131,17 @@ export interface Invoice {
 
 // Request types
 export interface CreateOrderRequest {
-  cartItems: CartItem[];
-  deliveryInfo: Omit<DeliveryInformation, 'deliveryId'>;
+  cartItems: CartItemDTO[];
+  deliveryInfo: DeliveryInformationDTO;
+}
+
+export interface CartItemDTO {
+  productId: number;
+  quantity: number;
+  rushOrder?: boolean;
+  instructions?: string;
+  productTitle?: string;  // For display
+  unitPrice?: number;     // For display
 }
 
 export interface CartItem {
@@ -181,6 +202,8 @@ export interface UserProfile {
   id: string;
   email: string;
   name: string;
+  phone?: string;
+  address?: string;
   role: 'ADMIN' | 'CUSTOMER' | 'MANAGER' | 'EMPLOYEE';
 }
 
@@ -192,4 +215,13 @@ export interface LoginRequest {
 export interface LoginResponse {
   user: UserProfile;
   token: string;
+}
+
+// Payment type
+export interface PaymentRequest {
+  amount: string;           // Payment amount in VND (numeric string)
+  bankCode?: string;        // Optional bank code
+  language: 'vn' | 'en';    // Interface language
+  vnp_Version: string;      // VNPAY API version
+  vnp_ExpireDate?: string;  // Optional expiry date (yyyyMMddHHmmss)
 }

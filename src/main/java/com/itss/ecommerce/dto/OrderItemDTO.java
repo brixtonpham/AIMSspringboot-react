@@ -9,9 +9,9 @@ import jakarta.validation.constraints.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderLineDTO {
+public class OrderItemDTO {
     
-    private Long orderLineId;
+    private Long orderItemId;
     
     @NotNull(message = "Order ID is required")
     private Long orderId;

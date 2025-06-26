@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.4.4</version>
-		<relativePath/>
+		<relativePath />
 	</parent>
 
 	<groupId>com.example</groupId>
 	<artifactId>merged-project</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 	<name>merged-project</name>
 	<description>Merged Spring Boot Project</description>
 
@@ -28,10 +28,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
+		-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
@@ -87,24 +88,26 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
-<!--			<scope>provided</scope>-->
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-jasper</artifactId>
-<!--			<scope>provided</scope>-->
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>javax.servlet</groupId>-->
-<!--			<artifactId>jstl</artifactId>-->
-<!--			<version>1.2</version>-->
-<!--		</dependency>-->
+		<dependency>
+			<groupId>jakarta.servlet.jsp.jstl</groupId>
+			<artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.web</groupId>
+			<artifactId>jakarta.servlet.jsp.jstl</artifactId>
+			<version>3.0.1</version>
+		</dependency>
 		<dependency>
 			<groupId>jakarta.validation</groupId>
 			<artifactId>jakarta.validation-api</artifactId>
-			<version>3.0.2</version> <!-- hoặc mới hơn nếu có -->
+			<version>3.0.2</version>
 		</dependency>
-
 		<!-- Test dependencies -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -155,26 +158,26 @@
 			<version>6.0.0</version>
 		</dependency>
 
-	   <dependency>
-          <groupId>org.testcontainers</groupId>
-          <artifactId>testcontainers</artifactId>
-          <version>1.19.3</version>
-          <scope>test</scope>
-       </dependency>
-    
-      <dependency>
-          <groupId>org.testcontainers</groupId>
-          <artifactId>junit-jupiter</artifactId>
-          <version>1.19.3</version>
-          <scope>test</scope>
-      </dependency>
-    
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers</artifactId>
+			<version>1.19.3</version>
+			<scope>test</scope>
+		</dependency>
 
-       <dependency>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-testcontainers</artifactId>
-          <scope>test</scope>
-       </dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<version>1.19.3</version>
+			<scope>test</scope>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-testcontainers</artifactId>
+			<scope>test</scope>
+		</dependency>
 
 	</dependencies>
 

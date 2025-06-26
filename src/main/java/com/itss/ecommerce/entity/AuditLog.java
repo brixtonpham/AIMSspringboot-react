@@ -8,16 +8,15 @@ import lombok.AllArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "logger")
+@Table(name = "audit_log")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuditLog {
-    
+public class AuditLog { 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "action_id")
-    private Long actionId;
+    @Column(name = "audit_log_id")
+    private Long auditLogId;
     
     @Column(name = "action_name", nullable = false, length = 255)
     private String actionName;

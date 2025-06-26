@@ -17,10 +17,10 @@ public class OrderMapper {
     /**
      * Convert Order entity to OrderDTO
      */
-    public OrderDTO toDTO(Order order) {
+    public OrderItemListDTO toDTO(OrderItemList order) {
         if (order == null) return null;
         
-        OrderDTO dto = new OrderDTO();
+        OrderItemListDTO dto = new OrderItemListDTO();
         dto.setOrderId(order.getOrderId());
         dto.setTotalBeforeVat(order.getTotalBeforeVat());
         dto.setTotalAfterVat(order.getTotalAfterVat());
@@ -34,8 +34,8 @@ public class OrderMapper {
             dto.setDeliveryInfo(toDTO(order.getDeliveryInfo()));
         }
         
-        if (order.getOrderLines() != null) {
-            dto.setOrderLines(order.getOrderLines().stream()
+        if (order.getOrderItems() != null) {
+            dto.setOrderItems(order.getOrderItems().stream()
                     .map(this::toDTO)
                     .collect(Collectors.toList()));
         }
@@ -48,24 +48,24 @@ public class OrderMapper {
     }
     
     /**
-     * Convert OrderLine entity to OrderLineDTO
+     * Convert OrderItem entity to OrderItemDTO
      */
-    public OrderLineDTO toDTO(OrderLine orderLine) {
-        if (orderLine == null) return null;
+    public OrderItemDTO toDTO(OrderItem orderItem) {
+        if (orderItem == null) return null;
         
-        OrderLineDTO dto = new OrderLineDTO();
-        dto.setOrderLineId(orderLine.getOrderLineId());
-        dto.setOrderId(orderLine.getOrder() != null ? orderLine.getOrder().getOrderId() : null);
-        dto.setStatus(orderLine.getStatus().name());
-        dto.setRushOrder(orderLine.getRushOrder());
-        dto.setQuantity(orderLine.getQuantity());
-        dto.setTotalFee(orderLine.getTotalFee());
-        dto.setDeliveryTime(orderLine.getDeliveryTime());
-        dto.setInstructions(orderLine.getInstructions());
+        OrderItemDTO dto = new OrderItemDTO();
+        dto.setOrderItemId(orderItem.getOrderItemId());
+        dto.setOrderId(orderItem.getOrder() != null ? orderItem.getOrder().getOrderId() : null);
+        dto.setStatus(orderItem.getStatus().name());
+        dto.setRushOrder(orderItem.getRushOrder());
+        dto.setQuantity(orderItem.getQuantity());
+        dto.setTotalFee(orderItem.getTotalFee());
+        dto.setDeliveryTime(orderItem.getDeliveryTime());
+        dto.setInstructions(orderItem.getInstructions());
         
         // Convert product
-        if (orderLine.getProduct() != null) {
-            dto.setProduct(productMapper.toDTO(orderLine.getProduct()));
+        if (orderItem.getProduct() != null) {
+            dto.setProduct(productMapper.toDTO(orderItem.getProduct()));
         }
         
         return dto;
@@ -83,6 +83,7 @@ public class OrderMapper {
         dto.setPhone(deliveryInfo.getPhone());
         dto.setEmail(deliveryInfo.getEmail());
         dto.setAddress(deliveryInfo.getAddress());
+        dto.setWard(deliveryInfo.getWard());
         dto.setProvince(deliveryInfo.getProvince());
         dto.setDeliveryMessage(deliveryInfo.getDeliveryMessage());
         dto.setDeliveryFee(deliveryInfo.getDeliveryFee());
@@ -113,15 +114,15 @@ public class OrderMapper {
     /**
      * Convert OrderDTO to Order entity
      */
-    public Order toEntity(OrderDTO dto) {
+    public OrderItemList toEntity(OrderItemListDTO dto) {
         if (dto == null) return null;
         
-        Order order = new Order();
+        OrderItemList order = new OrderItemList();
         order.setOrderId(dto.getOrderId());
         order.setTotalBeforeVat(dto.getTotalBeforeVat());
         order.setTotalAfterVat(dto.getTotalAfterVat());
         if (dto.getStatus() != null) {
-            order.setStatus(Order.OrderStatus.valueOf(dto.getStatus()));
+            order.setStatus(OrderItemList.OrderStatus.valueOf(dto.getStatus()));
         }
         order.setVatPercentage(dto.getVatPercentage());
         order.setCreatedAt(dto.getCreatedAt());
@@ -142,6 +143,7 @@ public class OrderMapper {
         deliveryInfo.setPhone(dto.getPhone());
         deliveryInfo.setEmail(dto.getEmail());
         deliveryInfo.setAddress(dto.getAddress());
+        deliveryInfo.setWard(dto.getWard());
         deliveryInfo.setProvince(dto.getProvince());
         deliveryInfo.setDeliveryMessage(dto.getDeliveryMessage());
         deliveryInfo.setDeliveryFee(dto.getDeliveryFee());
@@ -150,29 +152,29 @@ public class OrderMapper {
     }
     
     /**
-     * Convert OrderLineDTO to OrderLine entity
+     * Convert OrderItemDTO to OrderItem entity
      */
-    public OrderLine toEntity(OrderLineDTO dto) {
+    public OrderItem toEntity(OrderItemDTO dto) {
         if (dto == null) return null;
         
-        OrderLine orderLine = new OrderLine();
-        orderLine.setOrderLineId(dto.getOrderLineId());
+        OrderItem orderItem = new OrderItem();
+        orderItem.setOrderItemId(dto.getOrderItemId());
         if (dto.getStatus() != null) {
-            orderLine.setStatus(OrderLine.OrderLineStatus.valueOf(dto.getStatus()));
+            orderItem.setStatus(OrderItem.OrderItemStatus.valueOf(dto.getStatus()));
         }
-        orderLine.setRushOrder(dto.getRushOrder());
-        orderLine.setQuantity(dto.getQuantity());
-        orderLine.setTotalFee(dto.getTotalFee());
-        orderLine.setDeliveryTime(dto.getDeliveryTime());
-        orderLine.setInstructions(dto.getInstructions());
+        orderItem.setRushOrder(dto.getRushOrder());
+        orderItem.setQuantity(dto.getQuantity());
+        orderItem.setTotalFee(dto.getTotalFee());
+        orderItem.setDeliveryTime(dto.getDeliveryTime());
+        orderItem.setInstructions(dto.getInstructions());
         
-        return orderLine;
+        return orderItem;
     }
     
     /**
      * Convert list of Order entities to OrderDTOs
      */
-    public List<OrderDTO> toDTOList(List<Order> orders) {
+    public List<OrderItemListDTO> toDTOList(List<OrderItemList> orders) {
         if (orders == null) return null;
         return orders.stream()
                 .map(this::toDTO)
@@ -180,11 +182,11 @@ public class OrderMapper {
     }
     
     /**
-     * Convert list of OrderLine entities to OrderLineDTOs
+     * Convert list of OrderItem entities to OrderItemDTOs
      */
-    public List<OrderLineDTO> toOrderLineDTOList(List<OrderLine> orderLines) {
-        if (orderLines == null) return null;
-        return orderLines.stream()
+    public List<OrderItemDTO> toOrderItemDTOList(List<OrderItem> orderItems) {
+        if (orderItems == null) return null;
+        return orderItems.stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }

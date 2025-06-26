@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "invoices")
+@Table(name = "invoice")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,7 +21,7 @@ public class Invoice {
     
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
-    private Order order;
+    private OrderItemList order;
     
     @Column(name = "transaction_id")
     private String transactionId;
@@ -54,7 +54,7 @@ public class Invoice {
     /**
      * Create invoice for order
      */
-    public void createInvoice(Order order, String description) {
+    public void createInvoice(OrderItemList order, String description) {
         this.order = order;
         this.description = description;
         this.paymentStatus = PaymentStatus.PENDING;

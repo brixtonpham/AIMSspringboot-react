@@ -335,4 +335,21 @@ export const authApi = {
   },
 };
 
+export const paymentApi = {
+  // Create VNPay payment and get payment URL
+  createVNPayPayment: (paymentRequest: any): Promise<{ paymentUrl: string }> =>
+    fetch('http://localhost:8080/api/payment/vnpay', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(paymentRequest),
+    }).then(res => res.json()),
+
+  // Get VNPay return result (for example, if you want to fetch the result page data)
+  getVNPayReturn: (params: Record<string, string>): Promise<any> => {
+    const query = new URLSearchParams(params).toString();
+    return fetch(`http://localhost:8080/api/payment/vnpay/return?${query}`)
+      .then(res => res.json());
+  }
+};
+
 export default api;

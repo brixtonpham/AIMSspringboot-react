@@ -2,7 +2,6 @@ package com.itss.ecommerce.controller;
 
 import com.itss.ecommerce.dto.ApiResponse;
 import com.itss.ecommerce.dto.UserDTO;
-import com.itss.ecommerce.entity.User;
 import com.itss.ecommerce.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

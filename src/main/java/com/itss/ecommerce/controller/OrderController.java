@@ -36,7 +36,7 @@ public class OrderController {
      * Create new order
      */
     @PostMapping
-    public ResponseEntity<ApiResponse<OrderDTO>> createOrder(
+    public ResponseEntity<ApiResponse<OrderItemListDTO>> createOrder(
             @Valid @RequestBody CreateOrderRequest request) {
         log.info("POST /api/orders - Creating new order with {} items", 
                 request.getCartItems().size());
@@ -49,8 +49,8 @@ public class OrderController {
         // Convert delivery info
         DeliveryInformation deliveryInfo = orderMapper.toEntity(request.getDeliveryInfo());
         
-        Order savedOrder = orderService.createOrder(cartItems, deliveryInfo);
-        OrderDTO orderDTO = orderMapper.toDTO(savedOrder);
+        OrderItemList savedOrder = orderService.createOrder(cartItems, deliveryInfo);
+        OrderItemListDTO orderDTO = orderMapper.toDTO(savedOrder);
         
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiResponse.success(orderDTO, "Order created successfully"));
@@ -60,11 +60,11 @@ public class OrderController {
      * Get all orders
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<List<OrderDTO>>> getAllOrders() {
+    public ResponseEntity<ApiResponse<List<OrderItemListDTO>>> getAllOrders() {
         log.info("GET /api/orders - Fetching all orders");
         
-        List<Order> orders = orderService.getAllOrders();
-        List<OrderDTO> orderDTOs = orderMapper.toDTOList(orders);
+        List<OrderItemList> orders = orderService.getAllOrders();
+        List<OrderItemListDTO> orderDTOs = orderMapper.toDTOList(orders);
         
         return ResponseEntity.ok(ApiResponse.success(orderDTOs,
             String.format("Retrieved %d orders", orderDTOs.size())));
@@ -74,17 +74,17 @@ public class OrderController {
      * Get order by ID
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<OrderDTO>> getOrderById(
+    public ResponseEntity<ApiResponse<OrderItemListDTO>> getOrderById(
             @PathVariable @Positive Long id) {
         log.info("GET /api/orders/{} - Fetching order", id);
         
-        Optional<Order> order = orderService.getOrderById(id);
+        Optional<OrderItemList> order = orderService.getOrderById(id);
         if (order.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ApiResponse.notFound("Order not found with ID: " + id));
         }
         
-        OrderDTO orderDTO = orderMapper.toDTO(order.get());
+        OrderItemListDTO orderDTO = orderMapper.toDTO(order.get());
         return ResponseEntity.ok(ApiResponse.success(orderDTO));
     }
     
@@ -92,14 +92,14 @@ public class OrderController {
      * Get orders by status
      */
     @GetMapping("/status/{status}")
-    public ResponseEntity<ApiResponse<List<OrderDTO>>> getOrdersByStatus(
+    public ResponseEntity<ApiResponse<List<OrderItemListDTO>>> getOrdersByStatus(
             @PathVariable String status) {
         log.info("GET /api/orders/status/{} - Fetching orders", status);
         
         try {
-            Order.OrderStatus orderStatus = Order.OrderStatus.valueOf(status.toUpperCase());
-            List<Order> orders = orderService.getOrdersByStatus(orderStatus);
-            List<OrderDTO> orderDTOs = orderMapper.toDTOList(orders);
+            OrderItemList.OrderStatus orderStatus = OrderItemList.OrderStatus.valueOf(status.toUpperCase());
+            List<OrderItemList> orders = orderService.getOrdersByStatus(orderStatus);
+            List<OrderItemListDTO> orderDTOs = orderMapper.toDTOList(orders);
             
             return ResponseEntity.ok(ApiResponse.success(orderDTOs,
                 String.format("Retrieved %d orders with status %s", orderDTOs.size(), status)));
@@ -113,12 +113,12 @@ public class OrderController {
      * Get orders by customer email
      */
     @GetMapping("/customer/{email}")
-    public ResponseEntity<ApiResponse<List<OrderDTO>>> getOrdersByCustomerEmail(
+    public ResponseEntity<ApiResponse<List<OrderItemListDTO>>> getOrdersByCustomerEmail(
             @PathVariable String email) {
         log.info("GET /api/orders/customer/{} - Fetching orders", email);
         
-        List<Order> orders = orderService.getOrdersByCustomerEmail(email);
-        List<OrderDTO> orderDTOs = orderMapper.toDTOList(orders);
+        List<OrderItemList> orders = orderService.getOrdersByCustomerEmail(email);
+        List<OrderItemListDTO> orderDTOs = orderMapper.toDTOList(orders);
         
         return ResponseEntity.ok(ApiResponse.success(orderDTOs,
             String.format("Retrieved %d orders for customer %s", orderDTOs.size(), email)));
@@ -128,12 +128,12 @@ public class OrderController {
      * Confirm order
      */
     @PatchMapping("/{id}/confirm")
-    public ResponseEntity<ApiResponse<OrderDTO>> confirmOrder(
+    public ResponseEntity<ApiResponse<OrderItemListDTO>> confirmOrder(
             @PathVariable @Positive Long id) {
         log.info("PATCH /api/orders/{}/confirm - Confirming order", id);
         
-        Order confirmedOrder = orderService.confirmOrder(id);
-        OrderDTO orderDTO = orderMapper.toDTO(confirmedOrder);
+        OrderItemList confirmedOrder = orderService.confirmOrder(id);
+        OrderItemListDTO orderDTO = orderMapper.toDTO(confirmedOrder);
         
         return ResponseEntity.ok(ApiResponse.success(orderDTO, "Order confirmed successfully"));
     }
@@ -142,13 +142,13 @@ public class OrderController {
      * Cancel order
      */
     @PatchMapping("/{id}/cancel")
-    public ResponseEntity<ApiResponse<OrderDTO>> cancelOrder(
+    public ResponseEntity<ApiResponse<OrderItemListDTO>> cancelOrder(
             @PathVariable @Positive Long id,
             @RequestParam(required = false, defaultValue = "Customer request") String reason) {
         log.info("PATCH /api/orders/{}/cancel - Cancelling order with reason: {}", id, reason);
         
-        Order cancelledOrder = orderService.cancelOrder(id, reason);
-        OrderDTO orderDTO = orderMapper.toDTO(cancelledOrder);
+        OrderItemList cancelledOrder = orderService.cancelOrder(id, reason);
+        OrderItemListDTO orderDTO = orderMapper.toDTO(cancelledOrder);
         
         return ResponseEntity.ok(ApiResponse.success(orderDTO, "Order cancelled successfully"));
     }
@@ -157,15 +157,15 @@ public class OrderController {
      * Update order status
      */
     @PatchMapping("/{id}/status")
-    public ResponseEntity<ApiResponse<OrderDTO>> updateOrderStatus(
+    public ResponseEntity<ApiResponse<OrderItemListDTO>> updateOrderStatus(
             @PathVariable @Positive Long id,
             @RequestParam String status) {
         log.info("PATCH /api/orders/{}/status - Updating status to {}", id, status);
         
         try {
-            Order.OrderStatus orderStatus = Order.OrderStatus.valueOf(status.toUpperCase());
-            Order updatedOrder = orderService.updateOrderStatus(id, orderStatus);
-            OrderDTO orderDTO = orderMapper.toDTO(updatedOrder);
+            OrderItemList.OrderStatus orderStatus = OrderItemList.OrderStatus.valueOf(status.toUpperCase());
+            OrderItemList updatedOrder = orderService.updateOrderStatus(id, orderStatus);
+            OrderItemListDTO orderDTO = orderMapper.toDTO(updatedOrder);
             
             return ResponseEntity.ok(ApiResponse.success(orderDTO, 
                 "Order status updated to " + status));
@@ -179,11 +179,11 @@ public class OrderController {
      * Get pending orders
      */
     @GetMapping("/pending")
-    public ResponseEntity<ApiResponse<List<OrderDTO>>> getPendingOrders() {
+    public ResponseEntity<ApiResponse<List<OrderItemListDTO>>> getPendingOrders() {
         log.info("GET /api/orders/pending - Fetching pending orders");
         
-        List<Order> orders = orderService.getPendingOrders();
-        List<OrderDTO> orderDTOs = orderMapper.toDTOList(orders);
+        List<OrderItemList> orders = orderService.getPendingOrders();
+        List<OrderItemListDTO> orderDTOs = orderMapper.toDTOList(orders);
         
         return ResponseEntity.ok(ApiResponse.success(orderDTOs,
             String.format("Retrieved %d pending orders", orderDTOs.size())));
@@ -193,12 +193,12 @@ public class OrderController {
      * Get recent orders
      */
     @GetMapping("/recent")
-    public ResponseEntity<ApiResponse<List<OrderDTO>>> getRecentOrders(
+    public ResponseEntity<ApiResponse<List<OrderItemListDTO>>> getRecentOrders(
             @RequestParam(defaultValue = "30") @Positive int days) {
         log.info("GET /api/orders/recent - Fetching orders from last {} days", days);
         
-        List<Order> orders = orderService.getRecentOrders(days);
-        List<OrderDTO> orderDTOs = orderMapper.toDTOList(orders);
+        List<OrderItemList> orders = orderService.getRecentOrders(days);
+        List<OrderItemListDTO> orderDTOs = orderMapper.toDTOList(orders);
         
         return ResponseEntity.ok(ApiResponse.success(orderDTOs,
             String.format("Retrieved %d orders from last %d days", orderDTOs.size(), days)));
@@ -235,11 +235,11 @@ public class OrderController {
      * Get orders with rush delivery
      */
     @GetMapping("/rush-delivery")
-    public ResponseEntity<ApiResponse<List<OrderDTO>>> getOrdersWithRushDelivery() {
+    public ResponseEntity<ApiResponse<List<OrderItemListDTO>>> getOrdersWithRushDelivery() {
         log.info("GET /api/orders/rush-delivery - Fetching orders with rush delivery");
         
-        List<Order> orders = orderService.getOrdersWithRushDelivery();
-        List<OrderDTO> orderDTOs = orderMapper.toDTOList(orders);
+        List<OrderItemList> orders = orderService.getOrdersWithRushDelivery();
+        List<OrderItemListDTO> orderDTOs = orderMapper.toDTOList(orders);
         
         return ResponseEntity.ok(ApiResponse.success(orderDTOs,
             String.format("Retrieved %d orders with rush delivery", orderDTOs.size())));
@@ -249,11 +249,11 @@ public class OrderController {
      * Get cancellable orders
      */
     @GetMapping("/cancellable")
-    public ResponseEntity<ApiResponse<List<OrderDTO>>> getCancellableOrders() {
+    public ResponseEntity<ApiResponse<List<OrderItemListDTO>>> getCancellableOrders() {
         log.info("GET /api/orders/cancellable - Fetching cancellable orders");
         
-        List<Order> orders = orderService.getCancellableOrders();
-        List<OrderDTO> orderDTOs = orderMapper.toDTOList(orders);
+        List<OrderItemList> orders = orderService.getCancellableOrders();
+        List<OrderItemListDTO> orderDTOs = orderMapper.toDTOList(orders);
         
         return ResponseEntity.ok(ApiResponse.success(orderDTOs,
             String.format("Retrieved %d cancellable orders", orderDTOs.size())));
@@ -263,13 +263,13 @@ public class OrderController {
      * Add rush delivery to order line
      */
     @PatchMapping("/lines/{orderLineId}/rush-delivery")
-    public ResponseEntity<ApiResponse<OrderLineDTO>> addRushDelivery(
+    public ResponseEntity<ApiResponse<OrderItemDTO>> addRushDelivery(
             @PathVariable @Positive Long orderLineId,
             @RequestParam(required = false) String instructions) {
         log.info("PATCH /api/orders/lines/{}/rush-delivery - Adding rush delivery", orderLineId);
         
-        OrderLine updatedOrderLine = orderService.addRushDelivery(orderLineId, instructions);
-        OrderLineDTO orderLineDTO = orderMapper.toDTO(updatedOrderLine);
+        OrderItem updatedOrderLine = orderService.addRushDelivery(orderLineId, instructions);
+        OrderItemDTO orderLineDTO = orderMapper.toDTO(updatedOrderLine);
         
         return ResponseEntity.ok(ApiResponse.success(orderLineDTO, 
             "Rush delivery added successfully"));

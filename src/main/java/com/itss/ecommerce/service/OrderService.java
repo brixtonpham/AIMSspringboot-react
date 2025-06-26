@@ -17,8 +17,8 @@ import java.util.Optional;
 @Transactional
 public class OrderService {
     
-    private final OrderRepository orderRepository;
-    private final OrderLineRepository orderLineRepository;
+    private final OrderItemListRepository orderItemListRepository;
+    private final OrderItemRepository orderItemRepository;
     private final ProductRepository productRepository;
     private final DeliveryInformationRepository deliveryRepository;
     private final InvoiceRepository invoiceRepository;
@@ -27,7 +27,7 @@ public class OrderService {
     /**
      * Create order from cart items
      */
-    public Order createOrder(List<CartItem> cartItems, DeliveryInformation deliveryInfo) {
+    public OrderItemList createOrder(List<CartItem> cartItems, DeliveryInformation deliveryInfo) {
         log.info("Creating order with {} items", cartItems.size());
         
         // Validate cart items
@@ -37,16 +37,16 @@ public class OrderService {
         DeliveryInformation savedDeliveryInfo = deliveryRepository.save(deliveryInfo);
         
         // Create order
-        Order order = new Order();
+        OrderItemList order = new OrderItemList();
         order.setDeliveryInfo(savedDeliveryInfo);
-        order.setStatus(Order.OrderStatus.PENDING);
+        order.setStatus(OrderItemList.OrderStatus.PENDING);
         
         // Create order lines
         for (CartItem cartItem : cartItems) {
-            OrderLine orderLine = new OrderLine();
-            orderLine.createOrderLine(cartItem.getProduct(), cartItem.getQuantity());
-            orderLine.setOrder(order);
-            order.addOrderLine(orderLine);
+            OrderItem orderItem = new OrderItem();
+            orderItem.createOrderItem(cartItem.getProduct(), cartItem.getQuantity());
+            orderItem.setOrder(order);
+            order.addOrderItem(orderItem);
             
             // Reduce product stock
             Product product = cartItem.getProduct();
@@ -58,7 +58,7 @@ public class OrderService {
         order.recalculateTotals();
         
         // Save order
-        Order savedOrder = orderRepository.save(order);
+        OrderItemList savedOrder = orderItemListRepository.save(order);
         
         // Create invoice
         Invoice invoice = new Invoice();
@@ -81,49 +81,49 @@ public class OrderService {
      * Get order by ID
      */
     @Transactional(readOnly = true)
-    public Optional<Order> getOrderById(Long orderId) {
+    public Optional<OrderItemList> getOrderById(Long orderId) {
         log.debug("Fetching order by ID: {}", orderId);
-        return orderRepository.findById(orderId);
+        return orderItemListRepository.findById(orderId);
     }
     
     /**
      * Get all orders
      */
     @Transactional(readOnly = true)
-    public List<Order> getAllOrders() {
+    public List<OrderItemList> getAllOrders() {
         log.debug("Fetching all orders");
-        return orderRepository.findAllByOrderByCreatedAtDesc();
+        return orderItemListRepository.findAllByOrderByCreatedAtDesc();
     }
     
     /**
      * Get orders by status
      */
     @Transactional(readOnly = true)
-    public List<Order> getOrdersByStatus(Order.OrderStatus status) {
+    public List<OrderItemList> getOrdersByStatus(OrderItemList.OrderStatus status) {
         log.debug("Fetching orders by status: {}", status);
-        return orderRepository.findByStatus(status);
+        return orderItemListRepository.findByStatus(status);
     }
     
     /**
      * Get orders by customer email
      */
     @Transactional(readOnly = true)
-    public List<Order> getOrdersByCustomerEmail(String email) {
+    public List<OrderItemList> getOrdersByCustomerEmail(String email) {
         log.debug("Fetching orders for customer: {}", email);
-        return orderRepository.findOrdersByCustomerEmail(email);
+        return orderItemListRepository.findOrdersByCustomerEmail(email);
     }
     
     /**
      * Confirm order
      */
-    public Order confirmOrder(Long orderId) {
+    public OrderItemList confirmOrder(Long orderId) {
         log.info("Confirming order: {}", orderId);
         
-        Order order = orderRepository.findById(orderId)
+        OrderItemList order = orderItemListRepository.findById(orderId)
             .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
         
         order.confirm();
-        Order savedOrder = orderRepository.save(order);
+        OrderItemList savedOrder = orderItemListRepository.save(order);
         
         auditLogService.logOrderAction(
             orderId,
@@ -139,21 +139,21 @@ public class OrderService {
     /**
      * Cancel order
      */
-    public Order cancelOrder(Long orderId, String reason) {
+    public OrderItemList cancelOrder(Long orderId, String reason) {
         log.info("Cancelling order: {} with reason: {}", orderId, reason);
         
-        Order order = orderRepository.findById(orderId)
+        OrderItemList order = orderItemListRepository.findById(orderId)
             .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
         
         // Restore product stock
-        for (OrderLine orderLine : order.getOrderLines()) {
-            Product product = orderLine.getProduct();
-            product.addStock(orderLine.getQuantity());
+        for (OrderItem orderItem : order.getOrderItems()) {
+            Product product = orderItem.getProduct();
+            product.addStock(orderItem.getQuantity());
             productRepository.save(product);
         }
         
         order.cancel();
-        Order savedOrder = orderRepository.save(order);
+        OrderItemList savedOrder = orderItemListRepository.save(order);
         
         auditLogService.logOrderAction(
             orderId,
@@ -169,16 +169,16 @@ public class OrderService {
     /**
      * Update order status
      */
-    public Order updateOrderStatus(Long orderId, Order.OrderStatus newStatus) {
+    public OrderItemList updateOrderStatus(Long orderId, OrderItemList.OrderStatus newStatus) {
         log.info("Updating order {} status to: {}", orderId, newStatus);
         
-        Order order = orderRepository.findById(orderId)
+        OrderItemList order = orderItemListRepository.findById(orderId)
             .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
         
-        Order.OrderStatus oldStatus = order.getStatus();
+        OrderItemList.OrderStatus oldStatus = order.getStatus();
         order.setStatus(newStatus);
         
-        Order savedOrder = orderRepository.save(order);
+        OrderItemList savedOrder = orderItemListRepository.save(order);
         
         auditLogService.logOrderAction(
             orderId,
@@ -195,19 +195,19 @@ public class OrderService {
      * Get pending orders
      */
     @Transactional(readOnly = true)
-    public List<Order> getPendingOrders() {
+    public List<OrderItemList> getPendingOrders() {
         log.debug("Fetching pending orders");
-        return orderRepository.findPendingOrders();
+        return orderItemListRepository.findPendingOrders();
     }
     
     /**
      * Get recent orders
      */
     @Transactional(readOnly = true)
-    public List<Order> getRecentOrders(int days) {
+    public List<OrderItemList> getRecentOrders(int days) {
         LocalDateTime cutoff = LocalDateTime.now().minusDays(days);
         log.debug("Fetching orders from last {} days", days);
-        return orderRepository.findRecentOrders(cutoff);
+        return orderItemListRepository.findRecentOrders(cutoff);
     }
     
     /**
@@ -216,7 +216,7 @@ public class OrderService {
     @Transactional(readOnly = true)
     public List<Object[]> getOrderStatistics() {
         log.debug("Fetching order statistics");
-        return orderRepository.getOrderStatistics();
+        return orderItemListRepository.getOrderStatistics();
     }
     
     /**
@@ -225,55 +225,55 @@ public class OrderService {
     @Transactional(readOnly = true)
     public Long getTotalRevenue(LocalDateTime startDate, LocalDateTime endDate) {
         log.debug("Calculating revenue between {} and {}", startDate, endDate);
-        return orderRepository.getTotalRevenueByDateRange(startDate, endDate);
+        return orderItemListRepository.getTotalRevenueByDateRange(startDate, endDate);
     }
     
     /**
      * Get orders with rush delivery
      */
     @Transactional(readOnly = true)
-    public List<Order> getOrdersWithRushDelivery() {
+    public List<OrderItemList> getOrdersWithRushDelivery() {
         log.debug("Fetching orders with rush delivery");
-        return orderRepository.findOrdersWithRushDelivery();
+        return orderItemListRepository.findOrdersWithRushDelivery();
     }
     
     /**
      * Get cancellable orders
      */
     @Transactional(readOnly = true)
-    public List<Order> getCancellableOrders() {
+    public List<OrderItemList> getCancellableOrders() {
         log.debug("Fetching cancellable orders");
-        return orderRepository.findCancellableOrders();
+        return orderItemListRepository.findCancellableOrders();
     }
     
     /**
      * Add rush delivery to order line
      */
-    public OrderLine addRushDelivery(Long orderLineId, String instructions) {
-        log.info("Adding rush delivery to order line: {}", orderLineId);
+    public OrderItem addRushDelivery(Long orderItemId, String instructions) {
+        log.info("Adding rush delivery to order line: {}", orderItemId);
         
-        OrderLine orderLine = orderLineRepository.findById(orderLineId)
-            .orElseThrow(() -> new RuntimeException("Order line not found with ID: " + orderLineId));
+        OrderItem orderItem = orderItemRepository.findById(orderItemId)
+            .orElseThrow(() -> new RuntimeException("Order line not found with ID: " + orderItemId));
         
-        if (!orderLine.getProduct().getRushOrderSupported()) {
+        if (!orderItem.getProduct().getRushOrderSupported()) {
             throw new IllegalStateException("Product does not support rush delivery");
         }
         
-        orderLine.setRushOrder(true);
-        orderLine.setInstructions(instructions);
+        orderItem.setRushOrder(true);
+        orderItem.setInstructions(instructions);
         
-        OrderLine savedOrderLine = orderLineRepository.save(orderLine);
+        OrderItem savedorderItem = orderItemRepository.save(orderItem);
         
         auditLogService.logAction(
             "Rush Delivery Added",
-            "OrderLine",
-            orderLineId,
+            "orderItem",
+            orderItemId,
             AuditLog.ActionType.UPDATE,
             null
         );
         
-        log.info("Rush delivery added to order line: {}", orderLineId);
-        return savedOrderLine;
+        log.info("Rush delivery added to order line: {}", orderItemId);
+        return savedorderItem;
     }
     
     /**

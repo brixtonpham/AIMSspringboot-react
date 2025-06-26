@@ -2,9 +2,9 @@ package com.itss.ecommerce.service;
 
 import com.itss.ecommerce.entity.AuditLog;
 import com.itss.ecommerce.entity.Invoice;
-import com.itss.ecommerce.entity.Order;
+import com.itss.ecommerce.entity.OrderItemList;
 import com.itss.ecommerce.repository.InvoiceRepository;
-import com.itss.ecommerce.repository.OrderRepository;
+import com.itss.ecommerce.repository.OrderItemListRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ import java.util.Optional;
 public class InvoiceService {
     
     private final InvoiceRepository invoiceRepository;
-    private final OrderRepository orderRepository;
+    private final OrderItemListRepository orderRepository;
     private final AuditLogService auditLogService;
     
     /**
@@ -57,7 +57,7 @@ public class InvoiceService {
     public Invoice createInvoice(Long orderId, String description) {
         log.info("Creating invoice for order: {}", orderId);
         
-        Order order = orderRepository.findById(orderId)
+        OrderItemList order = orderRepository.findById(orderId)
             .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
         
         // Check if invoice already exists

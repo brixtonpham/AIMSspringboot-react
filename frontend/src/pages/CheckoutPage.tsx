@@ -8,10 +8,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../components/ui/form';
 import { useCartStore } from '../stores/cartStore';
 import { useAuthStore } from '../stores/authStore';
-import { orderApi } from '../services/api';
-import { CreateOrderRequest, DeliveryInformationDTO } from '../types/api';
+import { orderApi, paymentApi } from '../services/api';
+import { CreateOrderRequest } from '../types/api';
 
-interface CheckoutFormData extends DeliveryInformationDTO {
+interface CheckoutFormData {
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  customerWard: string;
+  customerProvince: string;
+  customerAddress: string;
   paymentMethod: 'CREDIT_CARD' | 'CASH_ON_DELIVERY' | 'VNPAY';
   rushDelivery: boolean;
 }
@@ -19,7 +25,7 @@ interface CheckoutFormData extends DeliveryInformationDTO {
 const CheckoutPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState<'delivery' | 'payment' | 'review'>('delivery');
-  const { items, total, clear } = useCartStore();
+  const { items, total, clearCart } = useCartStore();
   const { user } = useAuthStore();
   const navigate = useNavigate();
 
@@ -28,6 +34,8 @@ const CheckoutPage: React.FC = () => {
       customerName: user?.name || '',
       customerEmail: user?.email || '',
       customerPhone: user?.phone || '',
+      customerWard: '',
+      customerProvince: '',
       customerAddress: user?.address || '',
       paymentMethod: 'CREDIT_CARD',
       rushDelivery: false,
@@ -57,32 +65,54 @@ const CheckoutPage: React.FC = () => {
     setIsLoading(true);
     try {
       const orderData: CreateOrderRequest = {
-        customerEmail: data.customerEmail,
-        orderLines: items.map(item => ({
-          productId: item.id,
+        cartItems: items.map(item => ({
+          productId: item.product.productId,
           quantity: item.quantity,
-          rushDelivery: data.rushDelivery,
+          rushOrder: data.rushDelivery,
+          productTitle: item.product.title,
+          unitPrice: item.product.price,
         })),
-        deliveryInformation: {
-          customerName: data.customerName,
-          customerEmail: data.customerEmail,
-          customerPhone: data.customerPhone,
-          customerAddress: data.customerAddress,
+        deliveryInfo: {
+          name: data.customerName,
+          email: data.customerEmail,
+          phone: data.customerPhone,
+          address: data.customerAddress,
+          ward: data.customerWard,
+          province: data.customerProvince,
+          deliveryFee: deliveryFee,
         },
-        paymentMethod: data.paymentMethod,
       };
 
       const response = await orderApi.create(orderData);
-      clear();
-      navigate('/order-confirmation', { 
-        state: { 
-          orderId: response.data.orderId,
-          total: finalTotal,
-          paymentMethod: data.paymentMethod 
-        }
-      });
+      clearCart();
+
+      if (data.paymentMethod === 'VNPAY') {
+        const paymentRequest = {
+          amount: finalTotal.toString(),
+          language: 'vn',
+          vnp_Version: '2.1.0',
+          bankCode: "VNBANK"
+        };
+
+        // Use paymentApi instead of fetch
+        const { paymentUrl } = await paymentApi.createVNPayPayment(paymentRequest);
+        window.location.href = paymentUrl;
+        return;
+      }
+
+
+      console.log('Order creation:', response.data);
+      // For other payment methods, navigate to confirmation page
+      // navigate('/order-confirmation', {
+      //  state: {
+      //    orderId: response.data.orderId,
+      //    total: finalTotal,
+      //    paymentMethod: data.paymentMethod
+      //  }
+      // });
     } catch (error) {
       console.error('Order creation failed:', error);
+      console.error('Form data:', data);
     } finally {
       setIsLoading(false);
     }
@@ -108,7 +138,7 @@ const CheckoutPage: React.FC = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-8">Checkout</h1>
-        
+
         {/* Progress Steps */}
         <div className="flex items-center justify-center mb-8">
           <div className="flex items-center space-x-4">
@@ -215,15 +245,51 @@ const CheckoutPage: React.FC = () => {
 
                       <FormField
                         control={form.control}
-                        name="customerAddress"
-                        rules={{ required: 'Address is required' }}
+                        name="customerWard"
+                        rules={{ required: 'Ward is required' }}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Delivery Address</FormLabel>
+                            <FormLabel>Ward</FormLabel>
                             <FormControl>
                               <div className="relative">
                                 <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                                <Input {...field} placeholder="Enter your delivery address" className="pl-10" />
+                                <Input {...field} placeholder="Enter your ward" className="pl-10" />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="customerProvince"
+                        rules={{ required: 'Province/City is required' }}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Province/City</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                                <Input {...field} placeholder="Enter your province or city" className="pl-10" />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="customerAddress"
+                        rules={{ required: 'Detailed address is required' }}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Detailed Address</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                                <Input {...field} placeholder="Enter street address, building number, etc." className="pl-10" />
                               </div>
                             </FormControl>
                             <FormMessage />
@@ -340,6 +406,8 @@ const CheckoutPage: React.FC = () => {
                             <p>{watchedValues.customerName}</p>
                             <p>{watchedValues.customerEmail}</p>
                             <p>{watchedValues.customerPhone}</p>
+                            <p>{watchedValues.customerWard}</p>
+                            <p>{watchedValues.customerProvince}</p>
                             <p>{watchedValues.customerAddress}</p>
                             {watchedValues.rushDelivery && (
                               <p className="text-orange-600 font-medium">Rush Delivery Selected</p>
@@ -355,14 +423,14 @@ const CheckoutPage: React.FC = () => {
                           </p>
                         </div>
                       </div>
-                      
+
                       <div className="border-t pt-4">
                         <h4 className="font-medium mb-2">Order Items</h4>
                         <div className="space-y-2">
                           {items.map((item) => (
-                            <div key={item.id} className="flex justify-between text-sm">
-                              <span>{item.title} x {item.quantity}</span>
-                              <span>{(item.price * item.quantity).toLocaleString()} VND</span>
+                            <div key={item.product.productId} className="flex justify-between text-sm">
+                              <span>{item.product.title} x {item.quantity}</span>
+                              <span>{(item.product.price * item.quantity).toLocaleString()} VND</span>
                             </div>
                           ))}
                         </div>
@@ -381,7 +449,7 @@ const CheckoutPage: React.FC = () => {
                   >
                     Previous
                   </Button>
-                  
+
                   {step !== 'review' ? (
                     <Button type="button" onClick={nextStep}>
                       Next
@@ -404,17 +472,17 @@ const CheckoutPage: React.FC = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 {items.map((item) => (
-                  <div key={item.id} className="flex justify-between items-center">
+                  <div key={item.product.productId} className="flex justify-between items-center">
                     <div className="flex-1">
-                      <h4 className="font-medium text-sm">{item.title}</h4>
+                      <h4 className="font-medium text-sm">{item.product.title}</h4>
                       <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
                     </div>
                     <span className="font-medium text-sm">
-                      {(item.price * item.quantity).toLocaleString()} VND
+                      {(item.product.price * item.quantity).toLocaleString()} VND
                     </span>
                   </div>
                 ))}
-                
+
                 <div className="border-t pt-4 space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>Subtotal</span>

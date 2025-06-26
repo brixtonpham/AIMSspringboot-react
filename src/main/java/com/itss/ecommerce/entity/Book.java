@@ -7,15 +7,16 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 @Entity
-@Table(name = "books")
+@Table(name = "book")
 @DiscriminatorValue("book")
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@PrimaryKeyJoinColumn(name = "product_id")
+
 public class Book extends Product {
-    
-    
+     
     @Column(name = "genre", length = 100)
     private String genre;
     
