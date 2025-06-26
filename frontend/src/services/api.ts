@@ -271,8 +271,8 @@ export const authApi = {
         const errorData = await response.json().catch(() => ({ message: 'Login failed' }));
         throw new Error(errorData.message || 'Invalid credentials');
       }
-
-      const data = await response.json();
+      const res = await response.json();
+      const data = {user: res.data};
       return data;
     } catch (error) {
       if (error instanceof Error) {

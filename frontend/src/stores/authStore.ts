@@ -10,6 +10,7 @@ interface AuthState {
   logout: () => Promise<void>;
   getCurrentUser: () => Promise<void>;
   initializeAuth: () => Promise<void>;
+  setUser: (user: UserProfile | null) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -20,10 +21,10 @@ export const useAuthStore = create<AuthState>()(
 
       login: async (credentials: LoginRequest): Promise<UserProfile> => {
         try {
-          const response = await authApi.login(credentials);
-          localStorage.setItem('auth_token', response.token);
-          set({ user: response.user, isAuthenticated: true });
-          return response.user;
+          const data = await authApi.login(credentials);
+          //localStorage.setItem('auth_token', response.token);
+          set({ user: data.user, isAuthenticated: true });
+          return data.user;
         } catch (error) {
           // Clear any existing auth state on login failure
           localStorage.removeItem('auth_token');
@@ -65,6 +66,10 @@ export const useAuthStore = create<AuthState>()(
             // Auth state already cleared by getCurrentUser
           }
         }
+      },
+      setUser: (user: UserProfile | null) => {
+        set({ user, isAuthenticated: !!user });
+        console.log('User set in auth store:', user);
       },
     }),
     {

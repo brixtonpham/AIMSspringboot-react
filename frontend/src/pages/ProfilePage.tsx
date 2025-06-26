@@ -15,11 +15,12 @@ const ProfilePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { user, setUser } = useAuthStore();
 
+  console.log('Current user:', user);
   const form = useForm<UpdateUserProfileRequest>({
     defaultValues: {
       name: user?.name || '',
       phone: user?.phone || '',
-      address: user?.address || '',
+      //address: user?.address || '',
     },
   });
 
@@ -37,7 +38,14 @@ const ProfilePage: React.FC = () => {
     setIsLoading(true);
     try {
       const response = await userApi.updateProfile(user.userId, data);
-      setUser(response.data);
+      setUser({
+        userId: response.data.userId ?? user.userId,
+        email: response.data.email,
+        name: response.data.name,
+        phone: response.data.phone,
+        role: response.data.role,
+        isActive: response.data.isActive ?? user.isActive,
+      });
       setIsEditing(false);
     } catch (error) {
       console.error('Profile update failed:', error);
@@ -277,7 +285,11 @@ const ProfilePage: React.FC = () => {
                           <div>
                             <p className="font-medium">Order #{order.orderId}</p>
                             <p className="text-sm text-muted-foreground">
-                              {new Date(order.orderDate).toLocaleDateString()}
+                              {new Date(order.createdAt || '').toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                              })}
                             </p>
                           </div>
                           <span className={`px-2 py-1 text-xs font-medium rounded-full ${getOrderStatusColor(order.status)}`}>
@@ -286,7 +298,7 @@ const ProfilePage: React.FC = () => {
                         </div>
                         <div className="flex items-center justify-between">
                           <p className="text-sm text-muted-foreground">
-                            {order.orderLines.length} item(s)
+                            {order.orderLines?.length} item(s)
                           </p>
                           <p className="font-medium">
                             {order.totalAmount.toLocaleString()} VND

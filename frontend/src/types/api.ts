@@ -79,6 +79,7 @@ export interface Order {
   deliveryInfo?: DeliveryInformation;
   orderLines?: OrderLine[];
   invoice?: Invoice;
+  totalAmount: number;
 }
 
 export interface OrderLine {
@@ -155,6 +156,8 @@ export interface CreateUserRequest {
   password: string;
   phone?: string;
   role?: string;
+  address?: string;
+  isActive?: boolean;
 }
 
 export interface UpdateUserProfileRequest {
@@ -199,9 +202,10 @@ export interface AuthState {
 }
 
 export interface UserProfile {
-  id: string;
+  userId: number;
   email: string;
   name: string;
+  isActive: boolean;
   phone?: string;
   address?: string;
   role: 'ADMIN' | 'CUSTOMER' | 'MANAGER' | 'EMPLOYEE';
@@ -214,7 +218,7 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   user: UserProfile;
-  token: string;
+  //token: string;
 }
 
 // Payment type

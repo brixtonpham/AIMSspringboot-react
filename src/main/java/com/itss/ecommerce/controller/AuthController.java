@@ -1,7 +1,9 @@
 package com.itss.ecommerce.controller;
 
+import com.itss.ecommerce.dto.mapper.UserMapper;
 import com.itss.ecommerce.dto.ApiResponse;
 import com.itss.ecommerce.dto.UserDTO;
+import com.itss.ecommerce.dto.UserProfileDTO;
 import com.itss.ecommerce.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +19,12 @@ public class AuthController {
 
     @Autowired
     private AuthService authService;
+    @Autowired
+    private UserMapper userMapper;
+
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<UserDTO>> login(@RequestBody Map<String, String> loginRequest, HttpSession session) {
+    public ResponseEntity<ApiResponse<UserProfileDTO>> login(@RequestBody Map<String, String> loginRequest, HttpSession session) {
         try {
             String email = loginRequest.get("email");
             String password = loginRequest.get("password");
@@ -30,13 +35,14 @@ public class AuthController {
             }
 
             UserDTO userDTO = authService.validateLogin(email, password);
+            UserProfileDTO userProfileDTO = userMapper.toProfileDTO(userDTO);
             if (userDTO != null) {
                 // Store user information in session
                 session.setAttribute("userId", userDTO.getUserId());
                 session.setAttribute("userEmail", userDTO.getEmail());
                 session.setAttribute("userRole", userDTO.getRole());
                 
-                return ResponseEntity.ok(ApiResponse.success(userDTO, "Login successful"));
+                return ResponseEntity.ok(ApiResponse.success(userProfileDTO, "Login successful"));
             } else {
                 return ResponseEntity.badRequest()
                     .body(ApiResponse.unauthorized("Invalid email or password"));

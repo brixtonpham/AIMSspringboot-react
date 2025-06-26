@@ -28,51 +28,122 @@ const AdminDashboard: React.FC = () => {
   // Check if user is admin
   const isAdmin = user?.role === 'ADMIN' || user?.role === 'MANAGER';
 
-  const { data: productsResponse } = useQuery({
+  console.log('Admin Dashboard Rendered', { user, isAdmin });
+
+  // Add error handling and loading states
+  const { 
+    data: productsResponse, 
+    error: productsError, 
+    isLoading: productsLoading 
+  } = useQuery({
     queryKey: ['products'],
     queryFn: () => productApi.getAll(),
+    retry: 3,
+    retryDelay: 1000,
   });
 
-  const { data: ordersResponse } = useQuery({
+  const { 
+    data: ordersResponse, 
+    error: ordersError, 
+    isLoading: ordersLoading 
+  } = useQuery({
     queryKey: ['orders'],
     queryFn: () => orderApi.getAll(),
+    retry: 3,
+    retryDelay: 1000,
   });
 
-  const { data: usersResponse } = useQuery({
+  const { 
+    data: usersResponse, 
+    error: usersError, 
+    isLoading: usersLoading 
+  } = useQuery({
     queryKey: ['users'],
     queryFn: () => userApi.getAll(),
     enabled: isAdmin,
+    retry: 3,
+    retryDelay: 1000,
   });
 
-  const { data: lowStockResponse } = useQuery({
+  const { 
+    data: lowStockResponse, 
+    error: lowStockError, 
+    isLoading: lowStockLoading 
+  } = useQuery({
     queryKey: ['low-stock'],
     queryFn: () => productApi.getLowStock(10),
+    retry: 3,
+    retryDelay: 1000,
   });
 
-  const products = productsResponse?.data || [];
-  const orders = ordersResponse?.data || [];
-  const users = usersResponse?.data || [];
-  const lowStockProducts = lowStockResponse?.data || [];
+  // Safe data extraction with better error handling
+  const products = Array.isArray(productsResponse?.data) ? productsResponse.data : 
+                  Array.isArray(productsResponse) ? productsResponse : [];
+  
+  const orders = Array.isArray(ordersResponse?.data) ? ordersResponse.data : 
+                Array.isArray(ordersResponse) ? ordersResponse : [];
+  
+  const users = Array.isArray(usersResponse?.data) ? usersResponse.data : 
+               Array.isArray(usersResponse) ? usersResponse : [];
+  
+  const lowStockProducts = Array.isArray(lowStockResponse?.data) ? lowStockResponse.data : 
+                          Array.isArray(lowStockResponse) ? lowStockResponse : [];
 
+  // Show error state if any critical API fails
+  if (productsError || ordersError || (isAdmin && usersError)) {
+    return (
+      <div className="container mx-auto px-4 py-16 text-center">
+        <h1 className="text-4xl font-bold mb-4 text-red-600">Error Loading Dashboard</h1>
+        <p className="text-muted-foreground mb-4">
+          Unable to load dashboard data. Please try refreshing the page.
+        </p>
+        <div className="text-sm text-left max-w-md mx-auto">
+          {productsError && <p>Products: {productsError.message}</p>}
+          {ordersError && <p>Orders: {ordersError.message}</p>}
+          {usersError && <p>Users: {usersError.message}</p>}
+        </div>
+        <Button onClick={() => window.location.reload()} className="mt-4">
+          Reload Page
+        </Button>
+      </div>
+    );
+  }
+
+  // Show loading state
+  if (productsLoading || ordersLoading || (isAdmin && usersLoading)) {
+    return (
+      <div className="container mx-auto px-4 py-16 text-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-4"></div>
+        <h1 className="text-2xl font-bold mb-2">Loading Dashboard...</h1>
+        <p className="text-muted-foreground">Please wait while we load your data.</p>
+      </div>
+    );
+  }
+
+  // Safe filtering with null checks
   const filteredProducts = products.filter(product =>
-    product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.type.toLowerCase().includes(searchQuery.toLowerCase())
+    product?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    product?.type?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const filteredOrders = orders.filter(order =>
-    order.orderId.toString().includes(searchQuery) ||
-    order.status.toLowerCase().includes(searchQuery.toLowerCase())
+    order?.orderId?.toString().includes(searchQuery) ||
+    order?.status?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const filteredUsers = users.filter(user =>
-    user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchQuery.toLowerCase())
+    user?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user?.email?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Calculate stats
-  const totalRevenue = orders.reduce((sum, order) => sum + order.totalAmount, 0);
-  const pendingOrders = orders.filter(order => order.status === 'PENDING').length;
-  const outOfStockProducts = products.filter(product => product.quantity === 0).length;
+  // Calculate stats with safe operations
+  const totalRevenue = orders.reduce((sum, order) => {
+    const amount = order?.totalAmount || 0;
+    return sum + (typeof amount === 'number' ? amount : 0);
+  }, 0);
+  
+  const pendingOrders = orders.filter(order => order?.status === 'PENDING').length;
+  const outOfStockProducts = products.filter(product => (product?.quantity || 0) === 0).length;
 
   if (!isAdmin) {
     return (
@@ -84,6 +155,8 @@ const AdminDashboard: React.FC = () => {
   }
 
   const getOrderStatusColor = (status: string) => {
+    if (!status) return 'text-gray-600 bg-gray-100';
+    
     switch (status.toLowerCase()) {
       case 'completed':
         return 'text-green-600 bg-green-100';
@@ -95,6 +168,16 @@ const AdminDashboard: React.FC = () => {
         return 'text-blue-600 bg-blue-100';
       default:
         return 'text-gray-600 bg-gray-100';
+    }
+  };
+
+  // Safe date formatting
+  const formatDate = (dateString: string | null | undefined) => {
+    if (!dateString) return 'N/A';
+    try {
+      return new Date(dateString).toLocaleDateString();
+    } catch {
+      return 'Invalid Date';
     }
   };
 
@@ -213,10 +296,10 @@ const AdminDashboard: React.FC = () => {
                 <CardContent>
                   <div className="space-y-2">
                     {lowStockProducts.slice(0, 5).map((product) => (
-                      <div key={product.productId} className="flex justify-between items-center">
-                        <span className="font-medium">{product.title}</span>
+                      <div key={product?.productId || Math.random()} className="flex justify-between items-center">
+                        <span className="font-medium">{product?.title || 'Unknown Product'}</span>
                         <span className="text-sm text-orange-600">
-                          {product.quantity} remaining
+                          {product?.quantity || 0} remaining
                         </span>
                       </div>
                     ))}
@@ -234,19 +317,19 @@ const AdminDashboard: React.FC = () => {
               <CardContent>
                 <div className="space-y-4">
                   {orders.slice(0, 5).map((order) => (
-                    <div key={order.orderId} className="flex items-center justify-between">
+                    <div key={order?.orderId || Math.random()} className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium">Order #{order.orderId}</p>
+                        <p className="font-medium">Order #{order?.orderId || 'N/A'}</p>
                         <p className="text-sm text-muted-foreground">
-                          {new Date(order.orderDate).toLocaleDateString()}
+                          {formatDate(order?.createdAt)}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getOrderStatusColor(order.status)}`}>
-                          {order.status}
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getOrderStatusColor(order?.status)}`}>
+                          {order?.status || 'Unknown'}
                         </span>
                         <span className="font-medium">
-                          {order.totalAmount.toLocaleString()} VND
+                          {(order?.totalAmount || 0).toLocaleString()} VND
                         </span>
                       </div>
                     </div>
@@ -283,24 +366,24 @@ const AdminDashboard: React.FC = () => {
               <CardContent>
                 <div className="space-y-4">
                   {filteredProducts.slice(0, 10).map((product) => (
-                    <div key={product.productId} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div key={product?.productId || Math.random()} className="flex items-center justify-between p-4 border rounded-lg">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center">
-                          {product.type === 'book' ? '📚' : 
-                           product.type === 'cd' ? '💿' : '📀'}
+                          {product?.type === 'book' ? '📚' : 
+                           product?.type === 'cd' ? '💿' : '📀'}
                         </div>
                         <div>
-                          <p className="font-medium">{product.title}</p>
+                          <p className="font-medium">{product?.title || 'Unknown Product'}</p>
                           <p className="text-sm text-muted-foreground capitalize">
-                            {product.type} • {product.price.toLocaleString()} VND
+                            {product?.type || 'unknown'} • {(product?.price || 0).toLocaleString()} VND
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className={`px-2 py-1 text-xs rounded ${
-                          product.quantity > 0 ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
+                          (product?.quantity || 0) > 0 ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
                         }`}>
-                          {product.quantity > 0 ? `${product.quantity} in stock` : 'Out of stock'}
+                          {(product?.quantity || 0) > 0 ? `${product?.quantity} in stock` : 'Out of stock'}
                         </span>
                         <Button variant="outline" size="sm">
                           <Eye className="w-4 h-4 mr-1" />
@@ -343,19 +426,19 @@ const AdminDashboard: React.FC = () => {
               <CardContent>
                 <div className="space-y-4">
                   {filteredOrders.slice(0, 10).map((order) => (
-                    <div key={order.orderId} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div key={order?.orderId || Math.random()} className="flex items-center justify-between p-4 border rounded-lg">
                       <div>
-                        <p className="font-medium">Order #{order.orderId}</p>
+                        <p className="font-medium">Order #{order?.orderId || 'N/A'}</p>
                         <p className="text-sm text-muted-foreground">
-                          {new Date(order.orderDate).toLocaleDateString()} • {order.orderLines.length} items
+                          {formatDate(order?.createdAt)} • {order?.orderLines?.length || 0} items
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getOrderStatusColor(order.status)}`}>
-                          {order.status}
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getOrderStatusColor(order?.status)}`}>
+                          {order?.status || 'Unknown'}
                         </span>
                         <span className="font-medium">
-                          {order.totalAmount.toLocaleString()} VND
+                          {(order?.totalAmount || 0).toLocaleString()} VND
                         </span>
                         <Button variant="outline" size="sm">
                           <Eye className="w-4 h-4 mr-1" />
@@ -390,19 +473,19 @@ const AdminDashboard: React.FC = () => {
               <CardContent>
                 <div className="space-y-4">
                   {filteredUsers.slice(0, 10).map((user) => (
-                    <div key={user.userId} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div key={user?.userId || Math.random()} className="flex items-center justify-between p-4 border rounded-lg">
                       <div>
-                        <p className="font-medium">{user.name}</p>
-                        <p className="text-sm text-muted-foreground">{user.email}</p>
+                        <p className="font-medium">{user?.name || 'Unknown User'}</p>
+                        <p className="text-sm text-muted-foreground">{user?.email || 'No email'}</p>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className={`px-2 py-1 text-xs font-medium rounded-full capitalize ${
-                          user.isActive ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
+                          user?.isActive ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
                         }`}>
-                          {user.isActive ? 'Active' : 'Inactive'}
+                          {user?.isActive ? 'Active' : 'Inactive'}
                         </span>
                         <span className="px-2 py-1 bg-blue-100 text-blue-600 text-xs font-medium rounded-full capitalize">
-                          {user.role.toLowerCase()}
+                          {user?.role?.toLowerCase() || 'user'}
                         </span>
                         <Button variant="outline" size="sm">
                           <Eye className="w-4 h-4 mr-1" />

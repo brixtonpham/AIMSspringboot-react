@@ -69,4 +69,32 @@ public class UserMapper {
                 .map(this::toEntity)
                 .collect(Collectors.toList());
     }
+    /**
+     * Convert User entity to UserProfileDTO
+     */
+    public UserProfileDTO toProfileDTO(User user) {
+        if (user == null) return null;
+        UserProfileDTO profileDTO = new UserProfileDTO();
+        profileDTO.setUserId(user.getUserId());
+        profileDTO.setEmail(user.getEmail());
+        profileDTO.setName(user.getName());
+        profileDTO.setIsActive(user.getIsActive());
+        profileDTO.setPhone(user.getPhone());
+        profileDTO.setRole(user.getRole() != null ? user.getRole().toString() : null);
+        return profileDTO;
+    }
+    /**
+     * Convert UserDTO to UserProfileDTO
+     */
+    public UserProfileDTO toProfileDTO(UserDTO userDTO) {
+        if (userDTO == null) return null;
+        UserProfileDTO profileDTO = new UserProfileDTO();
+        profileDTO.setUserId(userDTO.getUserId());
+        profileDTO.setEmail(userDTO.getEmail());
+        profileDTO.setName(userDTO.getName());
+        profileDTO.setIsActive(userDTO.getIsActive());
+        profileDTO.setPhone(userDTO.getPhone());
+        profileDTO.setRole(userDTO.getRole());
+        return profileDTO;  
+    }
 }
