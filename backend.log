@@ -46912,3 +46912,674 @@ Hibernate:
 2025-06-28T05:07:45.914+07:00 DEBUG 18695 --- [demo] [nio-8080-exec-6] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
 2025-06-28T05:07:45.914+07:00 DEBUG 18695 --- [demo] [nio-8080-exec-6] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [ApiResponse(success=true, message=Retrieved 0 orders for customer admin@itss.com, data=[], errorCode (truncated)...]
 2025-06-28T05:07:45.915+07:00 DEBUG 18695 --- [demo] [nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-06-28T05:16:52.074+07:00 DEBUG 18695 --- [demo] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/api/products", parameters={}
+2025-06-28T05:16:52.080+07:00 DEBUG 18695 --- [demo] [nio-8080-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.itss.ecommerce.controller.ProductController#getAllProducts()
+2025-06-28T05:16:52.104+07:00  INFO 18695 --- [demo] [nio-8080-exec-2] c.i.e.controller.ProductController       : GET /api/products - Fetching all products
+2025-06-28T05:16:52.113+07:00 DEBUG 18695 --- [demo] [nio-8080-exec-2] c.itss.ecommerce.service.ProductService  : Fetching all products
+2025-06-28T05:16:52.117+07:00 DEBUG 18695 --- [demo] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        p1_0.product_id,
+        p1_0.type,
+        p1_0.barcode,
+        p1_0.condition,
+        p1_0.created_at,
+        p1_0.dimensions,
+        p1_0.image_url,
+        p1_0.import_date,
+        p1_0.introduction,
+        p1_0.price,
+        p1_0.quantity,
+        p1_0.rush_order_supported,
+        p1_0.title,
+        p1_0.updated_at,
+        p1_0.weight,
+        p1_1.authors,
+        p1_1.cover_type,
+        p1_1.genre,
+        p1_1.page_count,
+        p1_1.publication_date,
+        p1_1.publishers,
+        p1_2.artists,
+        p1_2.genre,
+        p1_2.record_label,
+        p1_2.release_date,
+        p1_2.track_list,
+        p1_3.directors,
+        p1_3.duration_minutes,
+        p1_3.dvd_type,
+        p1_3.genre,
+        p1_3.rating,
+        p1_3.release_date,
+        p1_3.studio,
+        p1_4.artist,
+        p1_4.music_type,
+        p1_4.record_label,
+        p1_4.release_date,
+        p1_4.rpm,
+        p1_4.size_inches,
+        p1_4.sleeve_condition,
+        p1_4.tracklist,
+        p1_4.vinyl_condition 
+    from
+        product p1_0 
+    left join
+        book p1_1 
+            on p1_0.product_id=p1_1.product_id 
+    left join
+        cd p1_2 
+            on p1_0.product_id=p1_2.product_id 
+    left join
+        dvd p1_3 
+            on p1_0.product_id=p1_3.product_id 
+    left join
+        lp p1_4 
+            on p1_0.product_id=p1_4.product_id
+Hibernate: 
+    select
+        p1_0.product_id,
+        p1_0.type,
+        p1_0.barcode,
+        p1_0.condition,
+        p1_0.created_at,
+        p1_0.dimensions,
+        p1_0.image_url,
+        p1_0.import_date,
+        p1_0.introduction,
+        p1_0.price,
+        p1_0.quantity,
+        p1_0.rush_order_supported,
+        p1_0.title,
+        p1_0.updated_at,
+        p1_0.weight,
+        p1_1.authors,
+        p1_1.cover_type,
+        p1_1.genre,
+        p1_1.page_count,
+        p1_1.publication_date,
+        p1_1.publishers,
+        p1_2.artists,
+        p1_2.genre,
+        p1_2.record_label,
+        p1_2.release_date,
+        p1_2.track_list,
+        p1_3.directors,
+        p1_3.duration_minutes,
+        p1_3.dvd_type,
+        p1_3.genre,
+        p1_3.rating,
+        p1_3.release_date,
+        p1_3.studio,
+        p1_4.artist,
+        p1_4.music_type,
+        p1_4.record_label,
+        p1_4.release_date,
+        p1_4.rpm,
+        p1_4.size_inches,
+        p1_4.sleeve_condition,
+        p1_4.tracklist,
+        p1_4.vinyl_condition 
+    from
+        product p1_0 
+    left join
+        book p1_1 
+            on p1_0.product_id=p1_1.product_id 
+    left join
+        cd p1_2 
+            on p1_0.product_id=p1_2.product_id 
+    left join
+        dvd p1_3 
+            on p1_0.product_id=p1_3.product_id 
+    left join
+        lp p1_4 
+            on p1_0.product_id=p1_4.product_id
+2025-06-28T05:16:52.122+07:00 DEBUG 18695 --- [demo] [nio-8080-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-28T05:16:52.123+07:00 DEBUG 18695 --- [demo] [nio-8080-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [ApiResponse(success=true, message=Retrieved 10 products, data=[ProductDTO(productId=1, title=The Gre (truncated)...]
+2025-06-28T05:16:52.128+07:00 DEBUG 18695 --- [demo] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-06-28T05:25:40.932+07:00 DEBUG 18695 --- [demo] [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/api/products", parameters={}
+2025-06-28T05:25:40.956+07:00 DEBUG 18695 --- [demo] [io-8080-exec-10] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.itss.ecommerce.controller.ProductController#getAllProducts()
+2025-06-28T05:25:40.991+07:00  INFO 18695 --- [demo] [io-8080-exec-10] c.i.e.controller.ProductController       : GET /api/products - Fetching all products
+2025-06-28T05:25:41.015+07:00 DEBUG 18695 --- [demo] [io-8080-exec-10] c.itss.ecommerce.service.ProductService  : Fetching all products
+2025-06-28T05:25:41.024+07:00 DEBUG 18695 --- [demo] [io-8080-exec-10] org.hibernate.SQL                        : 
+    select
+        p1_0.product_id,
+        p1_0.type,
+        p1_0.barcode,
+        p1_0.condition,
+        p1_0.created_at,
+        p1_0.dimensions,
+        p1_0.image_url,
+        p1_0.import_date,
+        p1_0.introduction,
+        p1_0.price,
+        p1_0.quantity,
+        p1_0.rush_order_supported,
+        p1_0.title,
+        p1_0.updated_at,
+        p1_0.weight,
+        p1_1.authors,
+        p1_1.cover_type,
+        p1_1.genre,
+        p1_1.page_count,
+        p1_1.publication_date,
+        p1_1.publishers,
+        p1_2.artists,
+        p1_2.genre,
+        p1_2.record_label,
+        p1_2.release_date,
+        p1_2.track_list,
+        p1_3.directors,
+        p1_3.duration_minutes,
+        p1_3.dvd_type,
+        p1_3.genre,
+        p1_3.rating,
+        p1_3.release_date,
+        p1_3.studio,
+        p1_4.artist,
+        p1_4.music_type,
+        p1_4.record_label,
+        p1_4.release_date,
+        p1_4.rpm,
+        p1_4.size_inches,
+        p1_4.sleeve_condition,
+        p1_4.tracklist,
+        p1_4.vinyl_condition 
+    from
+        product p1_0 
+    left join
+        book p1_1 
+            on p1_0.product_id=p1_1.product_id 
+    left join
+        cd p1_2 
+            on p1_0.product_id=p1_2.product_id 
+    left join
+        dvd p1_3 
+            on p1_0.product_id=p1_3.product_id 
+    left join
+        lp p1_4 
+            on p1_0.product_id=p1_4.product_id
+Hibernate: 
+    select
+        p1_0.product_id,
+        p1_0.type,
+        p1_0.barcode,
+        p1_0.condition,
+        p1_0.created_at,
+        p1_0.dimensions,
+        p1_0.image_url,
+        p1_0.import_date,
+        p1_0.introduction,
+        p1_0.price,
+        p1_0.quantity,
+        p1_0.rush_order_supported,
+        p1_0.title,
+        p1_0.updated_at,
+        p1_0.weight,
+        p1_1.authors,
+        p1_1.cover_type,
+        p1_1.genre,
+        p1_1.page_count,
+        p1_1.publication_date,
+        p1_1.publishers,
+        p1_2.artists,
+        p1_2.genre,
+        p1_2.record_label,
+        p1_2.release_date,
+        p1_2.track_list,
+        p1_3.directors,
+        p1_3.duration_minutes,
+        p1_3.dvd_type,
+        p1_3.genre,
+        p1_3.rating,
+        p1_3.release_date,
+        p1_3.studio,
+        p1_4.artist,
+        p1_4.music_type,
+        p1_4.record_label,
+        p1_4.release_date,
+        p1_4.rpm,
+        p1_4.size_inches,
+        p1_4.sleeve_condition,
+        p1_4.tracklist,
+        p1_4.vinyl_condition 
+    from
+        product p1_0 
+    left join
+        book p1_1 
+            on p1_0.product_id=p1_1.product_id 
+    left join
+        cd p1_2 
+            on p1_0.product_id=p1_2.product_id 
+    left join
+        dvd p1_3 
+            on p1_0.product_id=p1_3.product_id 
+    left join
+        lp p1_4 
+            on p1_0.product_id=p1_4.product_id
+2025-06-28T05:25:41.037+07:00 DEBUG 18695 --- [demo] [io-8080-exec-10] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-28T05:25:41.038+07:00 DEBUG 18695 --- [demo] [io-8080-exec-10] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [ApiResponse(success=true, message=Retrieved 10 products, data=[ProductDTO(productId=1, title=The Gre (truncated)...]
+2025-06-28T05:25:41.050+07:00 DEBUG 18695 --- [demo] [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-06-28T05:27:14.542+07:00  INFO 18695 --- [demo] [   File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2025-06-28T05:27:14.551+07:00  INFO 18695 --- [demo] [      Thread-57] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-06-28T05:27:14.554+07:00  INFO 18695 --- [demo] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-06-28T05:27:14.561+07:00  INFO 18695 --- [demo] [      Thread-57] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-06-28T05:27:14.562+07:00  INFO 18695 --- [demo] [      Thread-57] com.zaxxer.hikari.HikariDataSource       : HikariPool-15 - Shutdown initiated...
+2025-06-28T05:27:14.570+07:00  INFO 18695 --- [demo] [      Thread-57] com.zaxxer.hikari.HikariDataSource       : HikariPool-15 - Shutdown completed.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.4)
+
+2025-06-28T05:27:14.759+07:00  INFO 18695 --- [demo] [  restartedMain] c.itss.ecommerce.EcommerceApplication    : Starting EcommerceApplication using Java 21.0.6 with PID 18695 (/home/bxs/AIMSspringboot-react/target/classes started by bxs in /home/bxs/AIMSspringboot-react)
+2025-06-28T05:27:14.759+07:00 DEBUG 18695 --- [demo] [  restartedMain] c.itss.ecommerce.EcommerceApplication    : Running with Spring Boot v3.4.4, Spring v6.2.5
+2025-06-28T05:27:14.759+07:00  INFO 18695 --- [demo] [  restartedMain] c.itss.ecommerce.EcommerceApplication    : No active profile set, falling back to 1 default profile: "default"
+2025-06-28T05:27:15.017+07:00  INFO 18695 --- [demo] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2025-06-28T05:27:15.017+07:00  INFO 18695 --- [demo] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-06-28T05:27:15.040+07:00  INFO 18695 --- [demo] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 21 ms. Found 12 JPA repository interfaces.
+2025-06-28T05:27:15.304+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-06-28T05:27:15.307+07:00  INFO 18695 --- [demo] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-06-28T05:27:15.307+07:00  INFO 18695 --- [demo] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.39]
+2025-06-28T05:27:15.453+07:00  INFO 18695 --- [demo] [  restartedMain] org.apache.jasper.servlet.TldScanner     : At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+2025-06-28T05:27:15.456+07:00  INFO 18695 --- [demo] [  restartedMain] o.a.c.c.C.[Tomcat-3].[localhost].[/]     : Initializing Spring embedded WebApplicationContext
+2025-06-28T05:27:15.457+07:00  INFO 18695 --- [demo] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 695 ms
+2025-06-28T05:27:15.509+07:00  INFO 18695 --- [demo] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-06-28T05:27:15.514+07:00  INFO 18695 --- [demo] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-06-28T05:27:15.525+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-06-28T05:27:15.527+07:00  INFO 18695 --- [demo] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-16 - Starting...
+2025-06-28T05:27:15.530+07:00  INFO 18695 --- [demo] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-16 - Added connection org.sqlite.jdbc4.JDBC4Connection@50a2a472
+2025-06-28T05:27:15.530+07:00  INFO 18695 --- [demo] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-16 - Start completed.
+2025-06-28T05:27:15.531+07:00  INFO 18695 --- [demo] [  restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-16)']
+	Database driver: undefined/unknown
+	Database version: 3.47.2
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-06-28T05:27:15.789+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HT_product(product_id bigint not null, hib_sess_id char(36) not null, primary key (product_id, hib_sess_id))
+Hibernate: 
+    create table HT_product(product_id bigint not null, hib_sess_id char(36) not null, primary key (product_id, hib_sess_id))
+2025-06-28T05:27:15.793+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HTE_product(duration_minutes integer, page_count integer, price integer, quantity integer, rpm integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, size_inches float, updated_at timestamp, rating varchar(10), type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), cover_type varchar(50), dvd_type varchar(50), genre varchar(100), genre varchar(100), genre varchar(100), publishers varchar(200), record_label varchar(200), studio varchar(200), artists varchar(500), authors varchar(500), directors varchar(500), image_url varchar(500), artist varchar(255), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, music_type varchar(255), publication_date varchar(255), record_label varchar(255), release_date varchar(255), release_date varchar(255), release_date varchar(255), sleeve_condition varchar(255), title varchar(255), track_list TEXT, tracklist TEXT, type varchar(255), vinyl_condition varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+Hibernate: 
+    create table HTE_product(duration_minutes integer, page_count integer, price integer, quantity integer, rpm integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, size_inches float, updated_at timestamp, rating varchar(10), type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), cover_type varchar(50), dvd_type varchar(50), genre varchar(100), genre varchar(100), genre varchar(100), publishers varchar(200), record_label varchar(200), studio varchar(200), artists varchar(500), authors varchar(500), directors varchar(500), image_url varchar(500), artist varchar(255), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, music_type varchar(255), publication_date varchar(255), record_label varchar(255), release_date varchar(255), release_date varchar(255), release_date varchar(255), sleeve_condition varchar(255), title varchar(255), track_list TEXT, tracklist TEXT, type varchar(255), vinyl_condition varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+2025-06-28T05:27:15.793+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HTE_dvd(duration_minutes integer, price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, rating varchar(10), type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), dvd_type varchar(50), genre varchar(100), studio varchar(200), directors varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, release_date varchar(255), title varchar(255), type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+Hibernate: 
+    create table HTE_dvd(duration_minutes integer, price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, rating varchar(10), type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), dvd_type varchar(50), genre varchar(100), studio varchar(200), directors varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, release_date varchar(255), title varchar(255), type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+2025-06-28T05:27:15.793+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HTE_book(page_count integer, price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), cover_type varchar(50), genre varchar(100), publishers varchar(200), authors varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, publication_date varchar(255), title varchar(255), type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+Hibernate: 
+    create table HTE_book(page_count integer, price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), cover_type varchar(50), genre varchar(100), publishers varchar(200), authors varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, publication_date varchar(255), title varchar(255), type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+2025-06-28T05:27:15.794+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HTE_lp(price integer, quantity integer, rpm integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, size_inches float, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), image_url varchar(500), artist varchar(255), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, music_type varchar(255), record_label varchar(255), release_date varchar(255), sleeve_condition varchar(255), title varchar(255), tracklist TEXT, type varchar(255), vinyl_condition varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+Hibernate: 
+    create table HTE_lp(price integer, quantity integer, rpm integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, size_inches float, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), image_url varchar(500), artist varchar(255), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, music_type varchar(255), record_label varchar(255), release_date varchar(255), sleeve_condition varchar(255), title varchar(255), tracklist TEXT, type varchar(255), vinyl_condition varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+2025-06-28T05:27:15.794+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HTE_cd(price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), genre varchar(100), record_label varchar(200), artists varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, release_date varchar(255), title varchar(255), track_list TEXT, type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+Hibernate: 
+    create table HTE_cd(price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), genre varchar(100), record_label varchar(200), artists varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, release_date varchar(255), title varchar(255), track_list TEXT, type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+2025-06-28T05:27:15.805+07:00  INFO 18695 --- [demo] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-06-28T05:27:15.810+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    alter table daily_operation_tracker 
+       drop constraint UKenk1xmd0sbhl6des3w1npxred
+Hibernate: 
+    alter table daily_operation_tracker 
+       drop constraint UKenk1xmd0sbhl6des3w1npxred
+2025-06-28T05:27:15.811+07:00  INFO 18695 --- [demo] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-06-28T05:27:16.466+07:00  WARN 18695 --- [demo] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-06-28T05:27:16.485+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page template: index
+2025-06-28T05:27:16.525+07:00 DEBUG 18695 --- [demo] [  restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : 79 mappings in 'requestMappingHandlerMapping'
+2025-06-28T05:27:16.562+07:00 DEBUG 18695 --- [demo] [  restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-06-28T05:27:16.574+07:00 DEBUG 18695 --- [demo] [  restartedMain] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-06-28T05:27:16.585+07:00 DEBUG 18695 --- [demo] [  restartedMain] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-06-28T05:27:16.611+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:sqlite:./data/ITSS_demo2.db'
+2025-06-28T05:27:16.626+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-06-28T05:27:16.639+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-06-28T05:27:16.643+07:00  INFO 18695 --- [demo] [  restartedMain] c.itss.ecommerce.EcommerceApplication    : Started EcommerceApplication in 1.937 seconds (process running for 9513.848)
+2025-06-28T05:27:16.644+07:00  INFO 18695 --- [demo] [  restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2025-06-28T05:27:49.251+07:00  INFO 18695 --- [demo] [   File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2025-06-28T05:27:49.254+07:00  INFO 18695 --- [demo] [      Thread-61] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-06-28T05:27:49.258+07:00  INFO 18695 --- [demo] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-06-28T05:27:49.265+07:00  INFO 18695 --- [demo] [      Thread-61] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-06-28T05:27:49.267+07:00  INFO 18695 --- [demo] [      Thread-61] com.zaxxer.hikari.HikariDataSource       : HikariPool-16 - Shutdown initiated...
+2025-06-28T05:27:49.271+07:00  INFO 18695 --- [demo] [      Thread-61] com.zaxxer.hikari.HikariDataSource       : HikariPool-16 - Shutdown completed.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.4)
+
+2025-06-28T05:27:49.446+07:00  INFO 18695 --- [demo] [  restartedMain] c.itss.ecommerce.EcommerceApplication    : Starting EcommerceApplication using Java 21.0.6 with PID 18695 (/home/bxs/AIMSspringboot-react/target/classes started by bxs in /home/bxs/AIMSspringboot-react)
+2025-06-28T05:27:49.446+07:00 DEBUG 18695 --- [demo] [  restartedMain] c.itss.ecommerce.EcommerceApplication    : Running with Spring Boot v3.4.4, Spring v6.2.5
+2025-06-28T05:27:49.446+07:00  INFO 18695 --- [demo] [  restartedMain] c.itss.ecommerce.EcommerceApplication    : No active profile set, falling back to 1 default profile: "default"
+2025-06-28T05:27:49.536+07:00  INFO 18695 --- [demo] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2025-06-28T05:27:49.536+07:00  INFO 18695 --- [demo] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-06-28T05:27:49.565+07:00  INFO 18695 --- [demo] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 28 ms. Found 12 JPA repository interfaces.
+2025-06-28T05:27:49.690+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-06-28T05:27:49.691+07:00  INFO 18695 --- [demo] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-06-28T05:27:49.691+07:00  INFO 18695 --- [demo] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.39]
+2025-06-28T05:27:49.780+07:00  INFO 18695 --- [demo] [  restartedMain] org.apache.jasper.servlet.TldScanner     : At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+2025-06-28T05:27:49.782+07:00  INFO 18695 --- [demo] [  restartedMain] o.a.c.c.C.[Tomcat-3].[localhost].[/]     : Initializing Spring embedded WebApplicationContext
+2025-06-28T05:27:49.782+07:00  INFO 18695 --- [demo] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 335 ms
+2025-06-28T05:27:49.819+07:00  INFO 18695 --- [demo] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-06-28T05:27:49.821+07:00  INFO 18695 --- [demo] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-06-28T05:27:49.832+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-06-28T05:27:49.833+07:00  INFO 18695 --- [demo] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-17 - Starting...
+2025-06-28T05:27:49.834+07:00  INFO 18695 --- [demo] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-17 - Added connection org.sqlite.jdbc4.JDBC4Connection@1d39d401
+2025-06-28T05:27:49.834+07:00  INFO 18695 --- [demo] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-17 - Start completed.
+2025-06-28T05:27:49.834+07:00  INFO 18695 --- [demo] [  restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-17)']
+	Database driver: undefined/unknown
+	Database version: 3.47.2
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-06-28T05:27:50.100+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HT_product(product_id bigint not null, hib_sess_id char(36) not null, primary key (product_id, hib_sess_id))
+Hibernate: 
+    create table HT_product(product_id bigint not null, hib_sess_id char(36) not null, primary key (product_id, hib_sess_id))
+2025-06-28T05:27:50.101+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HTE_product(duration_minutes integer, page_count integer, price integer, quantity integer, rpm integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, size_inches float, updated_at timestamp, rating varchar(10), type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), cover_type varchar(50), dvd_type varchar(50), genre varchar(100), genre varchar(100), genre varchar(100), publishers varchar(200), record_label varchar(200), studio varchar(200), artists varchar(500), authors varchar(500), directors varchar(500), image_url varchar(500), artist varchar(255), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, music_type varchar(255), publication_date varchar(255), record_label varchar(255), release_date varchar(255), release_date varchar(255), release_date varchar(255), sleeve_condition varchar(255), title varchar(255), track_list TEXT, tracklist TEXT, type varchar(255), vinyl_condition varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+Hibernate: 
+    create table HTE_product(duration_minutes integer, page_count integer, price integer, quantity integer, rpm integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, size_inches float, updated_at timestamp, rating varchar(10), type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), cover_type varchar(50), dvd_type varchar(50), genre varchar(100), genre varchar(100), genre varchar(100), publishers varchar(200), record_label varchar(200), studio varchar(200), artists varchar(500), authors varchar(500), directors varchar(500), image_url varchar(500), artist varchar(255), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, music_type varchar(255), publication_date varchar(255), record_label varchar(255), release_date varchar(255), release_date varchar(255), release_date varchar(255), sleeve_condition varchar(255), title varchar(255), track_list TEXT, tracklist TEXT, type varchar(255), vinyl_condition varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+2025-06-28T05:27:50.102+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HTE_dvd(duration_minutes integer, price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, rating varchar(10), type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), dvd_type varchar(50), genre varchar(100), studio varchar(200), directors varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, release_date varchar(255), title varchar(255), type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+Hibernate: 
+    create table HTE_dvd(duration_minutes integer, price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, rating varchar(10), type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), dvd_type varchar(50), genre varchar(100), studio varchar(200), directors varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, release_date varchar(255), title varchar(255), type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+2025-06-28T05:27:50.102+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HTE_book(page_count integer, price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), cover_type varchar(50), genre varchar(100), publishers varchar(200), authors varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, publication_date varchar(255), title varchar(255), type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+Hibernate: 
+    create table HTE_book(page_count integer, price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), cover_type varchar(50), genre varchar(100), publishers varchar(200), authors varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, publication_date varchar(255), title varchar(255), type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+2025-06-28T05:27:50.103+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HTE_lp(price integer, quantity integer, rpm integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, size_inches float, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), image_url varchar(500), artist varchar(255), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, music_type varchar(255), record_label varchar(255), release_date varchar(255), sleeve_condition varchar(255), title varchar(255), tracklist TEXT, type varchar(255), vinyl_condition varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+Hibernate: 
+    create table HTE_lp(price integer, quantity integer, rpm integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, size_inches float, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), image_url varchar(500), artist varchar(255), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, music_type varchar(255), record_label varchar(255), release_date varchar(255), sleeve_condition varchar(255), title varchar(255), tracklist TEXT, type varchar(255), vinyl_condition varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+2025-06-28T05:27:50.103+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HTE_cd(price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), genre varchar(100), record_label varchar(200), artists varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, release_date varchar(255), title varchar(255), track_list TEXT, type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+Hibernate: 
+    create table HTE_cd(price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), genre varchar(100), record_label varchar(200), artists varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, release_date varchar(255), title varchar(255), track_list TEXT, type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+2025-06-28T05:27:50.116+07:00  INFO 18695 --- [demo] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-06-28T05:27:50.122+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    alter table daily_operation_tracker 
+       drop constraint UKenk1xmd0sbhl6des3w1npxred
+Hibernate: 
+    alter table daily_operation_tracker 
+       drop constraint UKenk1xmd0sbhl6des3w1npxred
+2025-06-28T05:27:50.122+07:00  INFO 18695 --- [demo] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-06-28T05:27:50.588+07:00  WARN 18695 --- [demo] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-06-28T05:27:50.600+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page template: index
+2025-06-28T05:27:50.642+07:00 DEBUG 18695 --- [demo] [  restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : 79 mappings in 'requestMappingHandlerMapping'
+2025-06-28T05:27:50.693+07:00 DEBUG 18695 --- [demo] [  restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-06-28T05:27:50.709+07:00 DEBUG 18695 --- [demo] [  restartedMain] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-06-28T05:27:50.725+07:00 DEBUG 18695 --- [demo] [  restartedMain] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-06-28T05:27:50.754+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:sqlite:./data/ITSS_demo2.db'
+2025-06-28T05:27:50.773+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-06-28T05:27:50.789+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-06-28T05:27:50.795+07:00  INFO 18695 --- [demo] [  restartedMain] c.itss.ecommerce.EcommerceApplication    : Started EcommerceApplication in 1.368 seconds (process running for 9548.0)
+2025-06-28T05:27:50.799+07:00  INFO 18695 --- [demo] [  restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2025-06-28T05:27:57.216+07:00  INFO 18695 --- [demo] [   File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2025-06-28T05:27:57.219+07:00  INFO 18695 --- [demo] [      Thread-65] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-06-28T05:27:57.223+07:00  INFO 18695 --- [demo] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-06-28T05:27:57.230+07:00  INFO 18695 --- [demo] [      Thread-65] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-06-28T05:27:57.232+07:00  INFO 18695 --- [demo] [      Thread-65] com.zaxxer.hikari.HikariDataSource       : HikariPool-17 - Shutdown initiated...
+2025-06-28T05:27:57.234+07:00  INFO 18695 --- [demo] [      Thread-65] com.zaxxer.hikari.HikariDataSource       : HikariPool-17 - Shutdown completed.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.4)
+
+2025-06-28T05:27:57.348+07:00  INFO 18695 --- [demo] [  restartedMain] c.itss.ecommerce.EcommerceApplication    : Starting EcommerceApplication using Java 21.0.6 with PID 18695 (/home/bxs/AIMSspringboot-react/target/classes started by bxs in /home/bxs/AIMSspringboot-react)
+2025-06-28T05:27:57.348+07:00 DEBUG 18695 --- [demo] [  restartedMain] c.itss.ecommerce.EcommerceApplication    : Running with Spring Boot v3.4.4, Spring v6.2.5
+2025-06-28T05:27:57.348+07:00  INFO 18695 --- [demo] [  restartedMain] c.itss.ecommerce.EcommerceApplication    : No active profile set, falling back to 1 default profile: "default"
+2025-06-28T05:27:57.436+07:00  INFO 18695 --- [demo] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2025-06-28T05:27:57.436+07:00  INFO 18695 --- [demo] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-06-28T05:27:57.451+07:00  INFO 18695 --- [demo] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 13 ms. Found 12 JPA repository interfaces.
+2025-06-28T05:27:57.543+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-06-28T05:27:57.544+07:00  INFO 18695 --- [demo] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-06-28T05:27:57.544+07:00  INFO 18695 --- [demo] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.39]
+2025-06-28T05:27:57.598+07:00  INFO 18695 --- [demo] [  restartedMain] org.apache.jasper.servlet.TldScanner     : At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+2025-06-28T05:27:57.600+07:00  INFO 18695 --- [demo] [  restartedMain] o.a.c.c.C.[Tomcat-3].[localhost].[/]     : Initializing Spring embedded WebApplicationContext
+2025-06-28T05:27:57.600+07:00  INFO 18695 --- [demo] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 251 ms
+2025-06-28T05:27:57.627+07:00  INFO 18695 --- [demo] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-06-28T05:27:57.628+07:00  INFO 18695 --- [demo] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-06-28T05:27:57.635+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-06-28T05:27:57.637+07:00  INFO 18695 --- [demo] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-18 - Starting...
+2025-06-28T05:27:57.637+07:00  INFO 18695 --- [demo] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-18 - Added connection org.sqlite.jdbc4.JDBC4Connection@2ca2d0b0
+2025-06-28T05:27:57.637+07:00  INFO 18695 --- [demo] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-18 - Start completed.
+2025-06-28T05:27:57.638+07:00  INFO 18695 --- [demo] [  restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-18)']
+	Database driver: undefined/unknown
+	Database version: 3.47.2
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-06-28T05:27:57.829+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HT_product(product_id bigint not null, hib_sess_id char(36) not null, primary key (product_id, hib_sess_id))
+Hibernate: 
+    create table HT_product(product_id bigint not null, hib_sess_id char(36) not null, primary key (product_id, hib_sess_id))
+2025-06-28T05:27:57.831+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HTE_product(duration_minutes integer, page_count integer, price integer, quantity integer, rpm integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, size_inches float, updated_at timestamp, rating varchar(10), type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), cover_type varchar(50), dvd_type varchar(50), genre varchar(100), genre varchar(100), genre varchar(100), publishers varchar(200), record_label varchar(200), studio varchar(200), artists varchar(500), authors varchar(500), directors varchar(500), image_url varchar(500), artist varchar(255), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, music_type varchar(255), publication_date varchar(255), record_label varchar(255), release_date varchar(255), release_date varchar(255), release_date varchar(255), sleeve_condition varchar(255), title varchar(255), track_list TEXT, tracklist TEXT, type varchar(255), vinyl_condition varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+Hibernate: 
+    create table HTE_product(duration_minutes integer, page_count integer, price integer, quantity integer, rpm integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, size_inches float, updated_at timestamp, rating varchar(10), type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), cover_type varchar(50), dvd_type varchar(50), genre varchar(100), genre varchar(100), genre varchar(100), publishers varchar(200), record_label varchar(200), studio varchar(200), artists varchar(500), authors varchar(500), directors varchar(500), image_url varchar(500), artist varchar(255), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, music_type varchar(255), publication_date varchar(255), record_label varchar(255), release_date varchar(255), release_date varchar(255), release_date varchar(255), sleeve_condition varchar(255), title varchar(255), track_list TEXT, tracklist TEXT, type varchar(255), vinyl_condition varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+2025-06-28T05:27:57.831+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HTE_dvd(duration_minutes integer, price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, rating varchar(10), type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), dvd_type varchar(50), genre varchar(100), studio varchar(200), directors varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, release_date varchar(255), title varchar(255), type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+Hibernate: 
+    create table HTE_dvd(duration_minutes integer, price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, rating varchar(10), type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), dvd_type varchar(50), genre varchar(100), studio varchar(200), directors varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, release_date varchar(255), title varchar(255), type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+2025-06-28T05:27:57.832+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HTE_book(page_count integer, price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), cover_type varchar(50), genre varchar(100), publishers varchar(200), authors varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, publication_date varchar(255), title varchar(255), type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+Hibernate: 
+    create table HTE_book(page_count integer, price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), cover_type varchar(50), genre varchar(100), publishers varchar(200), authors varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, publication_date varchar(255), title varchar(255), type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+2025-06-28T05:27:57.833+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HTE_lp(price integer, quantity integer, rpm integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, size_inches float, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), image_url varchar(500), artist varchar(255), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, music_type varchar(255), record_label varchar(255), release_date varchar(255), sleeve_condition varchar(255), title varchar(255), tracklist TEXT, type varchar(255), vinyl_condition varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+Hibernate: 
+    create table HTE_lp(price integer, quantity integer, rpm integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, size_inches float, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), image_url varchar(500), artist varchar(255), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, music_type varchar(255), record_label varchar(255), release_date varchar(255), sleeve_condition varchar(255), title varchar(255), tracklist TEXT, type varchar(255), vinyl_condition varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+2025-06-28T05:27:57.833+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HTE_cd(price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), genre varchar(100), record_label varchar(200), artists varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, release_date varchar(255), title varchar(255), track_list TEXT, type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+Hibernate: 
+    create table HTE_cd(price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), genre varchar(100), record_label varchar(200), artists varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, release_date varchar(255), title varchar(255), track_list TEXT, type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+2025-06-28T05:27:57.847+07:00  INFO 18695 --- [demo] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-06-28T05:27:57.854+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    alter table daily_operation_tracker 
+       drop constraint UKenk1xmd0sbhl6des3w1npxred
+Hibernate: 
+    alter table daily_operation_tracker 
+       drop constraint UKenk1xmd0sbhl6des3w1npxred
+2025-06-28T05:27:57.855+07:00  INFO 18695 --- [demo] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-06-28T05:27:58.096+07:00  WARN 18695 --- [demo] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-06-28T05:27:58.103+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page template: index
+2025-06-28T05:27:58.130+07:00 DEBUG 18695 --- [demo] [  restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : 79 mappings in 'requestMappingHandlerMapping'
+2025-06-28T05:27:58.154+07:00 DEBUG 18695 --- [demo] [  restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-06-28T05:27:58.161+07:00 DEBUG 18695 --- [demo] [  restartedMain] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-06-28T05:27:58.169+07:00 DEBUG 18695 --- [demo] [  restartedMain] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-06-28T05:27:58.182+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:sqlite:./data/ITSS_demo2.db'
+2025-06-28T05:27:58.189+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-06-28T05:27:58.204+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-06-28T05:27:58.209+07:00  INFO 18695 --- [demo] [  restartedMain] c.itss.ecommerce.EcommerceApplication    : Started EcommerceApplication in 0.883 seconds (process running for 9555.414)
+2025-06-28T05:27:58.210+07:00  INFO 18695 --- [demo] [  restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2025-06-28T05:28:04.620+07:00  INFO 18695 --- [demo] [   File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2025-06-28T05:28:04.621+07:00  INFO 18695 --- [demo] [      Thread-69] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-06-28T05:28:04.621+07:00  INFO 18695 --- [demo] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-06-28T05:28:04.624+07:00  INFO 18695 --- [demo] [      Thread-69] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-06-28T05:28:04.624+07:00  INFO 18695 --- [demo] [      Thread-69] com.zaxxer.hikari.HikariDataSource       : HikariPool-18 - Shutdown initiated...
+2025-06-28T05:28:04.626+07:00  INFO 18695 --- [demo] [      Thread-69] com.zaxxer.hikari.HikariDataSource       : HikariPool-18 - Shutdown completed.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.4)
+
+2025-06-28T05:28:04.790+07:00  INFO 18695 --- [demo] [  restartedMain] c.itss.ecommerce.EcommerceApplication    : Starting EcommerceApplication using Java 21.0.6 with PID 18695 (/home/bxs/AIMSspringboot-react/target/classes started by bxs in /home/bxs/AIMSspringboot-react)
+2025-06-28T05:28:04.790+07:00 DEBUG 18695 --- [demo] [  restartedMain] c.itss.ecommerce.EcommerceApplication    : Running with Spring Boot v3.4.4, Spring v6.2.5
+2025-06-28T05:28:04.790+07:00  INFO 18695 --- [demo] [  restartedMain] c.itss.ecommerce.EcommerceApplication    : No active profile set, falling back to 1 default profile: "default"
+2025-06-28T05:28:04.987+07:00  INFO 18695 --- [demo] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2025-06-28T05:28:04.987+07:00  INFO 18695 --- [demo] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-06-28T05:28:05.021+07:00  INFO 18695 --- [demo] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 31 ms. Found 12 JPA repository interfaces.
+2025-06-28T05:28:05.277+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-06-28T05:28:05.279+07:00  INFO 18695 --- [demo] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-06-28T05:28:05.279+07:00  INFO 18695 --- [demo] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.39]
+2025-06-28T05:28:05.378+07:00  INFO 18695 --- [demo] [  restartedMain] org.apache.jasper.servlet.TldScanner     : At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+2025-06-28T05:28:05.380+07:00  INFO 18695 --- [demo] [  restartedMain] o.a.c.c.C.[Tomcat-3].[localhost].[/]     : Initializing Spring embedded WebApplicationContext
+2025-06-28T05:28:05.380+07:00  INFO 18695 --- [demo] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 588 ms
+2025-06-28T05:28:05.429+07:00  INFO 18695 --- [demo] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-06-28T05:28:05.432+07:00  INFO 18695 --- [demo] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-06-28T05:28:05.441+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-06-28T05:28:05.442+07:00  INFO 18695 --- [demo] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-19 - Starting...
+2025-06-28T05:28:05.443+07:00  INFO 18695 --- [demo] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-19 - Added connection org.sqlite.jdbc4.JDBC4Connection@301f196f
+2025-06-28T05:28:05.443+07:00  INFO 18695 --- [demo] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-19 - Start completed.
+2025-06-28T05:28:05.444+07:00  INFO 18695 --- [demo] [  restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-19)']
+	Database driver: undefined/unknown
+	Database version: 3.47.2
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-06-28T05:28:05.732+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HT_product(product_id bigint not null, hib_sess_id char(36) not null, primary key (product_id, hib_sess_id))
+Hibernate: 
+    create table HT_product(product_id bigint not null, hib_sess_id char(36) not null, primary key (product_id, hib_sess_id))
+2025-06-28T05:28:05.734+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HTE_product(duration_minutes integer, page_count integer, price integer, quantity integer, rpm integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, size_inches float, updated_at timestamp, rating varchar(10), type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), cover_type varchar(50), dvd_type varchar(50), genre varchar(100), genre varchar(100), genre varchar(100), publishers varchar(200), record_label varchar(200), studio varchar(200), artists varchar(500), authors varchar(500), directors varchar(500), image_url varchar(500), artist varchar(255), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, music_type varchar(255), publication_date varchar(255), record_label varchar(255), release_date varchar(255), release_date varchar(255), release_date varchar(255), sleeve_condition varchar(255), title varchar(255), track_list TEXT, tracklist TEXT, type varchar(255), vinyl_condition varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+Hibernate: 
+    create table HTE_product(duration_minutes integer, page_count integer, price integer, quantity integer, rpm integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, size_inches float, updated_at timestamp, rating varchar(10), type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), cover_type varchar(50), dvd_type varchar(50), genre varchar(100), genre varchar(100), genre varchar(100), publishers varchar(200), record_label varchar(200), studio varchar(200), artists varchar(500), authors varchar(500), directors varchar(500), image_url varchar(500), artist varchar(255), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, music_type varchar(255), publication_date varchar(255), record_label varchar(255), release_date varchar(255), release_date varchar(255), release_date varchar(255), sleeve_condition varchar(255), title varchar(255), track_list TEXT, tracklist TEXT, type varchar(255), vinyl_condition varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+2025-06-28T05:28:05.736+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HTE_dvd(duration_minutes integer, price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, rating varchar(10), type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), dvd_type varchar(50), genre varchar(100), studio varchar(200), directors varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, release_date varchar(255), title varchar(255), type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+Hibernate: 
+    create table HTE_dvd(duration_minutes integer, price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, rating varchar(10), type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), dvd_type varchar(50), genre varchar(100), studio varchar(200), directors varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, release_date varchar(255), title varchar(255), type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+2025-06-28T05:28:05.737+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HTE_book(page_count integer, price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), cover_type varchar(50), genre varchar(100), publishers varchar(200), authors varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, publication_date varchar(255), title varchar(255), type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+Hibernate: 
+    create table HTE_book(page_count integer, price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), cover_type varchar(50), genre varchar(100), publishers varchar(200), authors varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, publication_date varchar(255), title varchar(255), type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+2025-06-28T05:28:05.738+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HTE_lp(price integer, quantity integer, rpm integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, size_inches float, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), image_url varchar(500), artist varchar(255), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, music_type varchar(255), record_label varchar(255), release_date varchar(255), sleeve_condition varchar(255), title varchar(255), tracklist TEXT, type varchar(255), vinyl_condition varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+Hibernate: 
+    create table HTE_lp(price integer, quantity integer, rpm integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, size_inches float, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), image_url varchar(500), artist varchar(255), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, music_type varchar(255), record_label varchar(255), release_date varchar(255), sleeve_condition varchar(255), title varchar(255), tracklist TEXT, type varchar(255), vinyl_condition varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+2025-06-28T05:28:05.739+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HTE_cd(price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), genre varchar(100), record_label varchar(200), artists varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, release_date varchar(255), title varchar(255), track_list TEXT, type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+Hibernate: 
+    create table HTE_cd(price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), genre varchar(100), record_label varchar(200), artists varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, release_date varchar(255), title varchar(255), track_list TEXT, type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+2025-06-28T05:28:05.753+07:00  INFO 18695 --- [demo] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-06-28T05:28:05.762+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    alter table daily_operation_tracker 
+       drop constraint UKenk1xmd0sbhl6des3w1npxred
+Hibernate: 
+    alter table daily_operation_tracker 
+       drop constraint UKenk1xmd0sbhl6des3w1npxred
+2025-06-28T05:28:05.762+07:00  INFO 18695 --- [demo] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-06-28T05:28:06.132+07:00  WARN 18695 --- [demo] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-06-28T05:28:06.144+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page template: index
+2025-06-28T05:28:06.174+07:00 DEBUG 18695 --- [demo] [  restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : 79 mappings in 'requestMappingHandlerMapping'
+2025-06-28T05:28:06.206+07:00 DEBUG 18695 --- [demo] [  restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-06-28T05:28:06.213+07:00 DEBUG 18695 --- [demo] [  restartedMain] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-06-28T05:28:06.223+07:00 DEBUG 18695 --- [demo] [  restartedMain] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-06-28T05:28:06.242+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:sqlite:./data/ITSS_demo2.db'
+2025-06-28T05:28:06.251+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-06-28T05:28:06.273+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-06-28T05:28:06.277+07:00  INFO 18695 --- [demo] [  restartedMain] c.itss.ecommerce.EcommerceApplication    : Started EcommerceApplication in 1.527 seconds (process running for 9563.482)
+2025-06-28T05:28:06.278+07:00  INFO 18695 --- [demo] [  restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2025-06-28T05:28:08.672+07:00  INFO 18695 --- [demo] [   File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2025-06-28T05:28:08.674+07:00  INFO 18695 --- [demo] [      Thread-73] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-06-28T05:28:08.675+07:00  INFO 18695 --- [demo] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-06-28T05:28:08.678+07:00  INFO 18695 --- [demo] [      Thread-73] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-06-28T05:28:08.679+07:00  INFO 18695 --- [demo] [      Thread-73] com.zaxxer.hikari.HikariDataSource       : HikariPool-19 - Shutdown initiated...
+2025-06-28T05:28:08.680+07:00  INFO 18695 --- [demo] [      Thread-73] com.zaxxer.hikari.HikariDataSource       : HikariPool-19 - Shutdown completed.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.4)
+
+2025-06-28T05:28:08.840+07:00  INFO 18695 --- [demo] [  restartedMain] c.itss.ecommerce.EcommerceApplication    : Starting EcommerceApplication using Java 21.0.6 with PID 18695 (/home/bxs/AIMSspringboot-react/target/classes started by bxs in /home/bxs/AIMSspringboot-react)
+2025-06-28T05:28:08.840+07:00 DEBUG 18695 --- [demo] [  restartedMain] c.itss.ecommerce.EcommerceApplication    : Running with Spring Boot v3.4.4, Spring v6.2.5
+2025-06-28T05:28:08.840+07:00  INFO 18695 --- [demo] [  restartedMain] c.itss.ecommerce.EcommerceApplication    : No active profile set, falling back to 1 default profile: "default"
+2025-06-28T05:28:08.933+07:00  INFO 18695 --- [demo] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2025-06-28T05:28:08.933+07:00  INFO 18695 --- [demo] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-06-28T05:28:08.946+07:00  INFO 18695 --- [demo] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 12 ms. Found 12 JPA repository interfaces.
+2025-06-28T05:28:09.042+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-06-28T05:28:09.042+07:00  INFO 18695 --- [demo] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-06-28T05:28:09.043+07:00  INFO 18695 --- [demo] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.39]
+2025-06-28T05:28:09.090+07:00  INFO 18695 --- [demo] [  restartedMain] org.apache.jasper.servlet.TldScanner     : At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+2025-06-28T05:28:09.091+07:00  INFO 18695 --- [demo] [  restartedMain] o.a.c.c.C.[Tomcat-3].[localhost].[/]     : Initializing Spring embedded WebApplicationContext
+2025-06-28T05:28:09.091+07:00  INFO 18695 --- [demo] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 250 ms
+2025-06-28T05:28:09.117+07:00  INFO 18695 --- [demo] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-06-28T05:28:09.119+07:00  INFO 18695 --- [demo] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-06-28T05:28:09.124+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-06-28T05:28:09.125+07:00  INFO 18695 --- [demo] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-20 - Starting...
+2025-06-28T05:28:09.125+07:00  INFO 18695 --- [demo] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-20 - Added connection org.sqlite.jdbc4.JDBC4Connection@3125583d
+2025-06-28T05:28:09.125+07:00  INFO 18695 --- [demo] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-20 - Start completed.
+2025-06-28T05:28:09.126+07:00  INFO 18695 --- [demo] [  restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-20)']
+	Database driver: undefined/unknown
+	Database version: 3.47.2
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-06-28T05:28:09.312+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HT_product(product_id bigint not null, hib_sess_id char(36) not null, primary key (product_id, hib_sess_id))
+Hibernate: 
+    create table HT_product(product_id bigint not null, hib_sess_id char(36) not null, primary key (product_id, hib_sess_id))
+2025-06-28T05:28:09.313+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HTE_product(duration_minutes integer, page_count integer, price integer, quantity integer, rpm integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, size_inches float, updated_at timestamp, rating varchar(10), type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), cover_type varchar(50), dvd_type varchar(50), genre varchar(100), genre varchar(100), genre varchar(100), publishers varchar(200), record_label varchar(200), studio varchar(200), artists varchar(500), authors varchar(500), directors varchar(500), image_url varchar(500), artist varchar(255), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, music_type varchar(255), publication_date varchar(255), record_label varchar(255), release_date varchar(255), release_date varchar(255), release_date varchar(255), sleeve_condition varchar(255), title varchar(255), track_list TEXT, tracklist TEXT, type varchar(255), vinyl_condition varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+Hibernate: 
+    create table HTE_product(duration_minutes integer, page_count integer, price integer, quantity integer, rpm integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, size_inches float, updated_at timestamp, rating varchar(10), type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), cover_type varchar(50), dvd_type varchar(50), genre varchar(100), genre varchar(100), genre varchar(100), publishers varchar(200), record_label varchar(200), studio varchar(200), artists varchar(500), authors varchar(500), directors varchar(500), image_url varchar(500), artist varchar(255), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, music_type varchar(255), publication_date varchar(255), record_label varchar(255), release_date varchar(255), release_date varchar(255), release_date varchar(255), sleeve_condition varchar(255), title varchar(255), track_list TEXT, tracklist TEXT, type varchar(255), vinyl_condition varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+2025-06-28T05:28:09.313+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HTE_dvd(duration_minutes integer, price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, rating varchar(10), type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), dvd_type varchar(50), genre varchar(100), studio varchar(200), directors varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, release_date varchar(255), title varchar(255), type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+Hibernate: 
+    create table HTE_dvd(duration_minutes integer, price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, rating varchar(10), type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), dvd_type varchar(50), genre varchar(100), studio varchar(200), directors varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, release_date varchar(255), title varchar(255), type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+2025-06-28T05:28:09.314+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HTE_book(page_count integer, price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), cover_type varchar(50), genre varchar(100), publishers varchar(200), authors varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, publication_date varchar(255), title varchar(255), type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+Hibernate: 
+    create table HTE_book(page_count integer, price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), cover_type varchar(50), genre varchar(100), publishers varchar(200), authors varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, publication_date varchar(255), title varchar(255), type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+2025-06-28T05:28:09.314+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HTE_lp(price integer, quantity integer, rpm integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, size_inches float, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), image_url varchar(500), artist varchar(255), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, music_type varchar(255), record_label varchar(255), release_date varchar(255), sleeve_condition varchar(255), title varchar(255), tracklist TEXT, type varchar(255), vinyl_condition varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+Hibernate: 
+    create table HTE_lp(price integer, quantity integer, rpm integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, size_inches float, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), image_url varchar(500), artist varchar(255), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, music_type varchar(255), record_label varchar(255), release_date varchar(255), sleeve_condition varchar(255), title varchar(255), tracklist TEXT, type varchar(255), vinyl_condition varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+2025-06-28T05:28:09.314+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    create table HTE_cd(price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), genre varchar(100), record_label varchar(200), artists varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, release_date varchar(255), title varchar(255), track_list TEXT, type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+Hibernate: 
+    create table HTE_cd(price integer, quantity integer, rush_order_supported boolean, weight float, HTE_IDENTITY integer, created_at timestamp, product_id bigint, updated_at timestamp, type varchar(31) not null, hib_sess_id char(36) not null, barcode varchar(50), genre varchar(100), record_label varchar(200), artists varchar(500), image_url varchar(500), condition varchar(255), dimensions varchar(255), import_date varchar(255), introduction TEXT, release_date varchar(255), title varchar(255), track_list TEXT, type varchar(255), primary key (HTE_IDENTITY, hib_sess_id))
+2025-06-28T05:28:09.323+07:00  INFO 18695 --- [demo] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-06-28T05:28:09.328+07:00 DEBUG 18695 --- [demo] [  restartedMain] org.hibernate.SQL                        : 
+    alter table daily_operation_tracker 
+       drop constraint UKenk1xmd0sbhl6des3w1npxred
+Hibernate: 
+    alter table daily_operation_tracker 
+       drop constraint UKenk1xmd0sbhl6des3w1npxred
+2025-06-28T05:28:09.329+07:00  INFO 18695 --- [demo] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-06-28T05:28:09.564+07:00  WARN 18695 --- [demo] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-06-28T05:28:09.569+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page template: index
+2025-06-28T05:28:09.586+07:00 DEBUG 18695 --- [demo] [  restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : 79 mappings in 'requestMappingHandlerMapping'
+2025-06-28T05:28:09.608+07:00 DEBUG 18695 --- [demo] [  restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-06-28T05:28:09.614+07:00 DEBUG 18695 --- [demo] [  restartedMain] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-06-28T05:28:09.620+07:00 DEBUG 18695 --- [demo] [  restartedMain] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-06-28T05:28:09.651+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:sqlite:./data/ITSS_demo2.db'
+2025-06-28T05:28:09.660+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-06-28T05:28:09.669+07:00  INFO 18695 --- [demo] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-06-28T05:28:09.673+07:00  INFO 18695 --- [demo] [  restartedMain] c.itss.ecommerce.EcommerceApplication    : Started EcommerceApplication in 0.859 seconds (process running for 9566.878)
+2025-06-28T05:28:09.674+07:00  INFO 18695 --- [demo] [  restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
