@@ -206,6 +206,14 @@ export const userApi = {
   // Get user count
   getCount: (): Promise<ApiResponse<number>> => 
     api.get('/users/count'),
+
+  // Block user
+  block: (id: number, reason?: string, blockedBy?: string): Promise<ApiResponse<User>> => 
+    api.post(`/users/${id}/block`, null, { params: { reason, blockedBy } }),
+
+  // Unblock user
+  unblock: (id: number, unblockedBy?: string): Promise<ApiResponse<User>> => 
+    api.post(`/users/${id}/unblock`, null, { params: { unblockedBy } }),
 };
 
 // Invoice API

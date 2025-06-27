@@ -19,7 +19,6 @@ CREATE TABLE IF NOT EXISTS products (
   title TEXT NOT NULL,
   category TEXT NOT NULL,               -- corresponds to `category` field
   price INTEGER NOT NULL,
-  product_value INTEGER NOT NULL,       -- required for price validation
   weight REAL,
   rush_order_supported BOOLEAN DEFAULT FALSE,
   dimensions TEXT,                      -- physical dimensions

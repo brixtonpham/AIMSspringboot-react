@@ -31,9 +31,9 @@ public class OrderItemList {
     @Column(name = "status")
     private OrderStatus status = OrderStatus.PENDING;
     
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "delivery_id")
-    private DeliveryInformation deliveryInfo;
+    private DeliveryInformation deliveryInformation;
     
     @Column(name = "vat_percentage")
     private Integer vatPercentage = 10;
@@ -49,7 +49,7 @@ public class OrderItemList {
     
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Invoice invoice;
-    
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

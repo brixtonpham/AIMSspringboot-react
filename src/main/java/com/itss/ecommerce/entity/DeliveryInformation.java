@@ -26,21 +26,24 @@ public class DeliveryInformation {
     @Column(name = "email", nullable = false, length = 255)
     private String email;
     
-    @Column(name = "address", nullable = false, columnDefinition = "TEXT")
-    private String address;
-    
+    @Column(name = "province", nullable = false, length = 100)
+    private String province;
+
+    @Column(name = "district", nullable = false, length = 100)
+    private String district;
+
     @Column(name = "ward", nullable = false, length = 100)
     private String ward;
     
-    @Column(name = "province", nullable = false, length = 100)
-    private String province;
+    @Column(name = "address", nullable = false, columnDefinition = "TEXT")
+    private String address;
     
     @Column(name = "delivery_message", columnDefinition = "TEXT")
     private String deliveryMessage;
     
     @Column(name = "delivery_fee")
     private Integer deliveryFee = 0;
-    
+
     /**
      * Create delivery information
      */

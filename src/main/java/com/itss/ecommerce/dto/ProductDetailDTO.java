@@ -8,7 +8,6 @@ public class ProductDetailDTO {
     private Long productId;
     private String title;
     private Integer price;
-    private Integer productValue;
     private Integer quantity;
     private Float weight;
     private String imageUrl;

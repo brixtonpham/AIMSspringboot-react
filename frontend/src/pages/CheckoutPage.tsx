@@ -25,14 +25,15 @@ interface CheckoutFormData {
 
 type LocationData = Record<string, Record<string, string[]>>;
 
-
-
 const CheckoutPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState<'delivery' | 'payment' | 'review'>('delivery');
-  const { items, total, clearCart } = useCartStore();
+  const { items, total } = useCartStore();
   const { user } = useAuthStore();
   const navigate = useNavigate();
+
+  const rushEligibleItems = items.filter(item => item.product.rushOrderSupported);
+  const regularItems = items.filter(item => !item.product.rushOrderSupported);
 
   const [locations, setLocations] = useState<LocationData>({});
 
@@ -50,12 +51,20 @@ const CheckoutPage: React.FC = () => {
       customerWard: '',
       customerProvince: '',
       customerAddress: user?.address || '',
-      paymentMethod: 'CREDIT_CARD',
+      paymentMethod: 'VNPAY',
       rushDelivery: false,
     },
   });
 
   const watchedValues = form.watch();
+
+  useEffect(() => {
+    // Uncheck rushDelivery if province is not 'Hà Nội'
+    if (watchedValues.customerProvince !== 'Hà Nội' && form.getValues('rushDelivery')) {
+      form.setValue('rushDelivery', false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watchedValues.customerProvince]);
 
   if (items.length === 0) {
     return (
@@ -69,8 +78,15 @@ const CheckoutPage: React.FC = () => {
     );
   }
 
+  const rushDeliveryFee = 50000;
+  const regularDeliveryFee = 30000;
+  const deliveryFee = rushEligibleItems.length > 0
+    && regularItems.length > 0 ?
+    (rushDeliveryFee + regularDeliveryFee)
+    : (regularItems.length == 0 ?
+      rushDeliveryFee : regularDeliveryFee);
+
   const subtotal = total;
-  const deliveryFee = watchedValues.rushDelivery ? 50000 : 30000; // Rush delivery costs more
   const tax = Math.round(subtotal * 0.1); // 10% VAT
   const finalTotal = subtotal + deliveryFee + tax;
 
@@ -98,10 +114,12 @@ const CheckoutPage: React.FC = () => {
       };
 
       const response = await orderApi.create(orderData);
+      console.log('Response from Order creation request returns:', response);
 
       if (data.paymentMethod === 'VNPAY') {
         const paymentRequest = {
           amount: finalTotal.toString(),
+          orderId: response.data.orderId.toString(),
           language: 'vn',
           vnp_Version: '2.1.0',
           bankCode: "VNBANK"
@@ -110,20 +128,9 @@ const CheckoutPage: React.FC = () => {
         // Use paymentApi instead of fetch
         const { paymentUrl } = await paymentApi.createVNPayPayment(paymentRequest);
         window.location.href = paymentUrl;
-        clearCart();
         return;
       }
 
-
-      console.log('Order creation:', response.data);
-      // For other payment methods, navigate to confirmation page
-      // navigate('/order-confirmation', {
-      //  state: {
-      //    orderId: response.data.orderId,
-      //    total: finalTotal,
-      //    paymentMethod: data.paymentMethod
-      //  }
-      // });
     } catch (error) {
       console.error('Order creation failed:', error);
       console.error('Form data:', data);
@@ -132,7 +139,10 @@ const CheckoutPage: React.FC = () => {
     }
   };
 
-  const nextStep = () => {
+  const nextStep = async (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent any form submission
+    const valid = await form.trigger(); // validate current fields
+    if (!valid) return;
     if (step === 'delivery') {
       setStep('payment');
     } else if (step === 'payment') {
@@ -140,11 +150,20 @@ const CheckoutPage: React.FC = () => {
     }
   };
 
-  const prevStep = () => {
+  const prevStep = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent any form submission
     if (step === 'payment') {
       setStep('delivery');
     } else if (step === 'review') {
       setStep('payment');
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Only submit if we're on the review step
+    if (step === 'review') {
+      form.handleSubmit(onSubmit)(e);
     }
   };
 
@@ -183,7 +202,7 @@ const CheckoutPage: React.FC = () => {
           {/* Form Section */}
           <div className="lg:col-span-2">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Delivery Information */}
                 {step === 'delivery' && (
                   <Card>
@@ -369,12 +388,20 @@ const CheckoutPage: React.FC = () => {
                                 checked={field.value}
                                 onChange={field.onChange}
                                 className="mt-1"
+                                disabled={
+                                  watchedValues.customerProvince !== 'Hà Nội' ||
+                                  rushEligibleItems.length === 0
+                                }
                               />
                             </FormControl>
                             <div className="space-y-1 leading-none">
                               <FormLabel>Rush Delivery (+20,000 VND)</FormLabel>
                               <p className="text-sm text-muted-foreground">
-                                Get your order delivered within 24 hours
+                                {watchedValues.customerProvince === 'Hà Nội' && rushEligibleItems.length > 0
+                                  ? 'Get your order delivered within 24 hours'
+                                  : (watchedValues.customerProvince !== 'Hà Nội')
+                                    ? 'Rush Delivery is only available for Hà Nội'
+                                    : `No rush delivery items in your cart`}
                               </p>
                             </div>
                           </FormItem>
@@ -409,7 +436,8 @@ const CheckoutPage: React.FC = () => {
                                   id="credit-card"
                                   value="CREDIT_CARD"
                                   checked={field.value === 'CREDIT_CARD'}
-                                  onChange={field.onChange}
+                                  disabled
+                                  readOnly
                                 />
                                 <label htmlFor="credit-card" className="flex items-center space-x-2 cursor-pointer">
                                   <CreditCard className="w-4 h-4" />
@@ -435,7 +463,8 @@ const CheckoutPage: React.FC = () => {
                                   id="cod"
                                   value="CASH_ON_DELIVERY"
                                   checked={field.value === 'CASH_ON_DELIVERY'}
-                                  onChange={field.onChange}
+                                  disabled
+                                  readOnly
                                 />
                                 <label htmlFor="cod" className="flex items-center space-x-2 cursor-pointer">
                                   <Truck className="w-4 h-4" />
@@ -532,17 +561,62 @@ const CheckoutPage: React.FC = () => {
                 <CardTitle>Order Summary</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {items.map((item) => (
-                  <div key={item.product.productId} className="flex justify-between items-center">
-                    <div className="flex-1">
-                      <h4 className="font-medium text-sm">{item.product.title}</h4>
-                      <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
+                {/* If Rush Delivery is selected and there are eligible items */}
+                {watchedValues.rushDelivery && rushEligibleItems.length > 0 ? (
+                  <>
+                    <div>
+                      <h4 className="font-semibold text-orange-600 mb-2">Rush Delivery Items</h4>
+                      {rushEligibleItems.map((item) => (
+                        <div key={item.product.productId} className="flex justify-between items-center">
+                          <div className="flex-1">
+                            <h4 className="font-medium text-sm">{item.product.title}</h4>
+                            <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
+                          </div>
+                          <span className="font-medium text-sm">
+                            {(item.product.price * item.quantity).toLocaleString()} VND
+                          </span>
+                        </div>
+                      ))}
+                      <div className="flex justify-between text-sm mt-2">
+                        <span>Rush Delivery Fee</span>
+                        <span>{rushDeliveryFee.toLocaleString()} VND</span>
+                      </div>
                     </div>
-                    <span className="font-medium text-sm">
-                      {(item.product.price * item.quantity).toLocaleString()} VND
-                    </span>
-                  </div>
-                ))}
+                    {regularItems.length > 0 && (
+                      <div className="mt-4">
+                        <h4 className="font-semibold text-blue-600 mb-2">Regular Delivery Items</h4>
+                        {regularItems.map((item) => (
+                          <div key={item.product.productId} className="flex justify-between items-center">
+                            <div className="flex-1">
+                              <h4 className="font-medium text-sm">{item.product.title}</h4>
+                              <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
+                            </div>
+                            <span className="font-medium text-sm">
+                              {(item.product.price * item.quantity).toLocaleString()} VND
+                            </span>
+                          </div>
+                        ))}
+                        <div className="flex justify-between text-sm mt-2">
+                          <span>Regular Delivery Fee</span>
+                          <span>{regularDeliveryFee.toLocaleString()} VND</span>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  // If Rush Delivery is not selected, show all items as regular
+                  items.map((item) => (
+                    <div key={item.product.productId} className="flex justify-between items-center">
+                      <div className="flex-1">
+                        <h4 className="font-medium text-sm">{item.product.title}</h4>
+                        <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
+                      </div>
+                      <span className="font-medium text-sm">
+                        {(item.product.price * item.quantity).toLocaleString()} VND
+                      </span>
+                    </div>
+                  ))
+                )}
 
                 <div className="border-t pt-4 space-y-2">
                   <div className="flex justify-between text-sm">

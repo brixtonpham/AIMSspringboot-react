@@ -12,17 +12,38 @@ import {
   Edit,
   Trash2,
   Search,
-  Filter
+  Filter,
+  CheckCircle,
+  X,
+  Lock,
+  Unlock
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { useAuthStore } from '../stores/authStore';
 import { productApi, orderApi, userApi } from '../services/api';
+import { ProductModal } from '../components/modals/ProductModal';
+import { OrderModal } from '../components/modals/OrderModal';
+import { UserModal } from '../components/modals/UserModal';
 
 const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'orders' | 'users'>('overview');
   const [searchQuery, setSearchQuery] = useState('');
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean;
+    mode: 'create' | 'edit' | 'view';
+    product?: any;
+  }>({ isOpen: false, mode: 'create' });
+  const [orderModalState, setOrderModalState] = useState<{
+    isOpen: boolean;
+    order?: any;
+  }>({ isOpen: false });
+  const [userModalState, setUserModalState] = useState<{
+    isOpen: boolean;
+    mode: 'create' | 'edit' | 'view';
+    user?: any;
+  }>({ isOpen: false, mode: 'create' });
   const { user } = useAuthStore();
 
   // Check if user is admin
@@ -90,7 +111,7 @@ const AdminDashboard: React.FC = () => {
                           Array.isArray(lowStockResponse) ? lowStockResponse : [];
 
   // Show error state if any critical API fails
-  if (productsError || ordersError || (isAdmin && usersError)) {
+  if (productsError || ordersError || (isAdmin && usersError) || lowStockError) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <h1 className="text-4xl font-bold mb-4 text-red-600">Error Loading Dashboard</h1>
@@ -110,7 +131,7 @@ const AdminDashboard: React.FC = () => {
   }
 
   // Show loading state
-  if (productsLoading || ordersLoading || (isAdmin && usersLoading)) {
+  if (productsLoading || ordersLoading || (isAdmin && usersLoading) || lowStockLoading) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-4"></div>
@@ -135,6 +156,71 @@ const AdminDashboard: React.FC = () => {
     user?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     user?.email?.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleConfirmOrder = async (orderId: number) => {
+    try {
+      await orderApi.confirm(orderId);
+      window.location.reload();
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const handleCancelOrder = async (orderId: number) => {
+    try {
+      await orderApi.cancel(orderId);
+      window.location.reload();
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const handleCreateUser = async (userData: any) => {
+    try {
+      await userApi.create(userData);
+      window.location.reload();
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const handleUpdateUser = async (userData: any) => {
+    try {
+      if (userModalState.user) {
+        await userApi.update(userModalState.user.userId, userData);
+        window.location.reload();
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const handleDeleteUser = async (userId: number) => {
+    try {
+      await userApi.delete(userId);
+      window.location.reload();
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const handleBlockUser = async (userId: number, reason?: string) => {
+    try {
+      await userApi.block(userId, reason, user?.name || 'Administrator');
+      window.location.reload();
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const handleUnblockUser = async (userId: number) => {
+    try {
+      await userApi.unblock(userId, user?.name || 'Administrator');
+      window.location.reload();
+    } catch (error) {
+      throw error;
+    }
+  };
 
   // Calculate stats with safe operations
   const totalRevenue = orders.reduce((sum, order) => {
@@ -191,10 +277,6 @@ const AdminDashboard: React.FC = () => {
               Manage your store's products, orders, and customers
             </p>
           </div>
-          <Button className="flex items-center gap-2">
-            <Plus className="w-4 h-4" />
-            Add New Product
-          </Button>
         </div>
 
         {/* Navigation Tabs */}
@@ -353,7 +435,7 @@ const AdminDashboard: React.FC = () => {
                   className="pl-10"
                 />
               </div>
-              <Button>
+              <Button onClick={() => setModalState({ isOpen: true, mode: 'create' })}>
                 <Plus className="w-4 h-4 mr-2" />
                 Add Product
               </Button>
@@ -385,15 +467,38 @@ const AdminDashboard: React.FC = () => {
                         }`}>
                           {(product?.quantity || 0) > 0 ? `${product?.quantity} in stock` : 'Out of stock'}
                         </span>
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => setModalState({ isOpen: true, mode: 'view', product })}
+                        >
                           <Eye className="w-4 h-4 mr-1" />
                           View
                         </Button>
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => setModalState({ isOpen: true, mode: 'edit', product })}
+                        >
                           <Edit className="w-4 h-4 mr-1" />
                           Edit
                         </Button>
-                        <Button variant="outline" size="sm" className="text-red-600">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="text-red-600"
+                          onClick={async () => {
+                            if (window.confirm('Are you sure you want to delete this product?')) {
+                              try {
+                                await productApi.delete(product.productId);
+                                window.location.reload();
+                              } catch (error) {
+                                console.error('Error deleting product:', error);
+                                alert('Failed to delete product. Please try again.');
+                              }
+                            }
+                          }}
+                        >
                           <Trash2 className="w-4 h-4 mr-1" />
                           Delete
                         </Button>
@@ -440,10 +545,54 @@ const AdminDashboard: React.FC = () => {
                         <span className="font-medium">
                           {(order?.totalAmount || 0).toLocaleString()} VND
                         </span>
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => setOrderModalState({ isOpen: true, order })}
+                        >
                           <Eye className="w-4 h-4 mr-1" />
                           View
                         </Button>
+                        {order?.status?.toLowerCase() === 'pending' && (
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="text-green-600 border-green-200 hover:bg-green-50"
+                            onClick={async () => {
+                              if (window.confirm('Are you sure you want to confirm this order?')) {
+                                try {
+                                  await handleConfirmOrder(order.orderId);
+                                } catch (error) {
+                                  console.error('Error confirming order:', error);
+                                  alert('Failed to confirm order. Please try again.');
+                                }
+                              }
+                            }}
+                          >
+                            <CheckCircle className="w-4 h-4 mr-1" />
+                            Confirm
+                          </Button>
+                        )}
+                        {['pending', 'confirmed'].includes(order?.status?.toLowerCase() || '') && (
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="text-red-600 border-red-200 hover:bg-red-50"
+                            onClick={async () => {
+                              if (window.confirm('Are you sure you want to cancel this order? This action cannot be undone.')) {
+                                try {
+                                  await handleCancelOrder(order.orderId);
+                                } catch (error) {
+                                  console.error('Error cancelling order:', error);
+                                  alert('Failed to cancel order. Please try again.');
+                                }
+                              }
+                            }}
+                          >
+                            <X className="w-4 h-4 mr-1" />
+                            Cancel
+                          </Button>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -456,14 +605,20 @@ const AdminDashboard: React.FC = () => {
         {/* Users Tab */}
         {activeTab === 'users' && (
           <div className="space-y-6">
-            <div className="relative max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-              <Input
-                placeholder="Search users..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
+            <div className="flex items-center gap-4">
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                <Input
+                  placeholder="Search users..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <Button onClick={() => setUserModalState({ isOpen: true, mode: 'create' })}>
+                <Plus className="w-4 h-4 mr-2" />
+                Add User
+              </Button>
             </div>
 
             <Card>
@@ -487,9 +642,79 @@ const AdminDashboard: React.FC = () => {
                         <span className="px-2 py-1 bg-blue-100 text-blue-600 text-xs font-medium rounded-full capitalize">
                           {user?.role?.toLowerCase() || 'user'}
                         </span>
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => setUserModalState({ isOpen: true, mode: 'view', user })}
+                        >
                           <Eye className="w-4 h-4 mr-1" />
                           View
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => setUserModalState({ isOpen: true, mode: 'edit', user })}
+                        >
+                          <Edit className="w-4 h-4 mr-1" />
+                          Edit
+                        </Button>
+                        {user?.isActive ? (
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="text-orange-600 border-orange-200 hover:bg-orange-50"
+                            onClick={async () => {
+                              const reason = prompt('Please enter a reason for blocking this user:');
+                              if (reason !== null) {
+                                try {
+                                  await handleBlockUser(user.userId, reason);
+                                } catch (error) {
+                                  console.error('Error blocking user:', error);
+                                  alert('Failed to block user. Please try again.');
+                                }
+                              }
+                            }}
+                          >
+                            <Lock className="w-4 h-4 mr-1" />
+                            Block
+                          </Button>
+                        ) : (
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="text-green-600 border-green-200 hover:bg-green-50"
+                            onClick={async () => {
+                              if (window.confirm('Are you sure you want to unblock this user?')) {
+                                try {
+                                  await handleUnblockUser(user.userId);
+                                } catch (error) {
+                                  console.error('Error unblocking user:', error);
+                                  alert('Failed to unblock user. Please try again.');
+                                }
+                              }
+                            }}
+                          >
+                            <Unlock className="w-4 h-4 mr-1" />
+                            Unblock
+                          </Button>
+                        )}
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="text-red-600"
+                          onClick={async () => {
+                            if (window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+                              try {
+                                await handleDeleteUser(user.userId);
+                              } catch (error) {
+                                console.error('Error deleting user:', error);
+                                alert('Failed to delete user. Please try again.');
+                              }
+                            }
+                          }}
+                        >
+                          <Trash2 className="w-4 h-4 mr-1" />
+                          Delete
                         </Button>
                       </div>
                     </div>
@@ -500,6 +725,53 @@ const AdminDashboard: React.FC = () => {
           </div>
         )}
       </div>
+      
+      <ProductModal
+        isOpen={modalState.isOpen}
+        mode={modalState.mode}
+        initialData={modalState.product}
+        onClose={() => setModalState({ isOpen: false, mode: 'create' })}
+        onSubmit={async (data) => {
+          try {
+            if (modalState.mode === 'create') {
+              await productApi.create(data);
+            } else if (modalState.mode === 'edit' && modalState.product) {
+              await productApi.update(modalState.product.productId, data);
+            }
+            window.location.reload();
+          } catch (error) {
+            throw error;
+          }
+        }}
+      />
+      
+      <OrderModal
+        isOpen={orderModalState.isOpen}
+        order={orderModalState.order}
+        onClose={() => setOrderModalState({ isOpen: false })}
+        onConfirmOrder={handleConfirmOrder}
+        onCancelOrder={handleCancelOrder}
+      />
+      
+      <UserModal
+        isOpen={userModalState.isOpen}
+        mode={userModalState.mode}
+        initialData={userModalState.user}
+        onClose={() => setUserModalState({ isOpen: false, mode: 'create' })}
+        onSubmit={async (data) => {
+          try {
+            if (userModalState.mode === 'create') {
+              await handleCreateUser(data);
+            } else if (userModalState.mode === 'edit') {
+              await handleUpdateUser(data);
+            }
+          } catch (error) {
+            throw error;
+          }
+        }}
+        onBlockUser={handleBlockUser}
+        onUnblockUser={handleUnblockUser}
+      />
     </div>
   );
 };

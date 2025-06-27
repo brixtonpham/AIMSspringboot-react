@@ -2,6 +2,7 @@ package com.itss.ecommerce.service;
 
 import com.itss.ecommerce.entity.*;
 import com.itss.ecommerce.repository.*;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,7 +39,7 @@ public class OrderService {
         
         // Create order
         OrderItemList order = new OrderItemList();
-        order.setDeliveryInfo(savedDeliveryInfo);
+        order.setDeliveryInformation(savedDeliveryInfo);
         order.setStatus(OrderItemList.OrderStatus.PENDING);
         
         // Create order lines
@@ -84,6 +85,34 @@ public class OrderService {
     public Optional<OrderItemList> getOrderById(Long orderId) {
         log.debug("Fetching order by ID: {}", orderId);
         return orderItemListRepository.findById(orderId);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean deleteOrderById(Long orderId) {
+        log.info("Deleting order with ID: {}", orderId);
+        
+        OrderItemList order = orderItemListRepository.findById(orderId)
+            .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
+        
+        // Restore product stock
+        for (OrderItem orderItem : order.getOrderItems()) {
+            Product product = orderItem.getProduct();
+            product.addStock(orderItem.getQuantity());
+            productRepository.save(product);
+        }
+        
+        // Delete the order
+        orderItemListRepository.delete(order);
+        
+        auditLogService.logOrderAction(
+            orderId,
+            null,
+            "Deleted",
+            "Order deleted"
+        );
+        
+        log.info("Order {} deleted successfully", orderId);
+        return true;
     }
     
     /**

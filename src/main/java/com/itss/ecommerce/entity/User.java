@@ -33,19 +33,7 @@ public class User {
     
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
-    private UserRole role = UserRole.CUSTOMER;
-    
-    @Column(name = "province")
-    private String province;
-
-    @Column(name = "district")
-    private String district;
-
-    @Column(name = "ward")
-    private String ward;
-    
-    @Column(name = "address", nullable = true)
-    private String address;
+    private UserRole role = UserRole.MANAGER;
 
     @Column(name = "registration_date")
     private LocalDateTime registrationDate;
@@ -64,7 +52,7 @@ public class User {
     }
     
     public enum UserRole {
-        ADMIN, CUSTOMER, MANAGER, EMPLOYEE
+        ADMIN, MANAGER
     }
     
     /**
@@ -79,6 +67,10 @@ public class User {
      */
     public boolean canManageProducts() {
         return role == UserRole.ADMIN || role == UserRole.MANAGER;
+    }
+    
+    public boolean canManageUsers() {
+        return role == UserRole.ADMIN;
     }
     
     /**

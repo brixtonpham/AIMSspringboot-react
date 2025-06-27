@@ -1,10 +1,11 @@
 package com.itss.ecommerce.repository;
 
-import com.itss.ecommerce.entity.OrderItemList;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import com.itss.ecommerce.entity.OrderItemList;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -68,7 +69,7 @@ public interface OrderItemListRepository extends JpaRepository<OrderItemList, Lo
     /**
      * Find orders by delivery province
      */
-    @Query("SELECT o FROM OrderItemList o WHERE o.deliveryInfo.province = :province")
+    @Query("SELECT o FROM OrderItemList o WHERE o.deliveryInformation.province = :province")
     List<OrderItemList> findOrdersByDeliveryProvince(@Param("province") String province);
     
     /**
@@ -91,6 +92,6 @@ public interface OrderItemListRepository extends JpaRepository<OrderItemList, Lo
     /**
      * Find orders by customer email (through delivery info)
      */
-    @Query("SELECT o FROM OrderItemList o WHERE o.deliveryInfo.email = :email")
+    @Query("SELECT o FROM OrderItemList o WHERE o.deliveryInformation.email = :email")
     List<OrderItemList> findOrdersByCustomerEmail(@Param("email") String email);
 }

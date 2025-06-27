@@ -1,21 +1,36 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
-import { CheckCircle, Truck, CreditCard, Mail, Calendar } from 'lucide-react';
+import { CheckCircle, Truck, CreditCard, Mail, Calendar, XCircle } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-
-interface OrderConfirmationState {
-  orderId: number;
-  total: number;
-  paymentMethod: string;
-}
+import { useCartStore } from '@/stores/cartStore';
 
 const OrderConfirmationPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const state = location.state as OrderConfirmationState;
+  const { clearCart } = useCartStore();
 
-  if (!state) {
+  // Parse query params from URL
+  const params = new URLSearchParams(location.search);
+  const status = params.get('status');
+  const orderId = params.get('orderId');
+  const amount = params.get('amount');
+  const orderInfo = params.get('orderInfo');
+  const payDate = params.get('payDate');
+
+  // Estimated delivery (example logic)
+  const estimatedDelivery = new Date();
+  estimatedDelivery.setDate(estimatedDelivery.getDate() + 3);
+
+
+  useEffect(() => {
+    if (status === 'success') {
+      clearCart();
+    }
+  }, [status, clearCart]);
+
+
+  if (!status) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <h1 className="text-4xl font-bold mb-4">Invalid Order</h1>
@@ -27,29 +42,39 @@ const OrderConfirmationPage: React.FC = () => {
     );
   }
 
-  const { orderId, total, paymentMethod } = state;
-  const estimatedDelivery = new Date();
-  estimatedDelivery.setDate(estimatedDelivery.getDate() + 3);
-
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-2xl mx-auto">
-        {/* Success Header */}
+        {/* Success or Failure Header */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle className="w-8 h-8 text-green-600" />
-          </div>
-          <h1 className="text-3xl font-bold text-green-600 mb-2">Order Confirmed!</h1>
-          <p className="text-muted-foreground">
-            Thank you for your purchase. Your order has been successfully placed.
-          </p>
+          {status === 'success' ? (
+            <>
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="w-8 h-8 text-green-600" />
+              </div>
+              <h1 className="text-3xl font-bold text-green-600 mb-2">Order Confirmed!</h1>
+              <p className="text-muted-foreground">
+                Thank you for your purchase. Your order has been successfully placed.
+              </p>
+            </>
+          ) : (
+            <>
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <XCircle className="w-8 h-8 text-red-600" />
+              </div>
+              <h1 className="text-3xl font-bold text-red-600 mb-2">Payment Failed</h1>
+              <p className="text-muted-foreground">
+                Unfortunately, your payment was not successful. Please try again or contact support.
+              </p>
+            </>
+          )}
         </div>
 
         {/* Order Details */}
         <Card className="mb-6">
           <CardHeader>
             <CardTitle>Order Details</CardTitle>
-            <CardDescription>Order #{orderId}</CardDescription>
+            <CardDescription>Order #{orderId || 'N/A'}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -60,12 +85,33 @@ const OrderConfirmationPage: React.FC = () => {
                 <div>
                   <p className="font-medium">Order Date</p>
                   <p className="text-sm text-muted-foreground">
-                    {new Date().toLocaleDateString('en-US', {
-                      weekday: 'long',
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
+                    {payDate
+                      ? new Date(
+                        payDate.slice(0, 4) +
+                        '-' +
+                        payDate.slice(4, 6) +
+                        '-' +
+                        payDate.slice(6, 8) +
+                        'T' +
+                        payDate.slice(8, 10) +
+                        ':' +
+                        payDate.slice(10, 12) +
+                        ':' +
+                        payDate.slice(12, 14)
+                      ).toLocaleString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })
+                      : new Date().toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })}
                   </p>
                 </div>
               </div>
@@ -77,9 +123,7 @@ const OrderConfirmationPage: React.FC = () => {
                 <div>
                   <p className="font-medium">Payment Method</p>
                   <p className="text-sm text-muted-foreground">
-                    {paymentMethod === 'CREDIT_CARD' && 'Credit/Debit Card'}
-                    {paymentMethod === 'VNPAY' && 'VNPay'}
-                    {paymentMethod === 'CASH_ON_DELIVERY' && 'Cash on Delivery'}
+                    VNPay
                   </p>
                 </div>
               </div>
@@ -107,57 +151,17 @@ const OrderConfirmationPage: React.FC = () => {
                 <div>
                   <p className="font-medium">Total Amount</p>
                   <p className="text-sm text-muted-foreground">
-                    {total.toLocaleString()} VND
+                    {amount ? Number(amount).toLocaleString() : 'N/A'} VND
                   </p>
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Next Steps */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>What happens next?</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                  1
-                </div>
-                <div>
-                  <p className="font-medium">Order Processing</p>
-                  <p className="text-sm text-muted-foreground">
-                    We'll process your order and prepare it for shipment within 1-2 business days.
-                  </p>
-                </div>
+            {orderInfo && (
+              <div className="mt-4">
+                <p className="font-medium">Order Info</p>
+                <p className="text-sm text-muted-foreground">{orderInfo}</p>
               </div>
-              
-              <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                  2
-                </div>
-                <div>
-                  <p className="font-medium">Email Confirmation</p>
-                  <p className="text-sm text-muted-foreground">
-                    You'll receive an email confirmation with tracking information once your order ships.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                  3
-                </div>
-                <div>
-                  <p className="font-medium">Delivery</p>
-                  <p className="text-sm text-muted-foreground">
-                    Your order will be delivered to your specified address within 3-5 business days.
-                  </p>
-                </div>
-              </div>
-            </div>
+            )}
           </CardContent>
         </Card>
 
@@ -169,7 +173,7 @@ const OrderConfirmationPage: React.FC = () => {
               View Order History
             </Button>
           </Link>
-          
+
           <Button onClick={() => navigate('/')} className="w-full sm:w-auto">
             Continue Shopping
           </Button>

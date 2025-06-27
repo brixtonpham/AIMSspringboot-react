@@ -3,6 +3,7 @@ package com.itss.ecommerce.service;
 import com.itss.ecommerce.entity.AuditLog;
 import com.itss.ecommerce.entity.User;
 import com.itss.ecommerce.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ public class UserService {
     
     private final UserRepository userRepository;
     private final AuditLogService auditLogService;
+    private final EmailService emailService;
     
     /**
      * Get all users
@@ -64,7 +66,7 @@ public class UserService {
         
         // Set default values
         if (user.getRole() == null) {
-            user.setRole(User.UserRole.CUSTOMER);
+            user.setRole(User.UserRole.MANAGER);
         }
         if (user.getIsActive() == null) {
             user.setIsActive(true);
@@ -284,6 +286,72 @@ public class UserService {
         );
         
         log.info("User {} active status set to: {}", userId, active);
+        return savedUser;
+    }
+
+    /**
+     * Block user and send notification email
+     */
+    public User blockUser(Long userId, String reason, String blockedBy) {
+        log.info("Blocking user {} with reason: {}", userId, reason);
+        
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+        
+        // Set user as inactive (blocked)
+        user.setIsActive(false);
+        User savedUser = userRepository.save(user);
+        
+        // Send email notification
+        try {
+            emailService.sendUserBlockedEmail(user, reason, blockedBy);
+        } catch (Exception e) {
+            log.error("Failed to send blocked email to user {}: {}", userId, e.getMessage());
+        }
+        
+        // Log the action
+        auditLogService.logAction(
+            "User Blocked" + (reason != null ? " - Reason: " + reason : ""),
+            "User",
+            userId,
+            AuditLog.ActionType.UPDATE,
+            null
+        );
+        
+        log.info("User {} has been blocked", userId);
+        return savedUser;
+    }
+
+    /**
+     * Unblock user and send notification email
+     */
+    public User unblockUser(Long userId, String unblockedBy) {
+        log.info("Unblocking user {}", userId);
+        
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+        
+        // Set user as active (unblocked)
+        user.setIsActive(true);
+        User savedUser = userRepository.save(user);
+        
+        // Send email notification
+        try {
+            emailService.sendUserUnblockedEmail(user, unblockedBy);
+        } catch (Exception e) {
+            log.error("Failed to send unblocked email to user {}: {}", userId, e.getMessage());
+        }
+        
+        // Log the action
+        auditLogService.logAction(
+            "User Unblocked",
+            "User",
+            userId,
+            AuditLog.ActionType.UPDATE,
+            null
+        );
+        
+        log.info("User {} has been unblocked", userId);
         return savedUser;
     }
     

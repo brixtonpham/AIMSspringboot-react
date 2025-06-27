@@ -22,10 +22,6 @@ public class ProductDTO {
     @Positive(message = "Price must be positive")
     private Integer price;
     
-    @NotNull(message = "Product value is required")
-    @Positive(message = "Product value must be positive")
-    private Integer productValue; // Used for price validation (30%-150% of this value)
-    
     // Physical product attributes
     private String dimensions; // e.g., "20x15x3 cm"
     private String condition; // New, Used - Like New, Used - Very Good, etc.

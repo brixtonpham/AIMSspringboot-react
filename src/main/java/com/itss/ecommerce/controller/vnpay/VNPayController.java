@@ -4,26 +4,28 @@
  */
 package com.itss.ecommerce.controller.vnpay;
 
+import com.itss.ecommerce.dto.vnpay.IPNResponse;
+import com.itss.ecommerce.dto.vnpay.PaymentRequest;
+import com.itss.ecommerce.dto.vnpay.QueryRequest;
+import com.itss.ecommerce.dto.vnpay.RefundRequest;
+import com.itss.ecommerce.service.EmailService;
+import com.itss.ecommerce.service.OrderService;
 import com.itss.ecommerce.service.VNPayService;
 import com.itss.ecommerce.service.VNPayService.PaymentResponse;
 import com.itss.ecommerce.service.VNPayService.QueryResponse;
 import com.itss.ecommerce.service.VNPayService.RefundResponse;
-import com.itss.ecommerce.dto.vnpay.IPNResponse;
-import com.itss.ecommerce.dto.vnpay.PaymentRequest;
-import com.itss.ecommerce.dto.vnpay.PaymentReturnResponse;
-import com.itss.ecommerce.dto.vnpay.QueryRequest;
-import com.itss.ecommerce.dto.vnpay.RefundRequest;
+
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,9 +36,13 @@ public class VNPayController {
 
     private static final Logger logger = LoggerFactory.getLogger(VNPayController.class);
     private final VNPayService vnPayService;
+    private final EmailService emailService;
+    private final OrderService orderService;
 
-    public VNPayController(VNPayService vnPayService) {
+    public VNPayController(VNPayService vnPayService, EmailService emailService, OrderService orderService) {
         this.vnPayService = vnPayService;
+        this.emailService = emailService;
+        this.orderService = orderService;
     }
 
     /**
@@ -76,7 +82,7 @@ public class VNPayController {
      * 
      * @return refund form info
      */
-    @GetMapping("/refund")
+    @GetMapping("/vnpay/refund")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> refundPage() {
         Map<String, Object> refundInfo = new HashMap<>();
@@ -96,70 +102,59 @@ public class VNPayController {
      * @param model         Spring MVC model
      * @return return page view name
      */
-    @GetMapping("/vnpay/return")
-    public String returnPage(
-            @RequestParam Map<String, String> requestParams,
-            HttpServletRequest request,
-            org.springframework.ui.Model model) {
+   @GetMapping("/vnpay/return")
+public RedirectView returnPage(
+        @RequestParam Map<String, String> requestParams,
+        HttpServletRequest request) {
 
-        // Create copy of params for hash calculation
-        Map<String, String> fields = new HashMap<>(requestParams);
+    // Prepare fields for hash validation
+    Map<String, String> fields = new HashMap<>(requestParams);
+    String vnp_SecureHash = fields.get("vnp_SecureHash");
+    fields.remove("vnp_SecureHashType");
+    fields.remove("vnp_SecureHash");
 
-        // Get and remove hash from param map before recalculating
-        String vnp_SecureHash = fields.get("vnp_SecureHash");
-        fields.remove("vnp_SecureHashType");
-        fields.remove("vnp_SecureHash");
+    // Validate hash
+    boolean validHash = vnPayService.hashAllFields(fields).equals(vnp_SecureHash);
 
-        // Create response object
-        PaymentReturnResponse response = new PaymentReturnResponse();
+    // Extract needed info
+    String txnRef = fields.get("vnp_TxnRef");
+    String responseCode = fields.get("vnp_ResponseCode");
+    String amount = fields.getOrDefault("vnp_Amount", "0");
+    String orderInfo = fields.get("vnp_OrderInfo");
+    String payDate = fields.get("vnp_PayDate");
 
-        // Validate hash
-        String signValue = vnPayService.hashAllFields(fields);
-        response.setValidHash(signValue.equals(vnp_SecureHash));
-
-        if (response.isValidHash()) {
-            // Parse and validate required fields
-            try {
-                response.setTransactionId(fields.get("vnp_TxnRef"));
-                response.setAmount(Long.parseLong(fields.getOrDefault("vnp_Amount", "0")));
-                response.setOrderInfo(fields.get("vnp_OrderInfo"));
-                response.setResponseCode(fields.get("vnp_ResponseCode"));
-                response.setVnpayTransactionId(fields.get("vnp_TransactionNo"));
-                response.setBankCode(fields.get("vnp_BankCode"));
-
-                // Parse payment date
-                String payDate = fields.get("vnp_PayDate");
-                if (payDate != null && payDate.length() >= 14) {
-                    LocalDateTime dateTime = LocalDateTime.parse(
-                            payDate.substring(0, 14),
-                            DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-                    response.setPaymentDate(dateTime);
-                    // Add formatted string for JSP
-                    String formattedDate = dateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
-                    model.addAttribute("paymentDateStr", formattedDate);
-
-                }
-
-                response.setTransactionStatus(fields.get("vnp_TransactionStatus"));
-
-            } catch (Exception e) {
-                // Log the error
-                logger.error("Error processing return URL parameters", e);
-                response.setMessage("Lỗi xử lý thông tin thanh toán");
-                response.setValidHash(false);
-            }
+    String status = "fail";
+    if (validHash && "00".equals(responseCode) && txnRef != null) {
+        status = "success";
+        try {
+            Long orderId = Long.parseLong(txnRef);
+            orderService.getOrderById(orderId).ifPresent(order -> {
+                emailService.sendOrderConfirmationEmail(order);
+            });
+        } catch (Exception e) {
+            // Log error if needed
         }
-
-        // Log transaction details
-        logger.info("Payment return - TxnId: {}, Amount: {}, Status: {}, ResponseCode: {}",
-                response.getTransactionId(),
-                response.getAmount(),
-                response.getTransactionStatus(),
-                response.getResponseCode());
-
-        model.addAttribute("payment", response);
-        return "vnpay_return";
+    } else if (validHash && txnRef != null) {
+        try {
+            Long orderId = Long.parseLong(txnRef);
+            orderService.deleteOrderById(orderId);
+        } catch (Exception e) {
+            // Log error if needed
+        }
     }
+
+    // Build redirect URL with query params for frontend
+    String redirectUrl = String.format(
+        "http://localhost:5173/order-confirmation?status=%s&orderId=%s&amount=%s&orderInfo=%s&payDate=%s",
+        status,
+        txnRef != null ? txnRef : "",
+        amount,
+        orderInfo != null ? orderInfo : "",
+        payDate != null ? payDate : ""
+    );
+
+    return new RedirectView(redirectUrl);
+}
 
     /**
      * Renders the IPN test page

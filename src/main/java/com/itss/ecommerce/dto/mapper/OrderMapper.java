@@ -2,6 +2,7 @@ package com.itss.ecommerce.dto.mapper;
 
 import com.itss.ecommerce.dto.*;
 import com.itss.ecommerce.entity.*;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -30,8 +31,8 @@ public class OrderMapper {
         dto.setUpdatedAt(order.getUpdatedAt());
         
         // Convert related entities
-        if (order.getDeliveryInfo() != null) {
-            dto.setDeliveryInfo(toDTO(order.getDeliveryInfo()));
+        if (order.getDeliveryInformation() != null) {
+            dto.setDeliveryInfo(toDTO(order.getDeliveryInformation()));
         }
         
         if (order.getOrderItems() != null) {
@@ -83,6 +84,7 @@ public class OrderMapper {
         dto.setPhone(deliveryInfo.getPhone());
         dto.setEmail(deliveryInfo.getEmail());
         dto.setAddress(deliveryInfo.getAddress());
+        dto.setDistrict(deliveryInfo.getDistrict());
         dto.setWard(deliveryInfo.getWard());
         dto.setProvince(deliveryInfo.getProvince());
         dto.setDeliveryMessage(deliveryInfo.getDeliveryMessage());
@@ -144,6 +146,7 @@ public class OrderMapper {
         deliveryInfo.setEmail(dto.getEmail());
         deliveryInfo.setAddress(dto.getAddress());
         deliveryInfo.setWard(dto.getWard());
+        deliveryInfo.setDistrict(dto.getDistrict());
         deliveryInfo.setProvince(dto.getProvince());
         deliveryInfo.setDeliveryMessage(dto.getDeliveryMessage());
         deliveryInfo.setDeliveryFee(dto.getDeliveryFee());

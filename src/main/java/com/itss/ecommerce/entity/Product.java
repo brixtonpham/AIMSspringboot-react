@@ -36,9 +36,6 @@ public abstract class Product {
     @Column(name = "price", nullable = false)
     private Integer price;
     
-    @Column(name = "product_value")
-    private Integer productValue = 0; // Used for price validation (30%-150% of this value)
-    
     @Column(name = "weight")
     private Float weight;
     
@@ -69,11 +66,6 @@ public abstract class Product {
     
     @Column(name = "type", insertable = false, updatable = false)
     private String type;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user; // User who created the product
-    
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -130,15 +122,4 @@ public abstract class Product {
         return price * requestedQuantity;
     }
     
-    /**
-     * Helper method to validate price against product value
-     */
-    public boolean isPriceValid() {
-        if (productValue == null || price == null) {
-            return false;
-        }
-        double minPrice = productValue * 0.3;
-        double maxPrice = productValue * 1.5;
-        return price >= minPrice && price <= maxPrice;
-    }
 }

@@ -46,7 +46,7 @@ public class VNPayService {
         long amount = Long.parseLong(request.getAmount()) * 100;
         String bankCode = request.getBankCode();
         
-        String vnp_TxnRef = vnPayConfig.getRandomNumber(8);
+        String vnp_TxnRef = request.getOrderId();
         String vnp_IpAddr = vnPayConfig.getIpAddress(servletRequest);
         String vnp_TmnCode = vnPayConfig.getTmnCode();
         

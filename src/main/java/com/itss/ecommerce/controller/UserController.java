@@ -4,6 +4,7 @@ import com.itss.ecommerce.dto.*;
 import com.itss.ecommerce.dto.mapper.UserMapper;
 import com.itss.ecommerce.entity.User;
 import com.itss.ecommerce.service.UserService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -232,5 +233,38 @@ public class UserController {
         
         return ResponseEntity.ok(ApiResponse.success(count,
             String.format("Total users: %d", count)));
+    }
+    
+    /**
+     * Block user with reason and send email notification
+     */
+    @PostMapping("/{id}/block")
+    public ResponseEntity<ApiResponse<UserDTO>> blockUser(
+            @PathVariable @Positive Long id,
+            @RequestParam(required = false) String reason,
+            @RequestParam(required = false) String blockedBy) {
+        log.info("POST /api/users/{}/block - Blocking user", id);
+        
+        User blockedUser = userService.blockUser(id, reason, blockedBy != null ? blockedBy : "Administrator");
+        UserDTO userDTO = userMapper.toDTO(blockedUser);
+        
+        return ResponseEntity.ok(ApiResponse.success(userDTO, 
+            String.format("User with ID %d has been blocked successfully. Email notification sent.", id)));
+    }
+    
+    /**
+     * Unblock user and send email notification
+     */
+    @PostMapping("/{id}/unblock")
+    public ResponseEntity<ApiResponse<UserDTO>> unblockUser(
+            @PathVariable @Positive Long id,
+            @RequestParam(required = false) String unblockedBy) {
+        log.info("POST /api/users/{}/unblock - Unblocking user", id);
+        
+        User unblockedUser = userService.unblockUser(id, unblockedBy != null ? unblockedBy : "Administrator");
+        UserDTO userDTO = userMapper.toDTO(unblockedUser);
+        
+        return ResponseEntity.ok(ApiResponse.success(userDTO,
+            String.format("User with ID %d has been unblocked successfully. Email notification sent.", id)));
     }
 }

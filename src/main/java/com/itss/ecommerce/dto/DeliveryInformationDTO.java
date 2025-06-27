@@ -26,17 +26,21 @@ public class DeliveryInformationDTO {
     @Size(max = 255, message = "Email must not exceed 255 characters")
     private String email;
     
-    @NotBlank(message = "Address is required")
-    @Size(max = 1000, message = "Address must not exceed 1000 characters")
-    private String address;
+    @NotBlank(message = "Province is required")
+    @Size(max = 100, message = "Province must not exceed 100 characters")
+    private String province;
+    
+    @NotBlank(message = "District is required")
+    @Size(max = 100, message = "District must not exceed 100 characters")
+    private String district;
     
     @NotBlank(message = "Ward is required")
     @Size(max = 100, message = "Ward must not exceed 100 characters")
     private String ward;
     
-    @NotBlank(message = "Province is required")
-    @Size(max = 100, message = "Province must not exceed 100 characters")
-    private String province;
+    @NotBlank(message = "Address is required")
+    @Size(max = 1000, message = "Address must not exceed 1000 characters")
+    private String address;
     
     @Size(max = 500, message = "Delivery message must not exceed 500 characters")
     private String deliveryMessage;

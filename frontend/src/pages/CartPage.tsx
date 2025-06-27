@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCartStore } from '../stores/cartStore';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -9,6 +9,37 @@ import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft } from 'lucide-react';
 
 export const CartPage: React.FC = () => {
   const { items, total, updateQuantity, removeItem, clearCart } = useCartStore();
+
+  const [checking, setChecking] = useState(false);
+  const [errorProducts, setErrorProducts] = useState<any[]>([]);
+  const navigate = useNavigate();
+
+  const handleProceedToCheckout = async () => {
+    setChecking(true);
+    setErrorProducts([]);
+    try {
+      const res = await fetch('http://localhost:8080/api/cart/check-quantities', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: items.map(i => ({
+            productId: i.product.productId,
+            quantity: i.quantity
+          }))
+        })
+      });
+      const data = await res.json();
+      if (data.ok) {
+        navigate('/checkout');
+      } else {
+        setErrorProducts(data.insufficient);
+      }
+    } catch (e) {
+      setErrorProducts([{ title: 'Unknown error. Please try again.' }]);
+    } finally {
+      setChecking(false);
+    }
+  };
 
   if (items.length === 0) {
     return (
@@ -67,8 +98,8 @@ export const CartPage: React.FC = () => {
                       />
                     ) : (
                       <span className="text-2xl">
-                        {item.product.type === 'book' ? '📚' : 
-                         item.product.type === 'cd' ? '💿' : '📀'}
+                        {item.product.type === 'book' ? '📚' :
+                          item.product.type === 'cd' ? '💿' : '📀'}
                       </span>
                     )}
                   </div>
@@ -82,7 +113,7 @@ export const CartPage: React.FC = () => {
                     <p className="text-sm font-medium text-primary">
                       {formatPrice(item.product.price)}
                     </p>
-                    
+
                     {/* Stock warning */}
                     {item.product.quantity < item.quantity && (
                       <p className="text-sm text-red-500">
@@ -101,7 +132,7 @@ export const CartPage: React.FC = () => {
                     >
                       <Minus className="w-3 h-3" />
                     </Button>
-                    
+
                     <Input
                       type="number"
                       value={item.quantity}
@@ -110,7 +141,7 @@ export const CartPage: React.FC = () => {
                       min="1"
                       max={item.product.quantity}
                     />
-                    
+
                     <Button
                       variant="outline"
                       size="icon"
@@ -175,10 +206,8 @@ export const CartPage: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <Button className="w-full" size="lg" asChild>
-                  <Link to="/checkout">
-                    Proceed to Checkout
-                  </Link>
+                <Button className="w-full" size="lg" onClick={handleProceedToCheckout} disabled={checking}>
+                  {checking ? 'Checking...' : 'Proceed to Checkout'}
                 </Button>
                 <Button variant="outline" className="w-full" asChild>
                   <Link to="/products">
@@ -186,6 +215,11 @@ export const CartPage: React.FC = () => {
                   </Link>
                 </Button>
               </div>
+              {errorProducts.length > 0 && (
+                <div className="mt-4 text-red-600 text-sm">
+                  <p>Some products are not available in the requested quantity:</p>
+                </div>
+              )}
 
               {/* Delivery Info */}
               <div className="text-sm text-muted-foreground border-t pt-4">

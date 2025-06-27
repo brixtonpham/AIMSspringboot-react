@@ -17,6 +17,8 @@ public class PaymentRequest {
     /** Payment amount in VND */
     private String amount;
     
+    private String orderId; // Optional, can be used to link to an order
+    
     /** Bank code for direct bank payment (optional) */
     private String bankCode;
     
@@ -40,6 +42,13 @@ public class PaymentRequest {
         this.amount = amount;
     }
 
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
     public String getBankCode() {
         return bankCode;
     }
