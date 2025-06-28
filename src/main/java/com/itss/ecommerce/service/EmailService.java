@@ -16,6 +16,11 @@ public class EmailService {
     private JavaMailSender mailSender;
 
     public void sendOrderConfirmationEmail(Order order) {
+        if (order == null) {
+            System.err.println("Cannot send email: Order is null");
+            return;
+        }
+        
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(order.getDeliveryInformation().getEmail());
