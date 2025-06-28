@@ -21,7 +21,7 @@ public class Invoice {
     
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
-    private OrderItemList order;
+    private Order order;
     
     @Column(name = "transaction_id")
     private String transactionId;
@@ -54,7 +54,7 @@ public class Invoice {
     /**
      * Create invoice for order
      */
-    public void createInvoice(OrderItemList order, String description) {
+    public void createInvoice(Order order, String description) {
         this.order = order;
         this.description = description;
         this.paymentStatus = PaymentStatus.PENDING;

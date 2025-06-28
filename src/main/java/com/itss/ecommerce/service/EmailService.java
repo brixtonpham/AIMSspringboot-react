@@ -6,7 +6,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import com.itss.ecommerce.entity.OrderItem;
-import com.itss.ecommerce.entity.OrderItemList;
+import com.itss.ecommerce.entity.Order;
 import com.itss.ecommerce.entity.User;
 
 @Service
@@ -15,7 +15,7 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    public void sendOrderConfirmationEmail(OrderItemList order) {
+    public void sendOrderConfirmationEmail(Order order) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(order.getDeliveryInformation().getEmail());
@@ -32,7 +32,7 @@ public class EmailService {
         }
     }
 
-    private String buildOrderConfirmationMessage(OrderItemList order) {
+    private String buildOrderConfirmationMessage(Order order) {
         StringBuilder message = new StringBuilder();
         message.append("Dear ").append(order.getDeliveryInformation().getName()).append(",\n\n");
         message.append("Thank you for your order! Your order has been confirmed.\n\n");

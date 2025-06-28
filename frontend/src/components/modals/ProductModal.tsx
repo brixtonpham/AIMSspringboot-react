@@ -44,30 +44,32 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
-    if (isOpen && initialData && Object.keys(initialData).length > 0) {
-      setFormData({
-        title: initialData.title || '',
-        price: initialData.price || 0,
-        quantity: initialData.quantity || 0,
-        barcode: initialData.barcode || '',
-        type: initialData.type || 'book',
-        weight: initialData.weight || 0,
-        rushOrderSupported: initialData.rushOrderSupported || false,
-        introduction: initialData.introduction || ''
-      });
-    } else if (isOpen && mode === 'create') {
-      setFormData({
-        title: '',
-        price: 0,
-        quantity: 0,
-        barcode: '',
-        type: 'book',
-        weight: 0,
-        rushOrderSupported: false,
-        introduction: ''
-      });
+    if (isOpen) {
+      if (initialData && Object.keys(initialData).length > 0) {
+        setFormData({
+          title: initialData.title || '',
+          price: initialData.price || 0,
+          quantity: initialData.quantity || 0,
+          barcode: initialData.barcode || '',
+          type: initialData.type || 'book',
+          weight: initialData.weight || 0,
+          rushOrderSupported: initialData.rushOrderSupported || false,
+          introduction: initialData.introduction || ''
+        });
+      } else if (mode === 'create') {
+        setFormData({
+          title: '',
+          price: 0,
+          quantity: 0,
+          barcode: '',
+          type: 'book',
+          weight: 0,
+          rushOrderSupported: false,
+          introduction: ''
+        });
+      }
+      setError('');
     }
-    setError('');
   }, [isOpen, mode]);
 
   const handleSubmit = async (e: React.FormEvent) => {

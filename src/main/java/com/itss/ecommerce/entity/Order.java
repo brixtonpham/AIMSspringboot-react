@@ -10,11 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "order_item_list")
+@Table(name = "order_items")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderItemList {
+public class Order {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

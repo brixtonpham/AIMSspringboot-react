@@ -3,7 +3,148 @@
 > vite
 
 
-  VITE v7.0.0  ready in 326 ms
+  VITE v7.0.0  ready in 325 ms
 
   ➜  Local:   http://localhost:5173/
   ➜  Network: use --host to expose
+5:18:09 PM [vite] (client) page reload index.html
+5:18:19 PM [vite] (client) page reload index.html
+5:18:38 PM [vite] (client) hmr update /src/components/Header.tsx, /src/index.css
+5:18:38 PM [vite] Internal server error: /home/bxs/AIMSspringboot-react/frontend/src/components/Header.tsx: Unexpected token (34:53)
+
+  32 |           <Link to="/" className="flex items-center space-x-2">
+  33 |             <div className="text-2xl">🛍️</div>
+> 34 |             <span className="text-xl font-bold" Store</span>
+     |                                                      ^
+  35 |           </Link>
+  36 |
+  37 |           {/* Search Bar - Hidden on mobile */}
+  Plugin: vite:react-babel
+  File: /home/bxs/AIMSspringboot-react/frontend/src/components/Header.tsx:34:53
+  32 |            <Link to="/" className="flex items-center space-x-2">
+  33 |              <div className="text-2xl">🛍️</div>
+  34 |              <span className="text-xl font-bold" Store</span>
+     |                                                       ^
+  35 |            </Link>
+  36 |  
+      at constructor (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:363:19)
+      at TypeScriptParserMixin.raise (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:6609:19)
+      at TypeScriptParserMixin.unexpected (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:6629:16)
+      at TypeScriptParserMixin.jsxParseIdentifier (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:4581:12)
+      at TypeScriptParserMixin.jsxParseNamespacedName (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:4588:23)
+      at TypeScriptParserMixin.jsxParseAttribute (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:4664:22)
+      at TypeScriptParserMixin.jsxParseOpeningElementAfterName (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:4679:28)
+      at TypeScriptParserMixin.jsxParseOpeningElementAfterName (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10004:18)
+      at TypeScriptParserMixin.jsxParseOpeningElementAt (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:4674:17)
+      at TypeScriptParserMixin.jsxParseElementAt (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:4698:33)
+      at TypeScriptParserMixin.jsxParseElementAt (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElement (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:4761:17)
+      at TypeScriptParserMixin.parseExprAtom (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:4771:19)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:11012:23)
+      at TypeScriptParserMixin.parseUpdate (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10997:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10977:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:9794:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10830:61)
+      at TypeScriptParserMixin.parseExprOps (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10835:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10812:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10765:21)
+      at /home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:9732:39
+      at TypeScriptParserMixin.tryParse (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:6918:20)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:9732:18)
+      at /home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10734:39
+      at TypeScriptParserMixin.allowInAnd (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:12361:12)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10734:17)
+      at TypeScriptParserMixin.parseParenAndDistinguishExpression (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:11608:28)
+      at TypeScriptParserMixin.parseExprAtom (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:11262:23)
+      at TypeScriptParserMixin.parseExprAtom (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:4776:20)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:11012:23)
+      at TypeScriptParserMixin.parseUpdate (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10997:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10977:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:9794:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10830:61)
+      at TypeScriptParserMixin.parseExprOps (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10835:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10812:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10765:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:9743:20)
+      at TypeScriptParserMixin.parseExpressionBase (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10718:23)
+      at /home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10714:39
+      at TypeScriptParserMixin.allowInAnd (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:12356:16)
+      at TypeScriptParserMixin.parseExpression (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10714:17)
+      at TypeScriptParserMixin.parseReturnStatement (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:13061:28)
+      at TypeScriptParserMixin.parseStatementContent (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:12716:21)
+      at TypeScriptParserMixin.parseStatementContent (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:9469:18)
+      at TypeScriptParserMixin.parseStatementLike (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:12685:17)
+5:18:40 PM [vite] (client) hmr update /src/components/Header.tsx, /src/index.css
+5:18:40 PM [vite] Internal server error: /home/bxs/AIMSspringboot-react/frontend/src/components/Header.tsx: Unexpected token (34:53)
+
+  32 |           <Link to="/" className="flex items-center space-x-2">
+  33 |             <div className="text-2xl">🛍️</div>
+> 34 |             <span className="text-xl font-bold" Store</span>
+     |                                                      ^
+  35 |           </Link>
+  36 |
+  37 |           {/* Search Bar - Hidden on mobile */}
+  Plugin: vite:react-babel
+  File: /home/bxs/AIMSspringboot-react/frontend/src/components/Header.tsx:34:53
+  32 |            <Link to="/" className="flex items-center space-x-2">
+  33 |              <div className="text-2xl">🛍️</div>
+  34 |              <span className="text-xl font-bold" Store</span>
+     |                                                       ^
+  35 |            </Link>
+  36 |  
+      at constructor (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:363:19)
+      at TypeScriptParserMixin.raise (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:6609:19)
+      at TypeScriptParserMixin.unexpected (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:6629:16)
+      at TypeScriptParserMixin.jsxParseIdentifier (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:4581:12)
+      at TypeScriptParserMixin.jsxParseNamespacedName (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:4588:23)
+      at TypeScriptParserMixin.jsxParseAttribute (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:4664:22)
+      at TypeScriptParserMixin.jsxParseOpeningElementAfterName (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:4679:28)
+      at TypeScriptParserMixin.jsxParseOpeningElementAfterName (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10004:18)
+      at TypeScriptParserMixin.jsxParseOpeningElementAt (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:4674:17)
+      at TypeScriptParserMixin.jsxParseElementAt (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:4698:33)
+      at TypeScriptParserMixin.jsxParseElementAt (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElement (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:4761:17)
+      at TypeScriptParserMixin.parseExprAtom (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:4771:19)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:11012:23)
+      at TypeScriptParserMixin.parseUpdate (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10997:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10977:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:9794:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10830:61)
+      at TypeScriptParserMixin.parseExprOps (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10835:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10812:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10765:21)
+      at /home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:9732:39
+      at TypeScriptParserMixin.tryParse (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:6918:20)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:9732:18)
+      at /home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10734:39
+      at TypeScriptParserMixin.allowInAnd (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:12361:12)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10734:17)
+      at TypeScriptParserMixin.parseParenAndDistinguishExpression (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:11608:28)
+      at TypeScriptParserMixin.parseExprAtom (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:11262:23)
+      at TypeScriptParserMixin.parseExprAtom (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:4776:20)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:11012:23)
+      at TypeScriptParserMixin.parseUpdate (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10997:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10977:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:9794:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10830:61)
+      at TypeScriptParserMixin.parseExprOps (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10835:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10812:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10765:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:9743:20)
+      at TypeScriptParserMixin.parseExpressionBase (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10718:23)
+      at /home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10714:39
+      at TypeScriptParserMixin.allowInAnd (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:12356:16)
+      at TypeScriptParserMixin.parseExpression (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:10714:17)
+      at TypeScriptParserMixin.parseReturnStatement (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:13061:28)
+      at TypeScriptParserMixin.parseStatementContent (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:12716:21)
+      at TypeScriptParserMixin.parseStatementContent (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:9469:18)
+      at TypeScriptParserMixin.parseStatementLike (/home/bxs/AIMSspringboot-react/frontend/node_modules/@babel/parser/lib/index.js:12685:17)
+5:18:42 PM [vite] (client) hmr update /src/components/Header.tsx, /src/index.css
+5:18:43 PM [vite] (client) hmr update /src/components/Header.tsx, /src/index.css
+5:19:02 PM [vite] (client) hmr update /src/pages/HomePage.tsx, /src/index.css

@@ -53,29 +53,31 @@ export const UserModal: React.FC<UserModalProps> = ({
   const [blockReason, setBlockReason] = useState('');
 
   useEffect(() => {
-    if (isOpen && initialData) {
-      setFormData({
-        name: initialData.name || '',
-        email: initialData.email || '',
-        phone: initialData.phone || '',
-        address: initialData.address || '',
-        role: initialData.role || 'USER',
-        isActive: initialData.isActive !== undefined ? initialData.isActive : true,
-        password: ''
-      });
-    } else if (isOpen && mode === 'create') {
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        address: '',
-        role: 'USER',
-        isActive: true,
-        password: ''
-      });
+    if (isOpen) {
+      if (initialData && Object.keys(initialData).length > 0) {
+        setFormData({
+          name: initialData.name || '',
+          email: initialData.email || '',
+          phone: initialData.phone || '',
+          address: initialData.address || '',
+          role: initialData.role || 'USER',
+          isActive: initialData.isActive !== undefined ? initialData.isActive : true,
+          password: ''
+        });
+      } else if (mode === 'create') {
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          address: '',
+          role: 'USER',
+          isActive: true,
+          password: ''
+        });
+      }
+      setError('');
     }
-    setError('');
-  }, [isOpen, initialData, mode]);
+  }, [isOpen, mode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -16,7 +16,7 @@ export const HomePage: React.FC = () => {
       {/* Hero Section */}
       <section className="text-center py-16 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
         <h1 className="text-4xl md:text-6xl font-bold mb-6">
-          Welcome to ITSS Store
+          Welcome to AIMS Store
         </h1>
         <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
           Discover our amazing collection of books, CDs, and DVDs. 

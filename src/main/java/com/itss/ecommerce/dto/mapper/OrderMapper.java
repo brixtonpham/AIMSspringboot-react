@@ -18,10 +18,10 @@ public class OrderMapper {
     /**
      * Convert Order entity to OrderDTO
      */
-    public OrderItemListDTO toDTO(OrderItemList order) {
+    public OrderDTO toDTO(Order order) {
         if (order == null) return null;
         
-        OrderItemListDTO dto = new OrderItemListDTO();
+        OrderDTO dto = new OrderDTO();
         dto.setOrderId(order.getOrderId());
         dto.setTotalBeforeVat(order.getTotalBeforeVat());
         dto.setTotalAfterVat(order.getTotalAfterVat());
@@ -116,15 +116,15 @@ public class OrderMapper {
     /**
      * Convert OrderDTO to Order entity
      */
-    public OrderItemList toEntity(OrderItemListDTO dto) {
+    public Order toEntity(OrderDTO dto) {
         if (dto == null) return null;
         
-        OrderItemList order = new OrderItemList();
+        Order order = new Order();
         order.setOrderId(dto.getOrderId());
         order.setTotalBeforeVat(dto.getTotalBeforeVat());
         order.setTotalAfterVat(dto.getTotalAfterVat());
         if (dto.getStatus() != null) {
-            order.setStatus(OrderItemList.OrderStatus.valueOf(dto.getStatus()));
+            order.setStatus(Order.OrderStatus.valueOf(dto.getStatus()));
         }
         order.setVatPercentage(dto.getVatPercentage());
         order.setCreatedAt(dto.getCreatedAt());
@@ -177,7 +177,7 @@ public class OrderMapper {
     /**
      * Convert list of Order entities to OrderDTOs
      */
-    public List<OrderItemListDTO> toDTOList(List<OrderItemList> orders) {
+    public List<OrderDTO> toDTOList(List<Order> orders) {
         if (orders == null) return null;
         return orders.stream()
                 .map(this::toDTO)

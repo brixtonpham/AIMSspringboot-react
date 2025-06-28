@@ -31,7 +31,7 @@ export const Header: React.FC = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <div className="text-2xl">🛍️</div>
-            <span className="text-xl font-bold">ITSS Store</span>
+            <span className="text-xl font-bold">AIMS Store</span>
           </Link>
 
           {/* Search Bar - Hidden on mobile */}
