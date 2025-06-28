@@ -157,7 +157,7 @@ export const orderApi = {
     api.get('/orders/recent', { params: { days } }),
 
   // Get order statistics
-  getStatistics: (): Promise<ApiResponse<any[]>> => 
+  getStatistics: (): Promise<ApiResponse<Record<string, unknown>[]>> => 
     api.get('/orders/statistics'),
 
   // Get total revenue
@@ -345,7 +345,7 @@ export const authApi = {
 
 export const paymentApi = {
   // Create VNPay payment and get payment URL
-  createVNPayPayment: (paymentRequest: any): Promise<{ paymentUrl: string }> =>
+  createVNPayPayment: (paymentRequest: Record<string, unknown>): Promise<{ paymentUrl: string }> =>
     fetch('http://localhost:8080/api/payment/vnpay', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -353,7 +353,7 @@ export const paymentApi = {
     }).then(res => res.json()),
 
   // Get VNPay return result (for example, if you want to fetch the result page data)
-  getVNPayReturn: (params: Record<string, string>): Promise<any> => {
+  getVNPayReturn: (params: Record<string, string>): Promise<Record<string, unknown>> => {
     const query = new URLSearchParams(params).toString();
     return fetch(`http://localhost:8080/api/payment/vnpay/return?${query}`)
       .then(res => res.json());

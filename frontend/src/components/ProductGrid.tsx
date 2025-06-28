@@ -7,7 +7,7 @@ import { Loader2 } from 'lucide-react';
 
 interface ProductGridProps {
   type?: string;
-  searchParams?: any;
+  searchParams?: Record<string, unknown>;
 }
 
 export const ProductGrid: React.FC<ProductGridProps> = ({ type, searchParams }) => {

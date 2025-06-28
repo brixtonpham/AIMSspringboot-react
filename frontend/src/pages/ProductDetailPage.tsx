@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, ShoppingCart, Plus, Minus, Star, Truck, Shield, RotateCcw } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Plus, Minus, Truck, Shield, RotateCcw } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { useCartStore } from '../stores/cartStore';
 import { productApi } from '../services/api';
-import { Product, Book, CD, DVD } from '../types/api';
+import { Book, CD, DVD } from '../types/api';
 
 const ProductDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();

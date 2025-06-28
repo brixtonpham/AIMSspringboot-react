@@ -7,7 +7,6 @@ import { Input } from '../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { useAuthStore } from '../stores/authStore';
 import { orderApi } from '../services/api';
-import { Order } from '../types/api';
 
 const OrderHistoryPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');

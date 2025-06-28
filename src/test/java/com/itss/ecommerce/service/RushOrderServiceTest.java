@@ -37,6 +37,15 @@ class RushOrderServiceTest {
     @Mock
     private ProductRepository productRepository;
     
+    @Mock
+    private DeliveryInformationRepository deliveryRepository;
+    
+    @Mock
+    private AuditLogService auditLogService;
+    
+    @Mock
+    private InvoiceRepository invoiceRepository;
+    
     @InjectMocks
     private OrderService rushOrderService; // Using OrderService as it handles rush orders
     
@@ -108,9 +117,9 @@ class RushOrderServiceTest {
     @DisplayName("Test Place Rush Order Priority Handling - UT032")
     void testPlaceRushOrderPriorityHandling() {
         // Given
-        when(productRepository.findById(1L)).thenReturn(Optional.of(rushProduct));
         when(orderRepository.save(any(Order.class))).thenReturn(rushOrder);
-        when(orderItemRepository.save(any(OrderItem.class))).thenReturn(rushOrderItem);
+        when(deliveryRepository.save(any(DeliveryInformation.class))).thenReturn(deliveryInfo);
+        when(invoiceRepository.save(any())).thenReturn(null);
         
         OrderService.CartItem cartItem = new OrderService.CartItem(rushProduct, 1);
         List<OrderService.CartItem> cartItems = Arrays.asList(cartItem);
@@ -157,7 +166,6 @@ class RushOrderServiceTest {
     void testRushOrderStockAvailability() {
         // Given
         int requestedQuantity = 15; // More than available stock (10)
-        when(productRepository.findById(1L)).thenReturn(Optional.of(rushProduct));
         
         // When & Then - Should throw exception for insufficient stock
         OrderService.CartItem cartItem = new OrderService.CartItem(rushProduct, requestedQuantity);

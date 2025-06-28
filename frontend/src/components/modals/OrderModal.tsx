@@ -99,14 +99,6 @@ export const OrderModal: React.FC<OrderModalProps> = ({
     }
   };
 
-  const formatDate = (dateString: string) => {
-    try {
-      return new Date(dateString).toLocaleString();
-    } catch {
-      return 'Invalid Date';
-    }
-  };
-
   const formatDateTime = (dateString?: string) => {
     if (!dateString) return 'N/A';
     try {

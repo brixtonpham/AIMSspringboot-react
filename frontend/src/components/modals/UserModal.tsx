@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, User, Mail, Phone, MapPin, Shield, Calendar, Lock, Unlock } from 'lucide-react';
+import { X, User, Mail, Phone, MapPin, Shield, Lock, Unlock } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -50,7 +50,6 @@ export const UserModal: React.FC<UserModalProps> = ({
   const [error, setError] = useState<string>('');
   const [isBlocking, setIsBlocking] = useState(false);
   const [isUnblocking, setIsUnblocking] = useState(false);
-  const [blockReason, setBlockReason] = useState('');
 
   useEffect(() => {
     if (isOpen) {
@@ -77,7 +76,7 @@ export const UserModal: React.FC<UserModalProps> = ({
       }
       setError('');
     }
-  }, [isOpen, mode]);
+  }, [isOpen, mode, initialData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
