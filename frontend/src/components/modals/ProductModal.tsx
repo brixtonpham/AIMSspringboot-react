@@ -44,7 +44,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
-    if (isOpen && initialData) {
+    if (isOpen && initialData && Object.keys(initialData).length > 0) {
       setFormData({
         title: initialData.title || '',
         price: initialData.price || 0,
@@ -68,7 +68,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
       });
     }
     setError('');
-  }, [isOpen, initialData, mode]);
+  }, [isOpen, mode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,7 +92,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   if (!isOpen) return null;
 
   const isReadOnly = mode === 'view';
-
+  console.log(isReadOnly);
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <Card className="w-full max-w-lg max-h-[90vh] flex flex-col">

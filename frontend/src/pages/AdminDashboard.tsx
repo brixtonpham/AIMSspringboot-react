@@ -46,8 +46,10 @@ const AdminDashboard: React.FC = () => {
   }>({ isOpen: false, mode: 'create' });
   const { user } = useAuthStore();
 
-  // Check if user is admin
-  const isAdmin = user?.role === 'ADMIN' || user?.role === 'MANAGER';
+  // Check if user is admin or manager
+  const isAdmin = user?.role === 'ADMIN';
+  const isManager = user?.role === 'MANAGER';
+  const canAccessDashboard = isAdmin || isManager;
 
   console.log('Admin Dashboard Rendered', { user, isAdmin });
 
@@ -81,7 +83,7 @@ const AdminDashboard: React.FC = () => {
   } = useQuery({
     queryKey: ['users'],
     queryFn: () => userApi.getAll(),
-    enabled: isAdmin,
+    enabled: isAdmin, // Only ADMIN can fetch users
     retry: 3,
     retryDelay: 1000,
   });
@@ -111,7 +113,7 @@ const AdminDashboard: React.FC = () => {
                           Array.isArray(lowStockResponse) ? lowStockResponse : [];
 
   // Show error state if any critical API fails
-  if (productsError || ordersError || (isAdmin && usersError) || lowStockError) {
+  if (productsError || ordersError || (canAccessDashboard && usersError) || lowStockError) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <h1 className="text-4xl font-bold mb-4 text-red-600">Error Loading Dashboard</h1>
@@ -131,7 +133,7 @@ const AdminDashboard: React.FC = () => {
   }
 
   // Show loading state
-  if (productsLoading || ordersLoading || (isAdmin && usersLoading) || lowStockLoading) {
+  if (productsLoading || ordersLoading || (canAccessDashboard && usersLoading) || lowStockLoading) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-4"></div>
@@ -231,7 +233,7 @@ const AdminDashboard: React.FC = () => {
   const pendingOrders = orders.filter(order => order?.status === 'PENDING').length;
   const outOfStockProducts = products.filter(product => (product?.quantity || 0) === 0).length;
 
-  if (!isAdmin) {
+  if (!canAccessDashboard) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <h1 className="text-4xl font-bold mb-4">Access Denied</h1>
@@ -478,7 +480,10 @@ const AdminDashboard: React.FC = () => {
                         <Button 
                           variant="outline" 
                           size="sm"
-                          onClick={() => setModalState({ isOpen: true, mode: 'edit', product })}
+                          onClick={() => {
+                            console.log('Edit button clicked:', { product, user, isAdmin, isManager });
+                            setModalState({ isOpen: true, mode: 'edit', product });
+                          }}
                         >
                           <Edit className="w-4 h-4 mr-1" />
                           Edit
@@ -604,6 +609,7 @@ const AdminDashboard: React.FC = () => {
 
         {/* Users Tab */}
         {activeTab === 'users' && (
+          isAdmin ? (
           <div className="space-y-6">
             <div className="flex items-center gap-4">
               <div className="relative flex-1 max-w-md">
@@ -723,6 +729,12 @@ const AdminDashboard: React.FC = () => {
               </CardContent>
             </Card>
           </div>
+          ) : (
+            <div className="container mx-auto px-4 py-16 text-center">
+              <h1 className="text-4xl font-bold mb-4">No Authorization</h1>
+              <p className="text-muted-foreground">You don't have permission to view user management.</p>
+            </div>
+          )
         )}
       </div>
       

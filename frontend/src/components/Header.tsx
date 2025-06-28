@@ -40,10 +40,11 @@ export const Header: React.FC = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
                 type="text"
-                placeholder="Search products..."
+                placeholder="Incomplete searching feature"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
+                disabled
               />
             </div>
             <Button type="submit" size="sm">
