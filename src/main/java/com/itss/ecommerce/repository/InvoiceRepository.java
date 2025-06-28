@@ -43,11 +43,6 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
     List<Invoice> findFailedInvoices();
     
     /**
-     * Find invoices by transaction ID
-     */
-    Optional<Invoice> findByTransactionId(String transactionId);
-    
-    /**
      * Find invoices by payment method
      */
     List<Invoice> findByPaymentMethod(String paymentMethod);

@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "invoice")
@@ -23,8 +25,8 @@ public class Invoice {
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
     
-    @Column(name = "transaction_id")
-    private String transactionId;
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<PaymentTransaction> paymentTransactions = new ArrayList<>();
     
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
@@ -61,11 +63,18 @@ public class Invoice {
     }
     
     /**
-     * Mark invoice as paid
+     * Add payment transaction
      */
-    public void markAsPaid(String transactionId, String paymentMethod) {
-        this.transactionId = transactionId;
-        this.paymentMethod = paymentMethod;
+    public void addPaymentTransaction(PaymentTransaction transaction) {
+        paymentTransactions.add(transaction);
+        transaction.setInvoice(this);
+    }
+    
+    /**
+     * Mark invoice as paid based on successful transaction
+     */
+    public void markAsPaid(PaymentTransaction successfulTransaction) {
+        this.paymentMethod = successfulTransaction.getPaymentMethod();
         this.paymentStatus = PaymentStatus.PAID;
         this.paidAt = LocalDateTime.now();
     }
@@ -82,6 +91,33 @@ public class Invoice {
      */
     public boolean isPaid() {
         return PaymentStatus.PAID.equals(paymentStatus);
+    }
+    
+    /**
+     * Get successful payment transaction
+     */
+    public PaymentTransaction getSuccessfulTransaction() {
+        return paymentTransactions.stream()
+                .filter(PaymentTransaction::isSuccessful)
+                .findFirst()
+                .orElse(null);
+    }
+    
+    /**
+     * Get latest payment transaction
+     */
+    public PaymentTransaction getLatestTransaction() {
+        return paymentTransactions.stream()
+                .max((t1, t2) -> t1.getCreatedAt().compareTo(t2.getCreatedAt()))
+                .orElse(null);
+    }
+    
+    /**
+     * Check if there are any pending transactions
+     */
+    public boolean hasPendingTransactions() {
+        return paymentTransactions.stream()
+                .anyMatch(PaymentTransaction::isPending);
     }
     
     /**

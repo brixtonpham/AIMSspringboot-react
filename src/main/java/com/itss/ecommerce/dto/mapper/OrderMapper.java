@@ -102,7 +102,7 @@ public class OrderMapper {
         InvoiceDTO dto = new InvoiceDTO();
         dto.setInvoiceId(invoice.getInvoiceId());
         dto.setOrderId(invoice.getOrder() != null ? invoice.getOrder().getOrderId() : null);
-        dto.setTransactionId(invoice.getTransactionId());
+        dto.setTransactionId(invoice.getSuccessfulTransaction().getTransactionId());
         dto.setDescription(invoice.getDescription());
         dto.setCreatedAt(invoice.getCreatedAt());
         dto.setPaymentStatus(invoice.getPaymentStatus().name());

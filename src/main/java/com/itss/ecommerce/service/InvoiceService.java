@@ -3,9 +3,10 @@ package com.itss.ecommerce.service;
 import com.itss.ecommerce.entity.AuditLog;
 import com.itss.ecommerce.entity.Invoice;
 import com.itss.ecommerce.entity.Order;
+import com.itss.ecommerce.entity.PaymentTransaction;
 import com.itss.ecommerce.repository.InvoiceRepository;
 import com.itss.ecommerce.repository.OrderRepository;
-
+import com.itss.ecommerce.repository.PaymentTransactionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,8 @@ import java.util.Optional;
 @Slf4j
 @Transactional
 public class InvoiceService {
+
+    private final PaymentTransactionRepository paymentTransactionRepository;
     
     private final InvoiceRepository invoiceRepository;
     private final OrderRepository orderRepository;
@@ -98,7 +101,8 @@ public class InvoiceService {
             throw new IllegalStateException("Invoice is already paid");
         }
         
-        invoice.markAsPaid(transactionId, paymentMethod);
+        
+        invoice.markAsPaid(paymentTransactionRepository.findByTransactionId(transactionId));
         Invoice savedInvoice = invoiceRepository.save(invoice);
         
         // Log the payment
@@ -179,7 +183,7 @@ public class InvoiceService {
     @Transactional(readOnly = true)
     public Optional<Invoice> getInvoiceByTransactionId(String transactionId) {
         log.debug("Fetching invoice by transaction ID: {}", transactionId);
-        return invoiceRepository.findByTransactionId(transactionId);
+        return Optional.ofNullable(paymentTransactionRepository.findInvoiceByTransactionId(transactionId));
     }
     
     /**
@@ -257,7 +261,9 @@ public class InvoiceService {
             // For demo purposes, we'll simulate success
             
             String transactionId = generateTransactionId();
-            invoice.markAsPaid(transactionId, paymentMethod);
+            //invoice.markAsPaid(paymentTransactionRepository.save(
+            //    new PaymentTransaction(transactionId, invoice, paymentMethod, transactionData)
+            //));
             
             Invoice savedInvoice = invoiceRepository.save(invoice);
             
