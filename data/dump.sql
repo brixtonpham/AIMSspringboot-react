@@ -239,7 +239,7 @@ INSERT INTO product VALUES('cd',6,'074643851428','New','2025-06-28 08:35:13','14
 INSERT INTO product VALUES('dvd',7,'085391163926','New','2025-06-28 08:35:13','19x13x1.5 cm','https://m.media-amazon.com/images/I/519NBNHX5BL._AC_.jpg','2024-01-25','A story of friendship and redemption in prison.',220000,12,0,'The Shawshank Redemption','2025-06-28 08:35:13',0.14999999999999999444);
 INSERT INTO product VALUES('dvd',8,'097360719147','New','2025-06-28 08:35:13','19x13x1.5 cm','https://m.media-amazon.com/images/I/41+dkHBquGL._AC_.jpg','2024-01-23','The aging patriarch hands control to his son.',250000,10,1,'The Godfather','2025-06-28 08:35:13',0.14999999999999999444);
 INSERT INTO product VALUES('dvd',9,'031398187737','New','2025-06-28 08:35:13','19x13x1.5 cm','https://m.media-amazon.com/images/I/71c05lTE03L._AC_SL1024_.jpg','2024-01-24','Tarantino''s cult classic about L.A. criminals.',210000,14,0,'Pulp Fiction','2025-06-28 08:35:13',0.14999999999999999444);
-CREATE TABLE user (
+CREATE TABLE aims_user (
         user_id integer,
         email varchar(255) not null unique,
         is_active boolean,
@@ -251,9 +251,9 @@ CREATE TABLE user (
         salary float,
         primary key (user_id)
     );
-INSERT INTO user VALUES(1,'admin@itss.com',1,'Admin User','hashedpassword123','0123456789','2025-06-28 08:35:13','ADMIN',1000.0);
-INSERT INTO user VALUES(2,'manager1@itss.com',0,'Manager User 1','hashedpassword456','0987654321',1751074513000,'MANAGER',0.0);
-INSERT INTO user VALUES(3,'manager2@itss.com',1,'Manager User 2','hashedpassword789','0555123456','2025-06-28 08:35:13','MANAGER',800.0);
+INSERT INTO aims_user VALUES(1,'admin@itss.com',1,'Admin User','hashedpassword123','0123456789','2025-06-28 08:35:13','ADMIN',1000.0);
+INSERT INTO aims_user VALUES(2,'manager1@itss.com',0,'Manager User 1','hashedpassword456','0987654321',1751074513000,'MANAGER',0.0);
+INSERT INTO aims_user VALUES(3,'manager2@itss.com',1,'Manager User 2','hashedpassword789','0555123456','2025-06-28 08:35:13','MANAGER',800.0);
 CREATE TABLE HT_product (
         product_id bigint not null,
         hib_sess_id char(36) not null,
