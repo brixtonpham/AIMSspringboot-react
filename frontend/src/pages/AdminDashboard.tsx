@@ -741,7 +741,16 @@ const AdminDashboard: React.FC = () => {
       <ProductModal
         isOpen={modalState.isOpen}
         mode={modalState.mode}
-        initialData={modalState.product}
+        initialData={modalState.product ? {
+          title: modalState.product.title,
+          price: modalState.product.price,
+          quantity: modalState.product.quantity,
+          barcode: modalState.product.barcode || '',
+          type: (modalState.product.type as 'book' | 'cd' | 'dvd' | 'lp') || 'book',
+          weight: modalState.product.weight,
+          rushOrderSupported: modalState.product.rushOrderSupported,
+          introduction: modalState.product.introduction
+        } : undefined}
         onClose={() => setModalState({ isOpen: false, mode: 'create' })}
         onSubmit={async (data) => {
           try {
@@ -759,7 +768,25 @@ const AdminDashboard: React.FC = () => {
       
       <OrderModal
         isOpen={orderModalState.isOpen}
-        order={orderModalState.order}
+        order={orderModalState.order ? {
+          ...orderModalState.order,
+          createdAt: orderModalState.order.createdAt || '',
+          orderLines: undefined,
+          orderItems: orderModalState.order.orderLines?.map(line => ({
+            orderItemId: line.orderLineId,
+            productId: line.product?.productId || 0,
+            title: line.product?.title || 'Unknown Product',
+            price: line.product?.price || 0,
+            quantity: line.quantity,
+            type: line.product?.type || 'unknown',
+            totalFee: line.totalFee,
+            rushOrder: line.rushOrder,
+            status: line.status,
+            deliveryTime: line.deliveryTime,
+            instructions: line.instructions,
+            product: line.product
+          }))
+        } : null}
         onClose={() => setOrderModalState({ isOpen: false })}
         onConfirmOrder={handleConfirmOrder}
         onCancelOrder={handleCancelOrder}
@@ -768,7 +795,16 @@ const AdminDashboard: React.FC = () => {
       <UserModal
         isOpen={userModalState.isOpen}
         mode={userModalState.mode}
-        initialData={userModalState.user}
+        initialData={userModalState.user ? {
+          userId: userModalState.user.userId,
+          name: userModalState.user.name,
+          email: userModalState.user.email,
+          phone: userModalState.user.phone,
+          role: userModalState.user.role as 'ADMIN' | 'MANAGER',
+          isActive: userModalState.user.isActive,
+          createdAt: userModalState.user.createdAt,
+          updatedAt: userModalState.user.updatedAt
+        } : undefined}
         onClose={() => setUserModalState({ isOpen: false, mode: 'create' })}
         onSubmit={async (data) => {
           try {

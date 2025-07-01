@@ -113,13 +113,13 @@ const CheckoutPage: React.FC = () => {
         },
       };
 
-      const response = await orderApi.create(orderData);
-      console.log('Response from Order creation request returns:', response);
-
       if (data.paymentMethod === 'VNPAY') {
+        const response = await orderApi.create(orderData);
+        console.log('Response from Order creation request:', response);
+
         const paymentRequest = {
           amount: finalTotal.toString(),
-          orderId: response.data.orderId.toString(),
+          orderId: response.data.orderId,
           language: 'vn',
           vnp_Version: '2.1.0',
           bankCode: "VNBANK"

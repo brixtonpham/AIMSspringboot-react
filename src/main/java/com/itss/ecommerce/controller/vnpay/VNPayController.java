@@ -8,42 +8,52 @@ import com.itss.ecommerce.dto.vnpay.IPNResponse;
 import com.itss.ecommerce.dto.vnpay.PaymentRequest;
 import com.itss.ecommerce.dto.vnpay.QueryRequest;
 import com.itss.ecommerce.dto.vnpay.RefundRequest;
+import com.itss.ecommerce.entity.Invoice;
+import com.itss.ecommerce.entity.PaymentTransaction;
 import com.itss.ecommerce.service.EmailService;
+import com.itss.ecommerce.service.InvoiceService;
 import com.itss.ecommerce.service.OrderService;
 import com.itss.ecommerce.service.VNPayService;
 import com.itss.ecommerce.service.VNPayService.PaymentResponse;
 import com.itss.ecommerce.service.VNPayService.QueryResponse;
 import com.itss.ecommerce.service.VNPayService.RefundResponse;
+import com.itss.ecommerce.service.PaymentTransactionService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/api/payment")
+@Slf4j
+@RequiredArgsConstructor
 @Controller
 public class VNPayController {
 
-    private static final Logger logger = LoggerFactory.getLogger(VNPayController.class);
+    //private static final Logger logger = LoggerFactory.getLogger(VNPayController.class);
     private final VNPayService vnPayService;
     private final EmailService emailService;
     private final OrderService orderService;
+    private final PaymentTransactionService paymentTransactionService;
+    private final InvoiceService invoiceService;
 
-    public VNPayController(VNPayService vnPayService, EmailService emailService, OrderService orderService) {
-        this.vnPayService = vnPayService;
-        this.emailService = emailService;
-        this.orderService = orderService;
-    }
+
 
     /**
      * API endpoint for payment form information
@@ -131,10 +141,28 @@ public RedirectView returnPage(
             orderService.getOrderById(orderId).ifPresent(order -> {
                 emailService.sendOrderConfirmationEmail(order);
             });
+            // Update order status to confirmed
+
+            // Update invoice status to paid
+            Optional<Invoice> invoice = invoiceService.getInvoiceByOrderId(Long.parseLong(txnRef));
+            if (invoice.isPresent()) {
+                Invoice inv = invoice.get();
+                inv.setPaymentStatus(Invoice.PaymentStatus.PAID);
+                inv.setPaidAt(LocalDateTime.now());
+                invoiceService.saveInvoice(inv);
+
+                // Update payment transaction status
+                PaymentTransaction paymentTransaction = paymentTransactionService.findPendingPaymentTransactionsByInvoiceId(inv.getInvoiceId());
+                if (paymentTransaction != null) {
+                    paymentTransactionService.updatePaymentTransactionStatus(paymentTransaction, PaymentTransaction.TransactionStatus.SUCCESS);
+                }
+            } else {
+                // Handle case where invoice is not found
+            }
         } catch (Exception e) {
             // Log error if needed
         }
-    } else if (validHash && txnRef != null) {
+    } else {
         try {
             Long orderId = Long.parseLong(txnRef);
             orderService.deleteOrderById(orderId);

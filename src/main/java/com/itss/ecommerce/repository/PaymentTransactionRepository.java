@@ -9,7 +9,7 @@ import com.itss.ecommerce.entity.Invoice;
 import com.itss.ecommerce.entity.PaymentTransaction;
 
 @Repository
-public interface PaymentTransactionRepository extends JpaRepository<PaymentTransaction, String> {
+public interface PaymentTransactionRepository extends JpaRepository<PaymentTransaction, Long> {
 
     /**
      * Find transactions by invoice ID
@@ -34,10 +34,12 @@ public interface PaymentTransactionRepository extends JpaRepository<PaymentTrans
     /**
      * Find transaction by transaction ID   
      */
-    PaymentTransaction findByTransactionId(String transactionId);
+    PaymentTransaction findByTransactionId(Long transactionId);
 
     /**
      * Find invoice by transaction ID
      */
-    Invoice findInvoiceByTransactionId(String transactionId);
+    Invoice findInvoiceByTransactionId(Long transactionId);
+
+    PaymentTransaction findSuccessByInvoice(Invoice invoice);
 }

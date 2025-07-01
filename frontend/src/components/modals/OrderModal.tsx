@@ -54,7 +54,7 @@ interface Order {
   totalAfterVat?: number;
   vatPercentage?: number;
   vatAmount?: number;
-  createdAt: string;
+  createdAt?: string;
   updatedAt?: string;
   orderLines?: OrderItem[];
   orderItems?: OrderItem[];

@@ -70,7 +70,7 @@ public class InvoiceController {
             @PathVariable String transactionId) {
         log.info("GET /api/invoices/transaction/{} - Fetching invoice", transactionId);
         
-        Optional<Invoice> invoice = invoiceService.getInvoiceByTransactionId(transactionId);
+        Optional<Invoice> invoice = invoiceService.getInvoiceByTransactionId(Long.parseLong(transactionId));
         if (invoice.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ApiResponse.notFound("Invoice not found with transaction ID: " + transactionId));

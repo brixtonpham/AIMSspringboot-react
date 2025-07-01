@@ -17,7 +17,7 @@ public class InvoiceDTO {
     @NotNull(message = "Order ID is required")
     private Long orderId;
     
-    private String transactionId;
+    private Long transactionId;
     
     @Size(max = 1000, message = "Description must not exceed 1000 characters")
     private String description;

@@ -1,6 +1,8 @@
 package com.itss.ecommerce.service;
 
 import com.itss.ecommerce.entity.*;
+import com.itss.ecommerce.exception.InsufficientStockException;
+import com.itss.ecommerce.exception.PaymentProcessingException;
 import com.itss.ecommerce.repository.*;
 
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,8 @@ import java.util.Optional;
 @Slf4j
 @Transactional
 public class OrderService {
+
+    private final PaymentTransactionRepository paymentTransactionRepository;
     
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
@@ -24,10 +28,11 @@ public class OrderService {
     private final DeliveryInformationRepository deliveryRepository;
     private final InvoiceRepository invoiceRepository;
     private final AuditLogService auditLogService;
-    
+
     /**
      * Create order from cart items
      */
+    @Transactional(rollbackFor = {InsufficientStockException.class, PaymentProcessingException.class})
     public Order createOrder(List<CartItem> cartItems, DeliveryInformation deliveryInfo) {
         log.info("Creating order with {} items", cartItems.size());
         
@@ -66,6 +71,13 @@ public class OrderService {
         invoice.createInvoice(savedOrder, "Order #" + savedOrder.getOrderId());
         invoiceRepository.save(invoice);
         
+        // Create payment transaction
+        PaymentTransaction paymentTransaction = new PaymentTransaction();
+        paymentTransaction.setInvoice(invoice);
+        paymentTransaction.setAmount(savedOrder.getTotalAfterVat());
+        paymentTransaction.setPaymentMethod("VNPay");
+        paymentTransactionRepository.save(paymentTransaction);
+
         // Log the action
         auditLogService.logOrderAction(
             savedOrder.getOrderId(),
