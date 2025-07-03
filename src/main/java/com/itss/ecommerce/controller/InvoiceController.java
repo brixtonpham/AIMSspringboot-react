@@ -28,7 +28,6 @@ import java.util.Optional;
 public class InvoiceController {
     
     private final InvoiceService invoiceService;
-    private final OrderMapper orderMapper;
     
     /**
      * Get all invoices
@@ -38,7 +37,7 @@ public class InvoiceController {
         log.info("GET /api/invoices - Fetching all invoices");
         
         List<Invoice> invoices = invoiceService.getAllInvoices();
-        List<InvoiceDTO> invoiceDTOs = orderMapper.toInvoiceDTOList(invoices);
+        List<InvoiceDTO> invoiceDTOs = OrderMapper.toInvoiceDTOList(invoices);
         
         return ResponseEntity.ok(ApiResponse.success(invoiceDTOs,
             String.format("Retrieved %d invoices", invoiceDTOs.size())));
@@ -58,7 +57,7 @@ public class InvoiceController {
                 .body(ApiResponse.notFound("Invoice not found with ID: " + id));
         }
         
-        InvoiceDTO invoiceDTO = orderMapper.toDTO(invoice.get());
+        InvoiceDTO invoiceDTO = OrderMapper.toDTO(invoice.get());
         return ResponseEntity.ok(ApiResponse.success(invoiceDTO));
     }
     
@@ -76,7 +75,7 @@ public class InvoiceController {
                 .body(ApiResponse.notFound("Invoice not found with transaction ID: " + transactionId));
         }
         
-        InvoiceDTO invoiceDTO = orderMapper.toDTO(invoice.get());
+        InvoiceDTO invoiceDTO = OrderMapper.toDTO(invoice.get());
         return ResponseEntity.ok(ApiResponse.success(invoiceDTO));
     }
     
@@ -94,7 +93,7 @@ public class InvoiceController {
                 .body(ApiResponse.notFound("Invoice not found for order ID: " + orderId));
         }
         
-        InvoiceDTO invoiceDTO = orderMapper.toDTO(invoice.get());
+        InvoiceDTO invoiceDTO = OrderMapper.toDTO(invoice.get());
         return ResponseEntity.ok(ApiResponse.success(invoiceDTO));
     }
     
@@ -110,7 +109,7 @@ public class InvoiceController {
             request.getOrderId(),
             request.getDescription()
         );
-        InvoiceDTO invoiceDTO = orderMapper.toDTO(savedInvoice);
+        InvoiceDTO invoiceDTO = OrderMapper.toDTO(savedInvoice);
         
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiResponse.success(invoiceDTO, "Invoice created successfully"));
@@ -128,7 +127,7 @@ public class InvoiceController {
         // For simplicity, we'll just get the invoice (no update method in service)
         Invoice invoice = invoiceService.getInvoiceById(id)
             .orElseThrow(() -> new RuntimeException("Invoice not found with ID: " + id));
-        InvoiceDTO invoiceDTO = orderMapper.toDTO(invoice);
+        InvoiceDTO invoiceDTO = OrderMapper.toDTO(invoice);
         
         return ResponseEntity.ok(ApiResponse.success(invoiceDTO, "Invoice updated successfully"));
     }
@@ -144,7 +143,7 @@ public class InvoiceController {
         
         Invoice paidInvoice = invoiceService.markAsPaid(id, request.getTransactionId(),
             request.getPaymentMethod());
-        InvoiceDTO invoiceDTO = orderMapper.toDTO(paidInvoice);
+        InvoiceDTO invoiceDTO = OrderMapper.toDTO(paidInvoice);
         
         return ResponseEntity.ok(ApiResponse.success(invoiceDTO, "Payment processed successfully"));
     }
@@ -160,7 +159,7 @@ public class InvoiceController {
         try {
             Invoice.PaymentStatus paymentStatus = Invoice.PaymentStatus.valueOf(status.toUpperCase());
             List<Invoice> invoices = invoiceService.getInvoicesByStatus(paymentStatus);
-            List<InvoiceDTO> invoiceDTOs = orderMapper.toInvoiceDTOList(invoices);
+            List<InvoiceDTO> invoiceDTOs = OrderMapper.toInvoiceDTOList(invoices);
             
             return ResponseEntity.ok(ApiResponse.success(invoiceDTOs,
                 String.format("Retrieved %d invoices with status %s", invoiceDTOs.size(), status)));
@@ -178,7 +177,7 @@ public class InvoiceController {
         log.info("GET /api/invoices/pending - Fetching pending invoices");
         
         List<Invoice> invoices = invoiceService.getPendingInvoices();
-        List<InvoiceDTO> invoiceDTOs = orderMapper.toInvoiceDTOList(invoices);
+        List<InvoiceDTO> invoiceDTOs = OrderMapper.toInvoiceDTOList(invoices);
         
         return ResponseEntity.ok(ApiResponse.success(invoiceDTOs,
             String.format("Retrieved %d pending invoices", invoiceDTOs.size())));
@@ -192,7 +191,7 @@ public class InvoiceController {
         log.info("GET /api/invoices/paid - Fetching paid invoices");
         
         List<Invoice> invoices = invoiceService.getPaidInvoices();
-        List<InvoiceDTO> invoiceDTOs = orderMapper.toInvoiceDTOList(invoices);
+        List<InvoiceDTO> invoiceDTOs = OrderMapper.toInvoiceDTOList(invoices);
         
         return ResponseEntity.ok(ApiResponse.success(invoiceDTOs,
             String.format("Retrieved %d paid invoices", invoiceDTOs.size())));
@@ -206,7 +205,7 @@ public class InvoiceController {
         log.info("GET /api/invoices/overdue - Fetching overdue invoices");
         
         List<Invoice> invoices = invoiceService.getOverdueInvoices(30);
-        List<InvoiceDTO> invoiceDTOs = orderMapper.toInvoiceDTOList(invoices);
+        List<InvoiceDTO> invoiceDTOs = OrderMapper.toInvoiceDTOList(invoices);
         
         return ResponseEntity.ok(ApiResponse.success(invoiceDTOs,
             String.format("Retrieved %d overdue invoices", invoiceDTOs.size())));
@@ -222,7 +221,7 @@ public class InvoiceController {
         
         // This method doesn't exist in service, return empty list
         List<Invoice> invoices = List.of();
-        List<InvoiceDTO> invoiceDTOs = orderMapper.toInvoiceDTOList(invoices);
+        List<InvoiceDTO> invoiceDTOs = OrderMapper.toInvoiceDTOList(invoices);
         
         return ResponseEntity.ok(ApiResponse.success(invoiceDTOs,
             String.format("Retrieved %d invoices with payment method '%s'", invoiceDTOs.size(), method)));
@@ -239,7 +238,7 @@ public class InvoiceController {
         
         // This method doesn't exist in service, return empty list
         List<Invoice> invoices = List.of();
-        List<InvoiceDTO> invoiceDTOs = orderMapper.toInvoiceDTOList(invoices);
+        List<InvoiceDTO> invoiceDTOs = OrderMapper.toInvoiceDTOList(invoices);
         
         return ResponseEntity.ok(ApiResponse.success(invoiceDTOs,
             String.format("Retrieved %d invoices in date range", invoiceDTOs.size())));
@@ -282,7 +281,7 @@ public class InvoiceController {
         log.info("PATCH /api/invoices/{}/refund - Processing refund with reason: {}", id, reason);
         
         Invoice refundedInvoice = invoiceService.refundPayment(id, reason);
-        InvoiceDTO invoiceDTO = orderMapper.toDTO(refundedInvoice);
+        InvoiceDTO invoiceDTO = OrderMapper.toDTO(refundedInvoice);
         
         return ResponseEntity.ok(ApiResponse.success(invoiceDTO, "Invoice refunded successfully"));
     }

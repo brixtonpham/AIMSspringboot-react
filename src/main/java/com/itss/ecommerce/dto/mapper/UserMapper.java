@@ -14,7 +14,7 @@ public class UserMapper {
     /**
      * Convert User entity to UserDTO
      */
-    public UserDTO toDTO(User user) {
+    public static UserDTO toDTO(User user) {
         if (user == null) return null;
         
         UserDTO dto = new UserDTO();
@@ -35,7 +35,7 @@ public class UserMapper {
     /**
      * Convert UserDTO to User entity
      */
-    public User toEntity(UserDTO dto) {
+    public static User toEntity(UserDTO dto) {
         if (dto == null) return null;
         
         User user = new User();
@@ -54,26 +54,26 @@ public class UserMapper {
     /**
      * Convert list of User entities to UserDTOs
      */
-    public List<UserDTO> toDTOList(List<User> users) {
+    public static List<UserDTO> toDTOList(List<User> users) {
         if (users == null) return null;
         return users.stream()
-                .map(this::toDTO)
+                .map(UserMapper::toDTO)
                 .collect(Collectors.toList());
     }
     
     /**
      * Convert list of UserDTOs to User entities
      */
-    public List<User> toEntityList(List<UserDTO> dtos) {
+    public static List<User> toEntityList(List<UserDTO> dtos) {
         if (dtos == null) return null;
         return dtos.stream()
-                .map(this::toEntity)
+                .map(UserMapper::toEntity)
                 .collect(Collectors.toList());
     }
     /**
      * Convert User entity to UserProfileDTO
      */
-    public UserProfileDTO toProfileDTO(User user) {
+    public static UserProfileDTO toProfileDTO(User user) {
         if (user == null) return null;
         UserProfileDTO profileDTO = new UserProfileDTO();
         profileDTO.setUserId(user.getUserId());
@@ -87,7 +87,7 @@ public class UserMapper {
     /**
      * Convert UserDTO to UserProfileDTO
      */
-    public UserProfileDTO toProfileDTO(UserDTO userDTO) {
+    public static UserProfileDTO toProfileDTO(UserDTO userDTO) {
         if (userDTO == null) return null;
         UserProfileDTO profileDTO = new UserProfileDTO();
         profileDTO.setUserId(userDTO.getUserId());

@@ -14,7 +14,7 @@ public class ProductMapper {
     /**
      * Convert Product entity to ProductDTO
      */
-    public ProductDTO toDTO(Product product) {
+    public static ProductDTO toDTO(Product product) {
         if (product == null) return null;
         
         ProductDTO dto = new ProductDTO();
@@ -38,7 +38,7 @@ public class ProductMapper {
     /**
      * Convert Book entity to BookDTO
      */
-    public BookDTO toDTO(Book book) {
+    public static BookDTO toDTO(Book book) {
         if (book == null) return null;
         
         BookDTO dto = new BookDTO();
@@ -61,7 +61,7 @@ public class ProductMapper {
     /**
      * Convert CD entity to CDDTO
      */
-    public CDDTO toDTO(CD cd) {
+    public static CDDTO toDTO(CD cd) {
         if (cd == null) return null;
         
         CDDTO dto = new CDDTO();
@@ -83,7 +83,7 @@ public class ProductMapper {
     /**
      * Convert DVD entity to DVDDTO
      */
-    public DVDDTO toDTO(DVD dvd) {
+    public static DVDDTO toDTO(DVD dvd) {
         if (dvd == null) return null;
         
         DVDDTO dto = new DVDDTO();
@@ -107,7 +107,7 @@ public class ProductMapper {
     /**
      * Convert ProductDTO to Product entity (for polymorphic handling)
      */
-    public Product toEntity(ProductDTO dto, String productType) {
+    public static Product toEntity(ProductDTO dto, String productType) {
         if (dto == null) return null;
         
         Product product = switch (productType.toLowerCase()) {
@@ -124,7 +124,7 @@ public class ProductMapper {
     /**
      * Convert BookDTO to Book entity
      */
-    public Book toEntity(BookDTO dto) {
+    public static Book toEntity(BookDTO dto) {
         if (dto == null) return null;
         
         Book book = new Book();
@@ -144,7 +144,7 @@ public class ProductMapper {
     /**
      * Convert CDDTO to CD entity
      */
-    public CD toEntity(CDDTO dto) {
+    public static CD toEntity(CDDTO dto) {
         if (dto == null) return null;
         
         CD cd = new CD();
@@ -163,7 +163,7 @@ public class ProductMapper {
     /**
      * Convert DVDDTO to DVD entity
      */
-    public DVD toEntity(DVDDTO dto) {
+    public static DVD toEntity(DVDDTO dto) {
         if (dto == null) return null;
         
         DVD dvd = new DVD();
@@ -184,47 +184,47 @@ public class ProductMapper {
     /**
      * Convert list of Product entities to ProductDTOs
      */
-    public List<ProductDTO> toDTOList(List<Product> products) {
+    public static List<ProductDTO> toDTOList(List<Product> products) {
         if (products == null) return null;
         return products.stream()
-                .map(this::toDTO)
+                .map(ProductMapper::toDTO)
                 .collect(Collectors.toList());
     }
     
     /**
      * Convert list of Book entities to BookDTOs
      */
-    public List<BookDTO> toBookDTOList(List<Book> books) {
+    public static List<BookDTO> toBookDTOList(List<Book> books) {
         if (books == null) return null;
         return books.stream()
-                .map(this::toDTO)
+                .map(ProductMapper::toDTO)
                 .collect(Collectors.toList());
     }
     
     /**
      * Convert list of CD entities to CDDTOs
      */
-    public List<CDDTO> toCDDTOList(List<CD> cds) {
+    public static List<CDDTO> toCDDTOList(List<CD> cds) {
         if (cds == null) return null;
         return cds.stream()
-                .map(this::toDTO)
+                .map(ProductMapper::toDTO)
                 .collect(Collectors.toList());
     }
     
     /**
      * Convert list of DVD entities to DVDDTOs
      */
-    public List<DVDDTO> toDVDDTOList(List<DVD> dvds) {
+    public static List<DVDDTO> toDVDDTOList(List<DVD> dvds) {
         if (dvds == null) return null;
         return dvds.stream()
-                .map(this::toDTO)
+                .map(ProductMapper::toDTO)
                 .collect(Collectors.toList());
     }
     
     /**
      * Copy common product fields from entity to DTO
      */
-    private void copyProductFields(Product entity, ProductDTO dto) {
+    private static void copyProductFields(Product entity, ProductDTO dto) {
         dto.setProductId(entity.getProductId());
         dto.setTitle(entity.getTitle());
         dto.setPrice(entity.getPrice());
@@ -243,7 +243,7 @@ public class ProductMapper {
     /**
      * Copy common product fields from DTO to entity
      */
-    private void copyDTOToEntity(ProductDTO dto, Product entity) {
+    private static void copyDTOToEntity(ProductDTO dto, Product entity) {
         entity.setProductId(dto.getProductId());
         entity.setTitle(dto.getTitle());
         entity.setPrice(dto.getPrice());

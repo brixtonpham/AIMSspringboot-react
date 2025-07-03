@@ -73,7 +73,7 @@ export const Header: React.FC = () => {
                   <Link to="/admin">
                     <Button variant="ghost" size="sm">
                       <Shield className="w-4 h-4 mr-2" />
-                      Admin
+                      Administration
                     </Button>
                   </Link>
                 )}

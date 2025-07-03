@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { 
   BarChart3, 
   Package, 
@@ -45,6 +45,7 @@ const AdminDashboard: React.FC = () => {
     user?: User;
   }>({ isOpen: false, mode: 'create' });
   const { user } = useAuthStore();
+  const queryClient = useQueryClient();
 
   // Check if user is admin or manager
   const isAdmin = user?.role === 'ADMIN';
@@ -125,8 +126,13 @@ const AdminDashboard: React.FC = () => {
           {ordersError && <p>Orders: {ordersError.message}</p>}
           {usersError && <p>Users: {usersError.message}</p>}
         </div>
-        <Button onClick={() => window.location.reload()} className="mt-4">
-          Reload Page
+        <Button onClick={() => {
+          queryClient.invalidateQueries({ queryKey: ['products'] });
+          queryClient.invalidateQueries({ queryKey: ['orders'] });
+          queryClient.invalidateQueries({ queryKey: ['users'] });
+          queryClient.invalidateQueries({ queryKey: ['low-stock'] });
+        }} className="mt-4">
+          Retry Loading
         </Button>
       </div>
     );
@@ -162,7 +168,9 @@ const AdminDashboard: React.FC = () => {
   const handleConfirmOrder = async (orderId: number) => {
     try {
       await orderApi.confirm(orderId);
-      window.location.reload();
+      // Invalidate and refetch orders data
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['low-stock'] });
     } catch (error) {
       throw error;
     }
@@ -171,7 +179,9 @@ const AdminDashboard: React.FC = () => {
   const handleCancelOrder = async (orderId: number) => {
     try {
       await orderApi.cancel(orderId);
-      window.location.reload();
+      // Invalidate and refetch orders data
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['low-stock'] });
     } catch (error) {
       throw error;
     }
@@ -180,7 +190,8 @@ const AdminDashboard: React.FC = () => {
   const handleCreateUser = async (userData: any) => {
     try {
       await userApi.create(userData);
-      window.location.reload();
+      // Invalidate and refetch users data
+      queryClient.invalidateQueries({ queryKey: ['users'] });
     } catch (error) {
       throw error;
     }
@@ -190,7 +201,8 @@ const AdminDashboard: React.FC = () => {
     try {
       if (userModalState.user) {
         await userApi.update(userModalState.user.userId, userData);
-        window.location.reload();
+        // Invalidate and refetch users data
+        queryClient.invalidateQueries({ queryKey: ['users'] });
       }
     } catch (error) {
       throw error;
@@ -200,7 +212,8 @@ const AdminDashboard: React.FC = () => {
   const handleDeleteUser = async (userId: number) => {
     try {
       await userApi.delete(userId);
-      window.location.reload();
+      // Invalidate and refetch users data
+      queryClient.invalidateQueries({ queryKey: ['users'] });
     } catch (error) {
       throw error;
     }
@@ -209,7 +222,8 @@ const AdminDashboard: React.FC = () => {
   const handleBlockUser = async (userId: number, reason?: string) => {
     try {
       await userApi.block(userId, reason, user?.name || 'Administrator');
-      window.location.reload();
+      // Invalidate and refetch users data
+      queryClient.invalidateQueries({ queryKey: ['users'] });
     } catch (error) {
       throw error;
     }
@@ -218,7 +232,8 @@ const AdminDashboard: React.FC = () => {
   const handleUnblockUser = async (userId: number) => {
     try {
       await userApi.unblock(userId, user?.name || 'Administrator');
-      window.location.reload();
+      // Invalidate and refetch users data
+      queryClient.invalidateQueries({ queryKey: ['users'] });
     } catch (error) {
       throw error;
     }
@@ -496,7 +511,9 @@ const AdminDashboard: React.FC = () => {
                             if (window.confirm('Are you sure you want to delete this product?')) {
                               try {
                                 await productApi.delete(product.productId);
-                                window.location.reload();
+                                // Invalidate and refetch products data
+                                queryClient.invalidateQueries({ queryKey: ['products'] });
+                                queryClient.invalidateQueries({ queryKey: ['low-stock'] });
                               } catch (error) {
                                 console.error('Error deleting product:', error);
                                 alert('Failed to delete product. Please try again.');
@@ -759,7 +776,11 @@ const AdminDashboard: React.FC = () => {
             } else if (modalState.mode === 'edit' && modalState.product) {
               await productApi.update(modalState.product.productId, data);
             }
-            window.location.reload();
+            // Invalidate and refetch products data
+            queryClient.invalidateQueries({ queryKey: ['products'] });
+            queryClient.invalidateQueries({ queryKey: ['low-stock'] });
+            // Close modal
+            setModalState({ isOpen: false, mode: 'create' });
           } catch (error) {
             throw error;
           }
@@ -813,6 +834,8 @@ const AdminDashboard: React.FC = () => {
             } else if (userModalState.mode === 'edit') {
               await handleUpdateUser(data);
             }
+            // Close modal after successful operation
+            setUserModalState({ isOpen: false, mode: 'create' });
           } catch (error) {
             throw error;
           }

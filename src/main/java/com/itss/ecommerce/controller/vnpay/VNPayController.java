@@ -9,6 +9,7 @@ import com.itss.ecommerce.dto.vnpay.PaymentRequest;
 import com.itss.ecommerce.dto.vnpay.QueryRequest;
 import com.itss.ecommerce.dto.vnpay.RefundRequest;
 import com.itss.ecommerce.entity.Invoice;
+import com.itss.ecommerce.entity.Order;
 import com.itss.ecommerce.entity.PaymentTransaction;
 import com.itss.ecommerce.service.EmailService;
 import com.itss.ecommerce.service.InvoiceService;
@@ -141,8 +142,10 @@ public RedirectView returnPage(
             orderService.getOrderById(orderId).ifPresent(order -> {
                 emailService.sendOrderConfirmationEmail(order);
             });
-            // Update order status to confirmed
-
+            
+            // Log successful payment
+            log.info("Payment successful for order ID: {}", txnRef);
+            
             // Update invoice status to paid
             Optional<Invoice> invoice = invoiceService.getInvoiceByOrderId(Long.parseLong(txnRef));
             if (invoice.isPresent()) {

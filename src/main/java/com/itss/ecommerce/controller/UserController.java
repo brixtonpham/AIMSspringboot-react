@@ -27,7 +27,6 @@ import java.util.Optional;
 public class UserController {
     
     private final UserService userService;
-    private final UserMapper userMapper;
     
     /**
      * Get all users
@@ -37,7 +36,7 @@ public class UserController {
         log.info("GET /api/users - Fetching all users");
         
         List<User> users = userService.getAllUsers();
-        List<UserDTO> userDTOs = userMapper.toDTOList(users);
+        List<UserDTO> userDTOs = UserMapper.toDTOList(users);
         
         return ResponseEntity.ok(ApiResponse.success(userDTOs,
             String.format("Retrieved %d users", userDTOs.size())));
@@ -57,7 +56,7 @@ public class UserController {
                 .body(ApiResponse.notFound("User not found with ID: " + id));
         }
         
-        UserDTO userDTO = userMapper.toDTO(user.get());
+        UserDTO userDTO = UserMapper.toDTO(user.get());
         return ResponseEntity.ok(ApiResponse.success(userDTO));
     }
     
@@ -75,7 +74,7 @@ public class UserController {
                 .body(ApiResponse.notFound("User not found with email: " + email));
         }
         
-        UserDTO userDTO = userMapper.toDTO(user.get());
+        UserDTO userDTO = UserMapper.toDTO(user.get());
         return ResponseEntity.ok(ApiResponse.success(userDTO));
     }
     
@@ -87,9 +86,9 @@ public class UserController {
             @Valid @RequestBody UserDTO userDTO) {
         log.info("POST /api/users - Creating new user: {}", userDTO.getEmail());
         
-        User user = userMapper.toEntity(userDTO);
+        User user = UserMapper.toEntity(userDTO);
         User savedUser = userService.createUser(user);
-        UserDTO savedUserDTO = userMapper.toDTO(savedUser);
+        UserDTO savedUserDTO = UserMapper.toDTO(savedUser);
         
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiResponse.success(savedUserDTO, "User created successfully"));
@@ -104,9 +103,9 @@ public class UserController {
             @Valid @RequestBody UserDTO userDTO) {
         log.info("PUT /api/users/{} - Updating user", id);
         
-        User updatedUser = userMapper.toEntity(userDTO);
+        User updatedUser = UserMapper.toEntity(userDTO);
         User savedUser = userService.updateUser(id, updatedUser);
-        UserDTO savedUserDTO = userMapper.toDTO(savedUser);
+        UserDTO savedUserDTO = UserMapper.toDTO(savedUser);
         
         return ResponseEntity.ok(ApiResponse.success(savedUserDTO, "User updated successfully"));
     }
@@ -135,7 +134,7 @@ public class UserController {
         log.info("GET /api/users/search - Searching users");
         
         List<User> users = userService.searchUsers(name != null ? name : "");
-        List<UserDTO> userDTOs = userMapper.toDTOList(users);
+        List<UserDTO> userDTOs = UserMapper.toDTOList(users);
         
         return ResponseEntity.ok(ApiResponse.success(userDTOs,
             String.format("Found %d users matching criteria", userDTOs.size())));
@@ -150,7 +149,7 @@ public class UserController {
         log.info("GET /api/users/name/{} - Fetching users with name containing", name);
         
         List<User> users = userService.searchUsers(name);
-        List<UserDTO> userDTOs = userMapper.toDTOList(users);
+        List<UserDTO> userDTOs = UserMapper.toDTOList(users);
         
         return ResponseEntity.ok(ApiResponse.success(userDTOs,
             String.format("Found %d users with name containing '%s'", userDTOs.size(), name)));
@@ -199,7 +198,7 @@ public class UserController {
         user.setName(request.getName());
         user.setPhone(request.getPhone());
         User updatedUser = userService.updateUser(id, user);
-        UserDTO userDTO = userMapper.toDTO(updatedUser);
+        UserDTO userDTO = UserMapper.toDTO(updatedUser);
         
         return ResponseEntity.ok(ApiResponse.success(userDTO, "User profile updated successfully"));
     }
@@ -217,7 +216,7 @@ public class UserController {
             .orElseThrow(() -> new RuntimeException("User not found with ID: " + id));
         user.setEmail(email);
         User updatedUser = userService.updateUser(id, user);
-        UserDTO userDTO = userMapper.toDTO(updatedUser);
+        UserDTO userDTO = UserMapper.toDTO(updatedUser);
         
         return ResponseEntity.ok(ApiResponse.success(userDTO, "User email updated successfully"));
     }
@@ -246,7 +245,7 @@ public class UserController {
         log.info("POST /api/users/{}/block - Blocking user", id);
         
         User blockedUser = userService.blockUser(id, reason, blockedBy != null ? blockedBy : "Administrator");
-        UserDTO userDTO = userMapper.toDTO(blockedUser);
+        UserDTO userDTO = UserMapper.toDTO(blockedUser);
         
         return ResponseEntity.ok(ApiResponse.success(userDTO, 
             String.format("User with ID %d has been blocked successfully. Email notification sent.", id)));
@@ -262,7 +261,7 @@ public class UserController {
         log.info("POST /api/users/{}/unblock - Unblocking user", id);
         
         User unblockedUser = userService.unblockUser(id, unblockedBy != null ? unblockedBy : "Administrator");
-        UserDTO userDTO = userMapper.toDTO(unblockedUser);
+        UserDTO userDTO = UserMapper.toDTO(unblockedUser);
         
         return ResponseEntity.ok(ApiResponse.success(userDTO,
             String.format("User with ID %d has been unblocked successfully. Email notification sent.", id)));

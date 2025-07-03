@@ -67,6 +67,11 @@ INSERT INTO audit_log VALUES(41,'Order Created','ORDER',22,'Order','order order 
 INSERT INTO audit_log VALUES(42,'Order Created','ORDER',23,'Order','order order with ID: 23',1751124968994,NULL);
 INSERT INTO audit_log VALUES(43,'Order Created','ORDER',24,'Order','order order with ID: 24',1751278226469,NULL);
 INSERT INTO audit_log VALUES(44,'Order Created','ORDER',25,'Order','order order with ID: 25',1751280642748,NULL);
+INSERT INTO audit_log VALUES(45,'Order Created','ORDER',26,'Order','order order with ID: 26',1751336732833,NULL);
+INSERT INTO audit_log VALUES(46,'User Login','LOGIN',NULL,NULL,'User logged in: admin@itss.com',1751336774426,1);
+INSERT INTO audit_log VALUES(47,'Order Created','ORDER',27,'Order','order order with ID: 27',1751337644190,NULL);
+INSERT INTO audit_log VALUES(48,'Order Created','ORDER',28,'Order','order order with ID: 28',1751337773606,NULL);
+INSERT INTO audit_log VALUES(49,'Order Created','ORDER',29,'Order','order order with ID: 29',1751525298032,NULL);
 CREATE TABLE book (
         authors varchar(500),
         cover_type varchar(50),
@@ -102,34 +107,38 @@ CREATE TABLE delivery_information (
         name varchar(255) not null,
         phone varchar(20) not null,
         province varchar(100) not null,
-        ward varchar(100) not null,
+        ward varchar(100) not null, delivery_time varchar(50), rush_delivery_instruction TEXT,
         primary key (delivery_id)
     );
-INSERT INTO delivery_information VALUES(1,'Số 8 - Ngõ 10 - Đường 12',80000,NULL,'Huyện Xín Mần','bxson0301@gmail.com','bui xuan son','0123456789','Hà Giang','Xã Thu Tà');
-INSERT INTO delivery_information VALUES(2,'Số 8 - Ngõ 10 - Đường 12',80000,NULL,'Huyện Đại Từ','bxson0301@gmail.com','bui xuan son','0123456789','Thái Nguyên','Xã Cù Vân');
-INSERT INTO delivery_information VALUES(3,'Số 8 - Ngõ 10 - Đường 12',80000,NULL,'Thành phố Phổ Yên','bxson0301@gmail.com','bui xuan son','0123456789','Thái Nguyên','Phường Nam Tiến');
-INSERT INTO delivery_information VALUES(4,'Số 8 - Ngõ 10 - Đường 12',80000,NULL,'Huyện Sơn Động','bxson0301@gmail.com','bui xuan son','0123456789','Bắc Giang','Xã An Bá');
-INSERT INTO delivery_information VALUES(5,'Số 8 - Ngõ 10 - Đường 12',30000,NULL,'Huyện Lạc Sơn','bxson0301@gmail.com','bui xuan son','0123456789','Hoà Bình','Xã Chí Đạo');
-INSERT INTO delivery_information VALUES(6,'Số 8 - Ngõ 10 - Đường 12',30000,NULL,'Quận Hoàn Kiếm','bxson0301@gmail.com','bui xuan son','0123456789','Hà Nội','Phường Cửa Nam');
-INSERT INTO delivery_information VALUES(7,'Số 8 - Ngõ 10 - Đường 12',30000,NULL,'Huyện Ba Chẽ','bxson0301@gmail.com','bui xuan son','0123456789','Quảng Ninh','Xã Đạp Thanh');
-INSERT INTO delivery_information VALUES(8,'Số 8 - Ngõ 10 - Đường 12',50000,NULL,'Huyện Tam Đảo','bxson0301@gmail.com','bui xuan son','0123456789','Vĩnh Phúc','Xã Bồ Lý');
-INSERT INTO delivery_information VALUES(9,'Số 8 - Ngõ 10 - Đường 12',50000,NULL,'Thị xã Sơn Tây','bxson0301@gmail.com','bui xuan son','0123456789','Hà Nội','Phường Trung Sơn Trầm');
-INSERT INTO delivery_information VALUES(10,'Số 8 - Ngõ 10 - Đường 12',30000,NULL,'Huyện Gia Lâm','admin@itss.com','Admin User','0123456789','Hà Nội','Xã Kiêu Kỵ');
-INSERT INTO delivery_information VALUES(11,'Số 8 - Ngõ 10 - Đường 12',80000,NULL,'Huyện Sóc Sơn','bxson0301@gmail.com','bui xuan son','0123456789','Hà Nội','Xã Tân Dân');
-INSERT INTO delivery_information VALUES(12,'Số 8 - Ngõ 10 - Đường 12',80000,NULL,'Huyện Vĩnh Tường','bxson0301@gmail.com','bui xuan son','0123456789','Vĩnh Phúc','Xã Ngũ Kiên');
-INSERT INTO delivery_information VALUES(13,'Số 8 - Ngõ 10 - Đường 12',80000,NULL,'Thị xã Việt Yên','bxson0301@gmail.com','bui xuan son','0123456789','Bắc Giang','Phường Vân Trung');
-INSERT INTO delivery_information VALUES(14,'Số 8 - Ngõ 10 - Đường 12',80000,NULL,'Quận Ba Đình','bxson0301@gmail.com','bui xuan son','0123456789','Hà Nội','Phường Đội Cấn');
-INSERT INTO delivery_information VALUES(15,'Số 8 - Ngõ 10 - Đường 12',80000,NULL,'Quận Ba Đình','bxson0301@gmail.com','bui xuan son','0123456789','Hà Nội','Phường Ngọc Hà');
-INSERT INTO delivery_information VALUES(16,'Số 8 - Ngõ 10 - Đường 12',80000,NULL,'Huyện Thanh Sơn','bxson0301@gmail.com','bui xuan son','0123456789','Phú Thọ','Xã Yên Lương');
-INSERT INTO delivery_information VALUES(17,'Số 8 - Ngõ 10 - Đường 12',80000,NULL,'Quận Ba Đình','bxson0301@gmail.com','bui xuan son','0123456789','Hà Nội','Phường Ngọc Khánh');
-INSERT INTO delivery_information VALUES(18,'Số 8 - Ngõ 10 - Đường 12',30000,NULL,'Huyện Sông Lô','bxson0301@gmail.com','bui xuan son','0123456789','Vĩnh Phúc','Xã Đức Bác');
-INSERT INTO delivery_information VALUES(19,'Số 8 - Ngõ 10 - Đường 12',80000,NULL,'Quận Ba Đình','bxson0301@gmail.com','bui xuan son','0123456789','Hà Nội','Phường Đội Cấn');
-INSERT INTO delivery_information VALUES(20,'Số 8 - Ngõ 10 - Đường 12',80000,NULL,'Thành phố Yên Bái','bxson0301@gmail.com','bui xuan son','0123456789','Yên Bái','Phường Yên Thịnh');
-INSERT INTO delivery_information VALUES(21,'13',80000,NULL,'Quận Hoàn Kiếm','admin@itss.com','Admin User','0123456789','Hà Nội','Phường Hàng Buồm');
-INSERT INTO delivery_information VALUES(22,'ddd',30000,NULL,'Quận Long Biên','customer@itss.com','John Doe','0987653321','Hà Nội','Phường Đức Giang');
-INSERT INTO delivery_information VALUES(23,'dep trai',30000,NULL,'Huyện Ba Bể','customer@itss.com','John Doe','0379179107','Bắc Kạn','Xã Phúc Lộc');
-INSERT INTO delivery_information VALUES(24,'Số 8 - Ngõ 10 - Đường 12',30000,NULL,'Thị xã Chũ','bxson0301@gmail.com','bui xuan son','0123456789','Bắc Giang','Phường Phượng Sơn');
-INSERT INTO delivery_information VALUES(25,'Số 8 - Ngõ 10 - Đường 12',30000,NULL,'Huyện Đại Từ','bxson0301@gmail.com','bui xuan son','0123456789','Thái Nguyên','Xã An Khánh');
+INSERT INTO delivery_information VALUES(1,'Số 8 - Ngõ 10 - Đường 12',80000,NULL,'Huyện Xín Mần','bxson0301@gmail.com','bui xuan son','0123456789','Hà Giang','Xã Thu Tà',NULL,NULL);
+INSERT INTO delivery_information VALUES(2,'Số 8 - Ngõ 10 - Đường 12',80000,NULL,'Huyện Đại Từ','bxson0301@gmail.com','bui xuan son','0123456789','Thái Nguyên','Xã Cù Vân',NULL,NULL);
+INSERT INTO delivery_information VALUES(3,'Số 8 - Ngõ 10 - Đường 12',80000,NULL,'Thành phố Phổ Yên','bxson0301@gmail.com','bui xuan son','0123456789','Thái Nguyên','Phường Nam Tiến',NULL,NULL);
+INSERT INTO delivery_information VALUES(4,'Số 8 - Ngõ 10 - Đường 12',80000,NULL,'Huyện Sơn Động','bxson0301@gmail.com','bui xuan son','0123456789','Bắc Giang','Xã An Bá',NULL,NULL);
+INSERT INTO delivery_information VALUES(5,'Số 8 - Ngõ 10 - Đường 12',30000,NULL,'Huyện Lạc Sơn','bxson0301@gmail.com','bui xuan son','0123456789','Hoà Bình','Xã Chí Đạo',NULL,NULL);
+INSERT INTO delivery_information VALUES(6,'Số 8 - Ngõ 10 - Đường 12',30000,NULL,'Quận Hoàn Kiếm','bxson0301@gmail.com','bui xuan son','0123456789','Hà Nội','Phường Cửa Nam',NULL,NULL);
+INSERT INTO delivery_information VALUES(7,'Số 8 - Ngõ 10 - Đường 12',30000,NULL,'Huyện Ba Chẽ','bxson0301@gmail.com','bui xuan son','0123456789','Quảng Ninh','Xã Đạp Thanh',NULL,NULL);
+INSERT INTO delivery_information VALUES(8,'Số 8 - Ngõ 10 - Đường 12',50000,NULL,'Huyện Tam Đảo','bxson0301@gmail.com','bui xuan son','0123456789','Vĩnh Phúc','Xã Bồ Lý',NULL,NULL);
+INSERT INTO delivery_information VALUES(9,'Số 8 - Ngõ 10 - Đường 12',50000,NULL,'Thị xã Sơn Tây','bxson0301@gmail.com','bui xuan son','0123456789','Hà Nội','Phường Trung Sơn Trầm',NULL,NULL);
+INSERT INTO delivery_information VALUES(10,'Số 8 - Ngõ 10 - Đường 12',30000,NULL,'Huyện Gia Lâm','admin@itss.com','Admin User','0123456789','Hà Nội','Xã Kiêu Kỵ',NULL,NULL);
+INSERT INTO delivery_information VALUES(11,'Số 8 - Ngõ 10 - Đường 12',80000,NULL,'Huyện Sóc Sơn','bxson0301@gmail.com','bui xuan son','0123456789','Hà Nội','Xã Tân Dân',NULL,NULL);
+INSERT INTO delivery_information VALUES(12,'Số 8 - Ngõ 10 - Đường 12',80000,NULL,'Huyện Vĩnh Tường','bxson0301@gmail.com','bui xuan son','0123456789','Vĩnh Phúc','Xã Ngũ Kiên',NULL,NULL);
+INSERT INTO delivery_information VALUES(13,'Số 8 - Ngõ 10 - Đường 12',80000,NULL,'Thị xã Việt Yên','bxson0301@gmail.com','bui xuan son','0123456789','Bắc Giang','Phường Vân Trung',NULL,NULL);
+INSERT INTO delivery_information VALUES(14,'Số 8 - Ngõ 10 - Đường 12',80000,NULL,'Quận Ba Đình','bxson0301@gmail.com','bui xuan son','0123456789','Hà Nội','Phường Đội Cấn',NULL,NULL);
+INSERT INTO delivery_information VALUES(15,'Số 8 - Ngõ 10 - Đường 12',80000,NULL,'Quận Ba Đình','bxson0301@gmail.com','bui xuan son','0123456789','Hà Nội','Phường Ngọc Hà',NULL,NULL);
+INSERT INTO delivery_information VALUES(16,'Số 8 - Ngõ 10 - Đường 12',80000,NULL,'Huyện Thanh Sơn','bxson0301@gmail.com','bui xuan son','0123456789','Phú Thọ','Xã Yên Lương',NULL,NULL);
+INSERT INTO delivery_information VALUES(17,'Số 8 - Ngõ 10 - Đường 12',80000,NULL,'Quận Ba Đình','bxson0301@gmail.com','bui xuan son','0123456789','Hà Nội','Phường Ngọc Khánh',NULL,NULL);
+INSERT INTO delivery_information VALUES(18,'Số 8 - Ngõ 10 - Đường 12',30000,NULL,'Huyện Sông Lô','bxson0301@gmail.com','bui xuan son','0123456789','Vĩnh Phúc','Xã Đức Bác',NULL,NULL);
+INSERT INTO delivery_information VALUES(19,'Số 8 - Ngõ 10 - Đường 12',80000,NULL,'Quận Ba Đình','bxson0301@gmail.com','bui xuan son','0123456789','Hà Nội','Phường Đội Cấn',NULL,NULL);
+INSERT INTO delivery_information VALUES(20,'Số 8 - Ngõ 10 - Đường 12',80000,NULL,'Thành phố Yên Bái','bxson0301@gmail.com','bui xuan son','0123456789','Yên Bái','Phường Yên Thịnh',NULL,NULL);
+INSERT INTO delivery_information VALUES(21,'13',80000,NULL,'Quận Hoàn Kiếm','admin@itss.com','Admin User','0123456789','Hà Nội','Phường Hàng Buồm',NULL,NULL);
+INSERT INTO delivery_information VALUES(22,'ddd',30000,NULL,'Quận Long Biên','customer@itss.com','John Doe','0987653321','Hà Nội','Phường Đức Giang',NULL,NULL);
+INSERT INTO delivery_information VALUES(23,'dep trai',30000,NULL,'Huyện Ba Bể','customer@itss.com','John Doe','0379179107','Bắc Kạn','Xã Phúc Lộc',NULL,NULL);
+INSERT INTO delivery_information VALUES(24,'Số 8 - Ngõ 10 - Đường 12',30000,NULL,'Thị xã Chũ','bxson0301@gmail.com','bui xuan son','0123456789','Bắc Giang','Phường Phượng Sơn',NULL,NULL);
+INSERT INTO delivery_information VALUES(25,'Số 8 - Ngõ 10 - Đường 12',30000,NULL,'Huyện Đại Từ','bxson0301@gmail.com','bui xuan son','0123456789','Thái Nguyên','Xã An Khánh',NULL,NULL);
+INSERT INTO delivery_information VALUES(26,'Số 8 - Ngõ 10 - Đường 12',80000,NULL,'Thành phố Phổ Yên','bxson0301@gmail.com','bui xuan son','0123456789','Thái Nguyên','Phường Tân Phú',NULL,NULL);
+INSERT INTO delivery_information VALUES(27,'Số 8 - Ngõ 10 - Đường 12',30000,NULL,'Huyện Văn Chấn','bxson0301@gmail.com','bui xuan son','0123456789','Yên Bái','Xã Đại Lịch',NULL,NULL);
+INSERT INTO delivery_information VALUES(28,'Số 8 - Ngõ 10 - Đường 12',30000,NULL,'Huyện Thanh Thuỷ','bxson0301@gmail.com','bui xuan son','0123456789','Phú Thọ','Xã Tu Vũ',NULL,NULL);
+INSERT INTO delivery_information VALUES(29,'Số 8 - Ngõ 10 - Đường 12',80000,NULL,'Quận Cầu Giấy','bxson0301@gmail.com','bui xuan son','0123456789','Hà Nội','Phường Dịch Vọng',NULL,NULL);
 CREATE TABLE dvd (
         directors varchar(500),
         duration_minutes integer,
@@ -187,6 +196,10 @@ INSERT INTO invoice VALUES(22,1751124922677,'Order #22',NULL,NULL,'PENDING',22);
 INSERT INTO invoice VALUES(23,1751124968993,'Order #23',NULL,NULL,'PENDING',23);
 INSERT INTO invoice VALUES(24,1751278226466,'Order #24',NULL,NULL,'PENDING',24);
 INSERT INTO invoice VALUES(25,1751280642746,'Order #25',NULL,NULL,'PENDING',25);
+INSERT INTO invoice VALUES(26,1751336732828,'Order #26',1751336767469,NULL,'PAID',26);
+INSERT INTO invoice VALUES(27,1751337644186,'Order #27',1751337678033,NULL,'PAID',27);
+INSERT INTO invoice VALUES(28,1751337773603,'Order #28',1751337818848,NULL,'PAID',28);
+INSERT INTO invoice VALUES(29,1751525298027,'Order #29',NULL,NULL,'PENDING',29);
 CREATE TABLE lp (
         artist varchar(255),
         music_type varchar(255),
@@ -265,6 +278,12 @@ INSERT INTO order_item VALUES(41,NULL,NULL,1,0,'PENDING',120000,24,1);
 INSERT INTO order_item VALUES(42,NULL,NULL,1,0,'PENDING',135000,24,2);
 INSERT INTO order_item VALUES(43,NULL,NULL,1,0,'PENDING',120000,25,1);
 INSERT INTO order_item VALUES(44,NULL,NULL,1,0,'PENDING',135000,25,2);
+INSERT INTO order_item VALUES(45,NULL,NULL,1,0,'PENDING',135000,26,2);
+INSERT INTO order_item VALUES(46,NULL,NULL,1,0,'PENDING',145000,26,3);
+INSERT INTO order_item VALUES(47,NULL,NULL,1,0,'PENDING',135000,27,2);
+INSERT INTO order_item VALUES(48,NULL,NULL,1,0,'PENDING',120000,28,1);
+INSERT INTO order_item VALUES(49,NULL,NULL,1,0,'PENDING',120000,29,1);
+INSERT INTO order_item VALUES(50,NULL,NULL,1,0,'PENDING',145000,29,3);
 CREATE TABLE IF NOT EXISTS "order_items" (
         order_id integer,
         created_at timestamp,
@@ -310,6 +329,10 @@ INSERT INTO order_items VALUES(22,1751124922676,'PENDING',462000,420000,17511249
 INSERT INTO order_items VALUES(23,1751124968991,'PENDING',462000,420000,1751124968991,10,23);
 INSERT INTO order_items VALUES(24,1751278226453,'PENDING',280500,255000,1751278226453,10,24);
 INSERT INTO order_items VALUES(25,1751280642736,'PENDING',280500,255000,1751280642736,10,25);
+INSERT INTO order_items VALUES(26,1751336732816,'PENDING',308000,280000,1751336732816,10,26);
+INSERT INTO order_items VALUES(27,1751337644176,'PENDING',148500,135000,1751337644176,10,27);
+INSERT INTO order_items VALUES(28,1751337773598,'PENDING',132000,120000,1751337773598,10,28);
+INSERT INTO order_items VALUES(29,1751525298015,'PENDING',291500,265000,1751525298015,10,29);
 CREATE TABLE product (
         type varchar(31) not null,
         product_id integer,
@@ -328,9 +351,9 @@ CREATE TABLE product (
         weight float,
         primary key (product_id)
     );
-INSERT INTO product VALUES('book',1,'978-0-7432-7356-5','New',1751074513000,'20x13x2 cm',NULL,NULL,'A classic American novel about the Jazz Age and the American Dream.',120000,16,0,'The Great Gatsby\',1751280642753,0.30000001192092895507);
-INSERT INTO product VALUES('book',2,'978-0-06-112008-4','New',1751074513000,'21x14x2.5 cm','https://covers.openlibrary.org/b/id/8226816-L.jpg','2024-01-10','A gripping tale of racial injustice and childhood innocence in the American South.',135000,13,0,'To Kill a Mockingbird',1751280642755,0.34999999403953552246);
-INSERT INTO product VALUES('book',3,'978-0-452-28423-4','New',1751074513000,'20x13x2 cm','https://covers.openlibrary.org/b/id/8226112-L.jpg','2024-01-12','A dystopian social science fiction novel about totalitarianism.',145000,23,1,'1984',1751124774669,0.2800000011920928955);
+INSERT INTO product VALUES('book',1,'978-0-7432-7356-5','New',1751074513000,'20x13x2 cm',NULL,NULL,'A classic American novel about the Jazz Age and the American Dream.',120000,14,0,'The Great Gatsby\',1751525298038,0.30000001192092895507);
+INSERT INTO product VALUES('book',2,'978-0-06-112008-4','New',1751074513000,'21x14x2.5 cm','https://covers.openlibrary.org/b/id/8226816-L.jpg','2024-01-10','A gripping tale of racial injustice and childhood innocence in the American South.',135000,11,0,'To Kill a Mockingbird',1751337644195,0.34999999403953552246);
+INSERT INTO product VALUES('book',3,'978-0-452-28423-4','New',1751074513000,'20x13x2 cm','https://covers.openlibrary.org/b/id/8226112-L.jpg','2024-01-12','A dystopian social science fiction novel about totalitarianism.',145000,21,1,'1984',1751525298039,0.2800000011920928955);
 INSERT INTO product VALUES('cd',4,'094638241621','New',1751074513000,'14x12x1 cm','https://upload.wikimedia.org/wikipedia/en/4/42/Beatles_-_Abbey_Road.jpg','2024-01-20','The Beatles final studio album featuring Come Together.',350000,8,0,'Abbey Road',1751116246485,0.10000000149011611938);
 INSERT INTO product VALUES('cd',5,'094637420621','New',1751074513000,'14x12x1 cm','https://upload.wikimedia.org/wikipedia/en/3/3b/Dark_Side_of_the_Moon.png','2024-01-18','Pink Floyd masterpiece exploring conflict and madness.',380000,14,1,'Dark Side of the Moon',1751116246485,0.10000000149011611938);
 INSERT INTO product VALUES('cd',6,'074643851428','New','2025-06-28 08:35:13','14x12x1 cm','https://upload.wikimedia.org/wikipedia/en/5/55/Michael_Jackson_-_Thriller.png','2024-01-22','Michael Jackson''s Thriller with Billie Jean and Beat It.',340000,18,0,'Thriller','2025-06-28 08:35:13',0.10000000000000000555);
@@ -385,6 +408,10 @@ INSERT INTO payment_transaction VALUES(6,250000,1751105467139,NULL,NULL,NULL,'PE
 INSERT INTO payment_transaction VALUES(7,275000,1751105514857,NULL,NULL,NULL,'PENDING',7);
 INSERT INTO payment_transaction VALUES(8,225000,1751105595388,NULL,NULL,NULL,'PENDING',8);
 INSERT INTO payment_transaction VALUES(9,300000,1751106140194,NULL,NULL,NULL,'PENDING',9);
+INSERT INTO payment_transaction VALUES(10,308000,1751336732830,NULL,'VNPay',NULL,'SUCCESS',26);
+INSERT INTO payment_transaction VALUES(11,148500,1751337644188,NULL,'VNPay',NULL,'SUCCESS',27);
+INSERT INTO payment_transaction VALUES(12,132000,1751337773604,NULL,'VNPay',NULL,'SUCCESS',28);
+INSERT INTO payment_transaction VALUES(13,291500,1751525298029,NULL,'VNPay',NULL,'PENDING',29);
 CREATE TABLE user (
         user_id integer,
         email varchar(255) not null unique,

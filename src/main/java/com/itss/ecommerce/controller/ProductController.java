@@ -25,9 +25,7 @@ import java.util.Optional;
 @CrossOrigin(origins = "*")
 public class ProductController {
     
-    private final ProductService productService;
-    private final ProductMapper productMapper;
-    
+    private final ProductService productService;    
     /**
      * Get all products
      */
@@ -36,7 +34,7 @@ public class ProductController {
         log.info("GET /api/products - Fetching all products");
         
         List<Product> products = productService.getAllProducts();
-        List<ProductDTO> productDTOs = productMapper.toDTOList(products);
+        List<ProductDTO> productDTOs = ProductMapper.toDTOList(products);
         
         return ResponseEntity.ok(ApiResponse.success(productDTOs, 
             String.format("Retrieved %d products", productDTOs.size())));
@@ -56,7 +54,7 @@ public class ProductController {
                 .body(ApiResponse.notFound("Product not found with ID: " + id));
         }
         
-        ProductDTO productDTO = productMapper.toDTO(product.get());
+        ProductDTO productDTO = ProductMapper.toDTO(product.get());
         return ResponseEntity.ok(ApiResponse.success(productDTO));
     }
     
@@ -74,7 +72,7 @@ public class ProductController {
                 .body(ApiResponse.notFound("Product not found with barcode: " + barcode));
         }
         
-        ProductDTO productDTO = productMapper.toDTO(product.get());
+        ProductDTO productDTO = ProductMapper.toDTO(product.get());
         return ResponseEntity.ok(ApiResponse.success(productDTO));
     }
     
@@ -87,7 +85,7 @@ public class ProductController {
         log.info("GET /api/products/type/{} - Fetching products", type);
         
         List<Product> products = productService.getProductsByType(type);
-        List<ProductDTO> productDTOs = productMapper.toDTOList(products);
+        List<ProductDTO> productDTOs = ProductMapper.toDTOList(products);
         
         return ResponseEntity.ok(ApiResponse.success(productDTOs,
             String.format("Retrieved %d %s products", productDTOs.size(), type)));
@@ -106,7 +104,7 @@ public class ProductController {
         log.info("GET /api/products/search - Searching products with criteria");
         
         List<Product> products = productService.searchProducts(title, type, minPrice, maxPrice, inStock);
-        List<ProductDTO> productDTOs = productMapper.toDTOList(products);
+        List<ProductDTO> productDTOs = ProductMapper.toDTOList(products);
         
         return ResponseEntity.ok(ApiResponse.success(productDTOs,
             String.format("Found %d products matching criteria", productDTOs.size())));
@@ -120,9 +118,9 @@ public class ProductController {
             @Valid @RequestBody ProductDTO productDTO) {
         log.info("POST /api/products - Creating new product: {}", productDTO.getTitle());
         
-        Product product = productMapper.toEntity(productDTO, productDTO.getType());
+        Product product = ProductMapper.toEntity(productDTO, productDTO.getType());
         Product savedProduct = productService.saveProduct(product);
-        ProductDTO savedProductDTO = productMapper.toDTO(savedProduct);
+        ProductDTO savedProductDTO = ProductMapper.toDTO(savedProduct);
         
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiResponse.success(savedProductDTO, "Product created successfully"));
@@ -137,9 +135,9 @@ public class ProductController {
             @Valid @RequestBody ProductDTO productDTO) {
         log.info("PUT /api/products/{} - Updating product", id);
         
-        Product updatedProduct = productMapper.toEntity(productDTO, productDTO.getType());
+        Product updatedProduct = ProductMapper.toEntity(productDTO, productDTO.getType());
         Product savedProduct = productService.updateProduct(id, updatedProduct);
-        ProductDTO savedProductDTO = productMapper.toDTO(savedProduct);
+        ProductDTO savedProductDTO = ProductMapper.toDTO(savedProduct);
         
         return ResponseEntity.ok(ApiResponse.success(savedProductDTO, "Product updated successfully"));
     }
@@ -167,7 +165,7 @@ public class ProductController {
         log.info("PATCH /api/products/{}/stock - Updating stock by {}", id, quantity);
         
         Product updatedProduct = productService.updateStock(id, quantity);
-        ProductDTO productDTO = productMapper.toDTO(updatedProduct);
+        ProductDTO productDTO = ProductMapper.toDTO(updatedProduct);
         
         return ResponseEntity.ok(ApiResponse.success(productDTO, 
             String.format("Stock updated. New quantity: %d", updatedProduct.getQuantity())));
@@ -197,7 +195,7 @@ public class ProductController {
         log.info("GET /api/products/low-stock - Fetching products with stock below {}", threshold);
         
         List<Product> products = productService.getLowStockProducts(threshold);
-        List<ProductDTO> productDTOs = productMapper.toDTOList(products);
+        List<ProductDTO> productDTOs = ProductMapper.toDTOList(products);
         
         return ResponseEntity.ok(ApiResponse.success(productDTOs,
             String.format("Found %d products with low stock", productDTOs.size())));
@@ -211,7 +209,7 @@ public class ProductController {
         log.info("GET /api/products/rush-order - Fetching products with rush order support");
         
         List<Product> products = productService.getRushOrderProducts();
-        List<ProductDTO> productDTOs = productMapper.toDTOList(products);
+        List<ProductDTO> productDTOs = ProductMapper.toDTOList(products);
         
         return ResponseEntity.ok(ApiResponse.success(productDTOs,
             String.format("Found %d products with rush order support", productDTOs.size())));
@@ -225,7 +223,7 @@ public class ProductController {
         log.info("GET /api/products/books - Fetching all books");
         
         List<Book> books = productService.getAllBooks();
-        List<BookDTO> bookDTOs = productMapper.toBookDTOList(books);
+        List<BookDTO> bookDTOs = ProductMapper.toBookDTOList(books);
         
         return ResponseEntity.ok(ApiResponse.success(bookDTOs,
             String.format("Retrieved %d books", bookDTOs.size())));
@@ -239,7 +237,7 @@ public class ProductController {
         log.info("GET /api/products/cds - Fetching all CDs");
         
         List<CD> cds = productService.getAllCDs();
-        List<CDDTO> cdDTOs = productMapper.toCDDTOList(cds);
+        List<CDDTO> cdDTOs = ProductMapper.toCDDTOList(cds);
         
         return ResponseEntity.ok(ApiResponse.success(cdDTOs,
             String.format("Retrieved %d CDs", cdDTOs.size())));
@@ -253,7 +251,7 @@ public class ProductController {
         log.info("GET /api/products/dvds - Fetching all DVDs");
         
         List<DVD> dvds = productService.getAllDVDs();
-        List<DVDDTO> dvdDTOs = productMapper.toDVDDTOList(dvds);
+        List<DVDDTO> dvdDTOs = ProductMapper.toDVDDTOList(dvds);
         
         return ResponseEntity.ok(ApiResponse.success(dvdDTOs,
             String.format("Retrieved %d DVDs", dvdDTOs.size())));
@@ -267,9 +265,9 @@ public class ProductController {
             @Valid @RequestBody BookDTO bookDTO) {
         log.info("POST /api/products/books - Creating new book: {}", bookDTO.getTitle());
         
-        Book book = productMapper.toEntity(bookDTO);
+        Book book = ProductMapper.toEntity(bookDTO);
         Product savedProduct = productService.saveProduct(book);
-        BookDTO savedBookDTO = productMapper.toDTO((Book) savedProduct);
+        BookDTO savedBookDTO = ProductMapper.toDTO((Book) savedProduct);
         
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiResponse.success(savedBookDTO, "Book created successfully"));
@@ -283,9 +281,9 @@ public class ProductController {
             @Valid @RequestBody CDDTO cdDTO) {
         log.info("POST /api/products/cds - Creating new CD: {}", cdDTO.getTitle());
         
-        CD cd = productMapper.toEntity(cdDTO);
+        CD cd = ProductMapper.toEntity(cdDTO);
         Product savedProduct = productService.saveProduct(cd);
-        CDDTO savedCDDTO = productMapper.toDTO((CD) savedProduct);
+        CDDTO savedCDDTO = ProductMapper.toDTO((CD) savedProduct);
         
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiResponse.success(savedCDDTO, "CD created successfully"));
@@ -299,9 +297,9 @@ public class ProductController {
             @Valid @RequestBody DVDDTO dvdDTO) {
         log.info("POST /api/products/dvds - Creating new DVD: {}", dvdDTO.getTitle());
         
-        DVD dvd = productMapper.toEntity(dvdDTO);
+        DVD dvd = ProductMapper.toEntity(dvdDTO);
         Product savedProduct = productService.saveProduct(dvd);
-        DVDDTO savedDVDDTO = productMapper.toDTO((DVD) savedProduct);
+        DVDDTO savedDVDDTO = ProductMapper.toDTO((DVD) savedProduct);
         
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiResponse.success(savedDVDDTO, "DVD created successfully"));

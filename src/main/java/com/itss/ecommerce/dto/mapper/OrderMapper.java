@@ -11,14 +11,11 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class OrderMapper {
-    
-    private final ProductMapper productMapper;
-    
+public class OrderMapper {    
     /**
      * Convert Order entity to OrderDTO
      */
-    public OrderDTO toDTO(Order order) {
+    public static OrderDTO toDTO(Order order) {
         if (order == null) return null;
         
         OrderDTO dto = new OrderDTO();
@@ -36,9 +33,10 @@ public class OrderMapper {
         }
         
         if (order.getOrderItems() != null) {
-            dto.setOrderItems(order.getOrderItems().stream()
-                    .map(this::toDTO)
-                    .collect(Collectors.toList()));
+            List<OrderItemDTO> orderItems = order.getOrderItems().stream()
+                    .map(OrderMapper::toDTO)
+                    .collect(Collectors.toList());
+            dto.setOrderItems(orderItems);
         }
         
         if (order.getInvoice() != null) {
@@ -51,7 +49,7 @@ public class OrderMapper {
     /**
      * Convert OrderItem entity to OrderItemDTO
      */
-    public OrderItemDTO toDTO(OrderItem orderItem) {
+    public static OrderItemDTO toDTO(OrderItem orderItem) {
         if (orderItem == null) return null;
         
         OrderItemDTO dto = new OrderItemDTO();
@@ -66,7 +64,7 @@ public class OrderMapper {
         
         // Convert product
         if (orderItem.getProduct() != null) {
-            dto.setProduct(productMapper.toDTO(orderItem.getProduct()));
+            dto.setProduct(ProductMapper.toDTO(orderItem.getProduct()));
         }
         
         return dto;
@@ -75,7 +73,7 @@ public class OrderMapper {
     /**
      * Convert DeliveryInformation entity to DeliveryInformationDTO
      */
-    public DeliveryInformationDTO toDTO(DeliveryInformation deliveryInfo) {
+    public static DeliveryInformationDTO toDTO(DeliveryInformation deliveryInfo) {
         if (deliveryInfo == null) return null;
         
         DeliveryInformationDTO dto = new DeliveryInformationDTO();
@@ -96,13 +94,14 @@ public class OrderMapper {
     /**
      * Convert Invoice entity to InvoiceDTO
      */
-    public InvoiceDTO toDTO(Invoice invoice) {
+    public static InvoiceDTO toDTO(Invoice invoice) {
         if (invoice == null) return null;
         
         InvoiceDTO dto = new InvoiceDTO();
         dto.setInvoiceId(invoice.getInvoiceId());
         dto.setOrderId(invoice.getOrder() != null ? invoice.getOrder().getOrderId() : null);
-        dto.setTransactionId(invoice.getSuccessfulTransaction().getTransactionId());
+        dto.setTransactionId(invoice.getSuccessfulTransaction() != null ? 
+                invoice.getSuccessfulTransaction().getTransactionId() : null);
         dto.setDescription(invoice.getDescription());
         dto.setCreatedAt(invoice.getCreatedAt());
         dto.setPaymentStatus(invoice.getPaymentStatus().name());
@@ -116,7 +115,7 @@ public class OrderMapper {
     /**
      * Convert OrderDTO to Order entity
      */
-    public Order toEntity(OrderDTO dto) {
+    public static Order toEntity(OrderDTO dto) {
         if (dto == null) return null;
         
         Order order = new Order();
@@ -136,7 +135,7 @@ public class OrderMapper {
     /**
      * Convert DeliveryInformationDTO to DeliveryInformation entity
      */
-    public DeliveryInformation toEntity(DeliveryInformationDTO dto) {
+    public static DeliveryInformation toEntity(DeliveryInformationDTO dto) {
         if (dto == null) return null;
         
         DeliveryInformation deliveryInfo = new DeliveryInformation();
@@ -150,14 +149,15 @@ public class OrderMapper {
         deliveryInfo.setProvince(dto.getProvince());
         deliveryInfo.setDeliveryMessage(dto.getDeliveryMessage());
         deliveryInfo.setDeliveryFee(dto.getDeliveryFee());
-        
+        deliveryInfo.setDeliveryTime(dto.getDeliveryTime());
+        deliveryInfo.setRushDeliveryInstruction(dto.getRushDeliveryInstruction());
         return deliveryInfo;
     }
     
     /**
      * Convert OrderItemDTO to OrderItem entity
      */
-    public OrderItem toEntity(OrderItemDTO dto) {
+    public static OrderItem toEntity(OrderItemDTO dto) {
         if (dto == null) return null;
         
         OrderItem orderItem = new OrderItem();
@@ -177,40 +177,40 @@ public class OrderMapper {
     /**
      * Convert list of Order entities to OrderDTOs
      */
-    public List<OrderDTO> toDTOList(List<Order> orders) {
+    public static List<OrderDTO> toDTOList(List<Order> orders) {
         if (orders == null) return null;
         return orders.stream()
-                .map(this::toDTO)
+                .map(OrderMapper::toDTO)
                 .collect(Collectors.toList());
     }
     
     /**
      * Convert list of OrderItem entities to OrderItemDTOs
      */
-    public List<OrderItemDTO> toOrderItemDTOList(List<OrderItem> orderItems) {
+    public static List<OrderItemDTO> toOrderItemDTOList(List<OrderItem> orderItems) {
         if (orderItems == null) return null;
         return orderItems.stream()
-                .map(this::toDTO)
+                .map(OrderMapper::toDTO)
                 .collect(Collectors.toList());
     }
     
     /**
      * Convert list of DeliveryInformation entities to DeliveryInformationDTOs
      */
-    public List<DeliveryInformationDTO> toDeliveryInfoDTOList(List<DeliveryInformation> deliveryInfos) {
+    public static List<DeliveryInformationDTO> toDeliveryInfoDTOList(List<DeliveryInformation> deliveryInfos) {
         if (deliveryInfos == null) return null;
         return deliveryInfos.stream()
-                .map(this::toDTO)
+                .map(OrderMapper::toDTO)
                 .collect(Collectors.toList());
     }
     
     /**
      * Convert list of Invoice entities to InvoiceDTOs
      */
-    public List<InvoiceDTO> toInvoiceDTOList(List<Invoice> invoices) {
+    public static List<InvoiceDTO> toInvoiceDTOList(List<Invoice> invoices) {
         if (invoices == null) return null;
         return invoices.stream()
-                .map(this::toDTO)
+                .map(OrderMapper::toDTO)
                 .collect(Collectors.toList());
     }
 }

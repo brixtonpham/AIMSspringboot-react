@@ -48,6 +48,12 @@ public class DeliveryInformationDTO {
     @PositiveOrZero(message = "Delivery fee cannot be negative")
     private Integer deliveryFee = 0;
     
+    @Size(max = 50, message = "Delivery time must not exceed 50 characters")
+    private String deliveryTime;
+    
+    @Size(max = 1000, message = "Rush delivery instruction must not exceed 1000 characters")
+    private String rushDeliveryInstruction;
+    
     // Additional computed fields
     private String fullAddress;
     private Boolean isComplete;
