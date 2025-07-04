@@ -27,6 +27,27 @@ import { OrderModal } from '../components/modals/OrderModal';
 import { UserModal } from '../components/modals/UserModal';
 import { Product, Order, User } from '../types/api';
 
+// Define form data types to match modal interfaces
+interface ProductFormData {
+  title: string;
+  price: number;
+  quantity: number;
+  barcode: string;
+  type: 'book' | 'cd' | 'dvd' | 'lp';
+  weight?: number;
+  rushOrderSupported?: boolean;
+  introduction?: string;
+}
+
+interface UserFormData {
+  name: string;
+  email: string;
+  phone?: string;
+  role: 'USER' | 'ADMIN' | 'MANAGER';
+  isActive: boolean;
+  password?: string;
+}
+
 const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'orders' | 'users'>('overview');
   const [searchQuery, setSearchQuery] = useState('');
@@ -45,6 +66,56 @@ const AdminDashboard: React.FC = () => {
     user?: User;
   }>({ isOpen: false, mode: 'create' });
   const { user } = useAuthStore();
+
+  // Helper function to get product icon
+  const getProductIcon = (type: string) => {
+    if (type === 'book') return '📚';
+    if (type === 'cd') return '💿';
+    return '📀';
+  };
+
+  // Helper function to transform Product to ProductFormData
+  const transformProductToFormData = (product?: Product): Partial<ProductFormData> | undefined => {
+    if (!product) return undefined;
+    return {
+      title: product.title,
+      price: product.price,
+      quantity: product.quantity,
+      barcode: product.barcode,
+      type: product.type as 'book' | 'cd' | 'dvd' | 'lp',
+      weight: product.weight,
+      rushOrderSupported: product.rushOrderSupported,
+      introduction: product.introduction
+    };
+  };
+
+  // Helper function to transform User to UserFormData
+  const transformUserToFormData = (user?: User): Partial<UserFormData> & { userId?: number; createdAt?: string; updatedAt?: string } | undefined => {
+    if (!user) return undefined;
+    
+    // Map CUSTOMER role to USER for the form
+    const mappedRole = user.role === 'CUSTOMER' ? 'USER' : user.role as 'ADMIN' | 'MANAGER' | 'USER';
+    
+    return {
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      role: mappedRole,
+      isActive: user.isActive,
+      userId: user.userId,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    };
+  };
+
+  // Helper function to transform Order for OrderModal
+  const transformOrderForModal = (order?: Order): any => {
+    if (!order) return null;
+    return {
+      ...order,
+      createdAt: order.createdAt ?? new Date().toISOString()
+    };
+  };
 
   // Check if user is admin or manager
   const isAdmin = user?.role === 'ADMIN';
@@ -100,17 +171,17 @@ const AdminDashboard: React.FC = () => {
   });
 
   // Safe data extraction with better error handling
-  const products = Array.isArray(productsResponse?.data) ? productsResponse.data : 
-                  Array.isArray(productsResponse) ? productsResponse : [];
+  const extractedProductsData = productsResponse?.data ?? productsResponse;
+  const products = Array.isArray(extractedProductsData) ? extractedProductsData : [];
   
-  const orders = Array.isArray(ordersResponse?.data) ? ordersResponse.data : 
-                Array.isArray(ordersResponse) ? ordersResponse : [];
+  const extractedOrdersData = ordersResponse?.data ?? ordersResponse;
+  const orders = Array.isArray(extractedOrdersData) ? extractedOrdersData : [];
   
-  const users = Array.isArray(usersResponse?.data) ? usersResponse.data : 
-               Array.isArray(usersResponse) ? usersResponse : [];
+  const extractedUsersData = usersResponse?.data ?? usersResponse;
+  const users = Array.isArray(extractedUsersData) ? extractedUsersData : [];
   
-  const lowStockProducts = Array.isArray(lowStockResponse?.data) ? lowStockResponse.data : 
-                          Array.isArray(lowStockResponse) ? lowStockResponse : [];
+  const extractedLowStockData = lowStockResponse?.data ?? lowStockResponse;
+  const lowStockProducts = Array.isArray(extractedLowStockData) ? extractedLowStockData : [];
 
   // Show error state if any critical API fails
   if (productsError || ordersError || (canAccessDashboard && usersError) || lowStockError) {
@@ -145,18 +216,18 @@ const AdminDashboard: React.FC = () => {
 
   // Safe filtering with null checks
   const filteredProducts = products.filter(product =>
-    product?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product?.type?.toLowerCase().includes(searchQuery.toLowerCase())
+    (product?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
+    (product?.type?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
   );
 
   const filteredOrders = orders.filter(order =>
-    order?.orderId?.toString().includes(searchQuery) ||
-    order?.status?.toLowerCase().includes(searchQuery.toLowerCase())
+    (order?.orderId?.toString().includes(searchQuery) ?? false) ||
+    (order?.status?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
   );
 
   const filteredUsers = users.filter(user =>
-    user?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user?.email?.toLowerCase().includes(searchQuery.toLowerCase())
+    (user?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
+    (user?.email?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
   );
 
   const handleConfirmOrder = async (orderId: number) => {
@@ -164,6 +235,8 @@ const AdminDashboard: React.FC = () => {
       await orderApi.confirm(orderId);
       window.location.reload();
     } catch (error) {
+      console.error('Failed to confirm order:', error);
+      alert('Failed to confirm order. Please try again.');
       throw error;
     }
   };
@@ -173,6 +246,8 @@ const AdminDashboard: React.FC = () => {
       await orderApi.cancel(orderId);
       window.location.reload();
     } catch (error) {
+      console.error('Failed to cancel order:', error);
+      alert('Failed to cancel order. Please try again.');
       throw error;
     }
   };
@@ -182,6 +257,8 @@ const AdminDashboard: React.FC = () => {
       await userApi.create(userData);
       window.location.reload();
     } catch (error) {
+      console.error('Failed to create user:', error);
+      alert('Failed to create user. Please try again.');
       throw error;
     }
   };
@@ -193,6 +270,8 @@ const AdminDashboard: React.FC = () => {
         window.location.reload();
       }
     } catch (error) {
+      console.error('Failed to update user:', error);
+      alert('Failed to update user. Please try again.');
       throw error;
     }
   };
@@ -202,36 +281,42 @@ const AdminDashboard: React.FC = () => {
       await userApi.delete(userId);
       window.location.reload();
     } catch (error) {
+      console.error('Failed to delete user:', error);
+      alert('Failed to delete user. Please try again.');
       throw error;
     }
   };
 
   const handleBlockUser = async (userId: number, reason?: string) => {
     try {
-      await userApi.block(userId, reason, user?.name || 'Administrator');
+      await userApi.block(userId, reason, user?.name ?? 'Administrator');
       window.location.reload();
     } catch (error) {
+      console.error('Failed to block user:', error);
+      alert('Failed to block user. Please try again.');
       throw error;
     }
   };
 
   const handleUnblockUser = async (userId: number) => {
     try {
-      await userApi.unblock(userId, user?.name || 'Administrator');
+      await userApi.unblock(userId, user?.name ?? 'Administrator');
       window.location.reload();
     } catch (error) {
+      console.error('Failed to unblock user:', error);
+      alert('Failed to unblock user. Please try again.');
       throw error;
     }
   };
 
   // Calculate stats with safe operations
   const totalRevenue = orders.reduce((sum, order) => {
-    const amount = order?.totalAmount || 0;
+    const amount = order?.totalAmount ?? 0;
     return sum + (typeof amount === 'number' ? amount : 0);
   }, 0);
   
   const pendingOrders = orders.filter(order => order?.status === 'PENDING').length;
-  const outOfStockProducts = products.filter(product => (product?.quantity || 0) === 0).length;
+  const outOfStockProducts = products.filter(product => (product?.quantity ?? 0) === 0).length;
 
   if (!canAccessDashboard) {
     return (
@@ -378,15 +463,14 @@ const AdminDashboard: React.FC = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2">
-                    {lowStockProducts.slice(0, 5).map((product) => (
-                      <div key={product?.productId || Math.random()} className="flex justify-between items-center">
-                        <span className="font-medium">{product?.title || 'Unknown Product'}</span>
-                        <span className="text-sm text-orange-600">
-                          {product?.quantity || 0} remaining
-                        </span>
-                      </div>
-                    ))}
+                  <div className="space-y-2">                  {lowStockProducts.slice(0, 5).map((product) => (
+                    <div key={product?.productId ?? Math.random()} className="flex justify-between items-center">
+                      <span className="font-medium">{product?.title ?? 'Unknown Product'}</span>
+                      <span className="text-sm text-orange-600">
+                        {product?.quantity ?? 0} remaining
+                      </span>
+                    </div>
+                  ))}
                   </div>
                 </CardContent>
               </Card>
@@ -401,19 +485,19 @@ const AdminDashboard: React.FC = () => {
               <CardContent>
                 <div className="space-y-4">
                   {orders.slice(0, 5).map((order) => (
-                    <div key={order?.orderId || Math.random()} className="flex items-center justify-between">
+                    <div key={order?.orderId ?? Math.random()} className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium">Order #{order?.orderId || 'N/A'}</p>
+                        <p className="font-medium">Order #{order?.orderId ?? 'N/A'}</p>
                         <p className="text-sm text-muted-foreground">
                           {formatDate(order?.createdAt)}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className={`px-2 py-1 text-xs font-medium rounded-full ${getOrderStatusColor(order?.status)}`}>
-                          {order?.status || 'Unknown'}
+                          {order?.status ?? 'Unknown'}
                         </span>
                         <span className="font-medium">
-                          {(order?.totalAmount || 0).toLocaleString()} VND
+                          {(order?.totalAmount ?? 0).toLocaleString()} VND
                         </span>
                       </div>
                     </div>
@@ -450,24 +534,23 @@ const AdminDashboard: React.FC = () => {
               <CardContent>
                 <div className="space-y-4">
                   {filteredProducts.slice(0, 10).map((product) => (
-                    <div key={product?.productId || Math.random()} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div key={product?.productId ?? Math.random()} className="flex items-center justify-between p-4 border rounded-lg">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center">
-                          {product?.type === 'book' ? '📚' : 
-                           product?.type === 'cd' ? '💿' : '📀'}
+                          {getProductIcon(product?.type ?? 'unknown')}
                         </div>
                         <div>
-                          <p className="font-medium">{product?.title || 'Unknown Product'}</p>
+                          <p className="font-medium">{product?.title ?? 'Unknown Product'}</p>
                           <p className="text-sm text-muted-foreground capitalize">
-                            {product?.type || 'unknown'} • {(product?.price || 0).toLocaleString()} VND
+                            {product?.type ?? 'unknown'} • {(product?.price ?? 0).toLocaleString()} VND
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className={`px-2 py-1 text-xs rounded ${
-                          (product?.quantity || 0) > 0 ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
+                          (product?.quantity ?? 0) > 0 ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
                         }`}>
-                          {(product?.quantity || 0) > 0 ? `${product?.quantity} in stock` : 'Out of stock'}
+                          {(product?.quantity ?? 0) > 0 ? `${product?.quantity} in stock` : 'Out of stock'}
                         </span>
                         <Button 
                           variant="outline" 
@@ -536,19 +619,19 @@ const AdminDashboard: React.FC = () => {
               <CardContent>
                 <div className="space-y-4">
                   {filteredOrders.slice(0, 10).map((order) => (
-                    <div key={order?.orderId || Math.random()} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div key={order?.orderId ?? Math.random()} className="flex items-center justify-between p-4 border rounded-lg">
                       <div>
-                        <p className="font-medium">Order #{order?.orderId || 'N/A'}</p>
+                        <p className="font-medium">Order #{order?.orderId ?? 'N/A'}</p>
                         <p className="text-sm text-muted-foreground">
-                          {formatDate(order?.createdAt)} • {order?.orderLines?.length || 0} items
+                          {formatDate(order?.createdAt)} • {order?.orderLines?.length ?? 0} items
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className={`px-2 py-1 text-xs font-medium rounded-full ${getOrderStatusColor(order?.status)}`}>
-                          {order?.status || 'Unknown'}
+                          {order?.status ?? 'Unknown'}
                         </span>
                         <span className="font-medium">
-                          {(order?.totalAmount || 0).toLocaleString()} VND
+                          {(order?.totalAmount ?? 0).toLocaleString()} VND
                         </span>
                         <Button 
                           variant="outline" 
@@ -578,7 +661,7 @@ const AdminDashboard: React.FC = () => {
                             Confirm
                           </Button>
                         )}
-                        {['pending', 'confirmed'].includes(order?.status?.toLowerCase() || '') && (
+                        {['pending', 'confirmed'].includes(order?.status?.toLowerCase() ?? '') && (
                           <Button 
                             variant="outline" 
                             size="sm"
@@ -634,10 +717,10 @@ const AdminDashboard: React.FC = () => {
               <CardContent>
                 <div className="space-y-4">
                   {filteredUsers.slice(0, 10).map((user) => (
-                    <div key={user?.userId || Math.random()} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div key={user?.userId ?? Math.random()} className="flex items-center justify-between p-4 border rounded-lg">
                       <div>
-                        <p className="font-medium">{user?.name || 'Unknown User'}</p>
-                        <p className="text-sm text-muted-foreground">{user?.email || 'No email'}</p>
+                        <p className="font-medium">{user?.name ?? 'Unknown User'}</p>
+                        <p className="text-sm text-muted-foreground">{user?.email ?? 'No email'}</p>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className={`px-2 py-1 text-xs font-medium rounded-full capitalize ${
@@ -646,7 +729,7 @@ const AdminDashboard: React.FC = () => {
                           {user?.isActive ? 'Active' : 'Inactive'}
                         </span>
                         <span className="px-2 py-1 bg-blue-100 text-blue-600 text-xs font-medium rounded-full capitalize">
-                          {user?.role?.toLowerCase() || 'user'}
+                          {user?.role?.toLowerCase() ?? 'user'}
                         </span>
                         <Button 
                           variant="outline" 
@@ -741,7 +824,7 @@ const AdminDashboard: React.FC = () => {
       <ProductModal
         isOpen={modalState.isOpen}
         mode={modalState.mode}
-        initialData={modalState.product}
+        initialData={transformProductToFormData(modalState.product)}
         onClose={() => setModalState({ isOpen: false, mode: 'create' })}
         onSubmit={async (data) => {
           try {
@@ -752,6 +835,8 @@ const AdminDashboard: React.FC = () => {
             }
             window.location.reload();
           } catch (error) {
+            console.error('Failed to save product:', error);
+            alert('Failed to save product. Please try again.');
             throw error;
           }
         }}
@@ -759,7 +844,7 @@ const AdminDashboard: React.FC = () => {
       
       <OrderModal
         isOpen={orderModalState.isOpen}
-        order={orderModalState.order}
+        order={transformOrderForModal(orderModalState.order)}
         onClose={() => setOrderModalState({ isOpen: false })}
         onConfirmOrder={handleConfirmOrder}
         onCancelOrder={handleCancelOrder}
@@ -768,7 +853,7 @@ const AdminDashboard: React.FC = () => {
       <UserModal
         isOpen={userModalState.isOpen}
         mode={userModalState.mode}
-        initialData={userModalState.user}
+        initialData={transformUserToFormData(userModalState.user)}
         onClose={() => setUserModalState({ isOpen: false, mode: 'create' })}
         onSubmit={async (data) => {
           try {
@@ -778,6 +863,8 @@ const AdminDashboard: React.FC = () => {
               await handleUpdateUser(data);
             }
           } catch (error) {
+            console.error('Failed to save user:', error);
+            alert('Failed to save user. Please try again.');
             throw error;
           }
         }}
