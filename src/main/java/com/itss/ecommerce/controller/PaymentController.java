@@ -96,7 +96,7 @@ public class PaymentController {
                 Long orderId = Long.parseLong(txnRef);
                 orderService.getOrderById(orderId).ifPresent(order -> {
                     notificationService.sendPaymentConfirmation(order, NotificationServiceProvider.EMAIL);
-                    emailService.sendOrderConfirmationEmail(order);
+                    System.out.println("Payment confirmation sent to email: " + order.getDeliveryInformation().getEmail());
                 });
 
                 // Log successful payment
