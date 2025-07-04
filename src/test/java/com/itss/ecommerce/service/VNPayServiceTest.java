@@ -1,7 +1,7 @@
 package com.itss.ecommerce.service;
 
 import com.itss.ecommerce.config.VNPayConfig;
-import com.itss.ecommerce.dto.vnpay.PaymentRequest;
+import com.itss.ecommerce.dto.payment.request.PaymentRequest;
 import com.itss.ecommerce.service.VNPayService.PaymentResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;

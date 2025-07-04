@@ -2,7 +2,7 @@
  * DTO class for handling VNPAY payment return response
  * Contains all fields returned by VNPAY after payment processing
  */
-package com.itss.ecommerce.dto.vnpay;
+package com.itss.ecommerce.dto.payment;
 
 import java.time.LocalDateTime;
 

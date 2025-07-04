@@ -2,7 +2,7 @@
  * DTO class for payment request parameters
  * Contains all required fields for creating a VNPAY payment
  */
-package com.itss.ecommerce.dto.vnpay;
+package com.itss.ecommerce.dto.payment.request;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
