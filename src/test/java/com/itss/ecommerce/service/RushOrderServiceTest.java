@@ -46,6 +46,9 @@ class RushOrderServiceTest {
     @Mock
     private InvoiceRepository invoiceRepository;
     
+    @Mock
+    private PaymentTransactionRepository paymentTransactionRepository;
+    
     @InjectMocks
     private OrderService rushOrderService; // Using OrderService as it handles rush orders
     
@@ -120,6 +123,7 @@ class RushOrderServiceTest {
         when(orderRepository.save(any(Order.class))).thenReturn(rushOrder);
         when(deliveryRepository.save(any(DeliveryInformation.class))).thenReturn(deliveryInfo);
         when(invoiceRepository.save(any())).thenReturn(null);
+        when(paymentTransactionRepository.save(any())).thenReturn(new PaymentTransaction());
         
         OrderService.CartItem cartItem = new OrderService.CartItem(rushProduct, 1);
         List<OrderService.CartItem> cartItems = Arrays.asList(cartItem);

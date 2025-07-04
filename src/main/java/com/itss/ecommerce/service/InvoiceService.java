@@ -102,7 +102,7 @@ public class InvoiceService {
         }
         
         
-        invoice.markAsPaid(paymentTransactionRepository.findByTransactionId(transactionId));
+        invoice.markAsPaid(paymentTransactionRepository.findByTransactionId(Long.parseLong(transactionId)));
         Invoice savedInvoice = invoiceRepository.save(invoice);
         
         // Log the payment
@@ -181,7 +181,7 @@ public class InvoiceService {
      * Get invoice by transaction ID
      */
     @Transactional(readOnly = true)
-    public Optional<Invoice> getInvoiceByTransactionId(String transactionId) {
+    public Optional<Invoice> getInvoiceByTransactionId(Long transactionId) {
         log.debug("Fetching invoice by transaction ID: {}", transactionId);
         return Optional.ofNullable(paymentTransactionRepository.findInvoiceByTransactionId(transactionId));
     }
@@ -260,7 +260,7 @@ public class InvoiceService {
             // Here you would integrate with actual payment gateways
             // For demo purposes, we'll simulate success
             
-            String transactionId = generateTransactionId();
+            // String transactionId = generateTransactionId();
             //invoice.markAsPaid(paymentTransactionRepository.save(
             //    new PaymentTransaction(transactionId, invoice, paymentMethod, transactionData)
             //));
@@ -329,5 +329,9 @@ public class InvoiceService {
         
         log.info("Refund processed for invoice: {}", invoiceId);
         return savedInvoice;
+    }
+    public void saveInvoice(Invoice invoice) {
+        log.debug("Saving invoice: {}", invoice);
+        invoiceRepository.save(invoice);
     }
 }

@@ -2,7 +2,7 @@
  * DTO class for refund requests
  * Contains all parameters required by VNPAY's refund API
  */
-package com.itss.ecommerce.dto.vnpay;
+package com.itss.ecommerce.dto.payment.request;
 
 /**
  * Refund request parameters

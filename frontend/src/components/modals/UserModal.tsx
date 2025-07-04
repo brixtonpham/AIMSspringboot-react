@@ -9,7 +9,7 @@ interface UserFormData {
   email: string;
   phone?: string;
   address?: string;
-  role: 'USER' | 'ADMIN' | 'MANAGER';
+  role: 'ADMIN' | 'MANAGER';
   isActive: boolean;
   password?: string;
 }
@@ -42,7 +42,7 @@ export const UserModal: React.FC<UserModalProps> = ({
     email: '',
     phone: '',
     address: '',
-    role: 'USER',
+    role: 'MANAGER',
     isActive: true,
     password: ''
   });
@@ -59,7 +59,7 @@ export const UserModal: React.FC<UserModalProps> = ({
           email: initialData.email || '',
           phone: initialData.phone || '',
           address: initialData.address || '',
-          role: initialData.role || 'USER',
+          role: initialData.role || 'MANAGER',
           isActive: initialData.isActive !== undefined ? initialData.isActive : true,
           password: ''
         });
@@ -69,7 +69,7 @@ export const UserModal: React.FC<UserModalProps> = ({
           email: '',
           phone: '',
           address: '',
-          role: 'USER',
+          role: 'MANAGER',
           isActive: true,
           password: ''
         });
@@ -343,9 +343,8 @@ export const UserModal: React.FC<UserModalProps> = ({
                   className="w-full px-3 py-2 border border-input bg-background rounded-md text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   required
                 >
-                  <option value="USER">👤 User</option>
-                  <option value="ADMIN">👑 Admin</option>
                   <option value="MANAGER">🏢 Manager</option>
+                  <option value="ADMIN">👑 Admin</option>
                 </select>
               </div>
               

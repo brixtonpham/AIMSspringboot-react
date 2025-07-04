@@ -8,10 +8,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.itss.ecommerce.config.VNPayConfig;
-import com.itss.ecommerce.dto.vnpay.IPNResponse;
-import com.itss.ecommerce.dto.vnpay.PaymentRequest;
-import com.itss.ecommerce.dto.vnpay.QueryRequest;
-import com.itss.ecommerce.dto.vnpay.RefundRequest;
+import com.itss.ecommerce.dto.payment.request.PaymentRequest;
+import com.itss.ecommerce.dto.payment.request.QueryRequest;
+import com.itss.ecommerce.dto.payment.request.RefundRequest;
+import com.itss.ecommerce.dto.payment.response.IPNResponse;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;

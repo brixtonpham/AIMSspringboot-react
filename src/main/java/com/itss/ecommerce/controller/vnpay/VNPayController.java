@@ -4,46 +4,56 @@
  */
 package com.itss.ecommerce.controller.vnpay;
 
-import com.itss.ecommerce.dto.vnpay.IPNResponse;
-import com.itss.ecommerce.dto.vnpay.PaymentRequest;
-import com.itss.ecommerce.dto.vnpay.QueryRequest;
-import com.itss.ecommerce.dto.vnpay.RefundRequest;
+import com.itss.ecommerce.dto.payment.request.PaymentRequest;
+import com.itss.ecommerce.dto.payment.request.QueryRequest;
+import com.itss.ecommerce.dto.payment.request.RefundRequest;
+import com.itss.ecommerce.dto.payment.response.IPNResponse;
+import com.itss.ecommerce.entity.Invoice;
+import com.itss.ecommerce.entity.PaymentTransaction;
 import com.itss.ecommerce.service.EmailService;
+import com.itss.ecommerce.service.InvoiceService;
 import com.itss.ecommerce.service.OrderService;
-import com.itss.ecommerce.service.VNPayService;
-import com.itss.ecommerce.service.VNPayService.PaymentResponse;
-import com.itss.ecommerce.service.VNPayService.QueryResponse;
-import com.itss.ecommerce.service.VNPayService.RefundResponse;
+import com.itss.ecommerce.dto.payment.response.PaymentResponse;
+import com.itss.ecommerce.dto.payment.response.QueryResponse;
+import com.itss.ecommerce.dto.payment.response.RefundResponse;
+import com.itss.ecommerce.service.payment.PaymentServiceFactory;
+import com.itss.ecommerce.service.payment.gateway.IPaymentService;
+import com.itss.ecommerce.service.PaymentTransactionService;
+import com.itss.ecommerce.service.notification.INotificationService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
-@CrossOrigin(origins = "http://localhost:5173")
-@RequestMapping("/api/payment")
+
+//@CrossOrigin(origins = "http://localhost:5173")
+//@RequestMapping("/api/payment")
+@Slf4j
+@RequiredArgsConstructor
 @Controller
 public class VNPayController {
 
-    private static final Logger logger = LoggerFactory.getLogger(VNPayController.class);
-    private final VNPayService vnPayService;
+    // private final VNPayService vnPayService;
     private final EmailService emailService;
     private final OrderService orderService;
-
-    public VNPayController(VNPayService vnPayService, EmailService emailService, OrderService orderService) {
-        this.vnPayService = vnPayService;
-        this.emailService = emailService;
-        this.orderService = orderService;
-    }
+    private final PaymentTransactionService paymentTransactionService;
+    private final InvoiceService invoiceService;
+    private final PaymentServiceFactory paymentServiceFactory;
 
     /**
      * API endpoint for payment form information
@@ -102,59 +112,81 @@ public class VNPayController {
      * @param model         Spring MVC model
      * @return return page view name
      */
-   @GetMapping("/vnpay/return")
-public RedirectView returnPage(
-        @RequestParam Map<String, String> requestParams,
-        HttpServletRequest request) {
+    @GetMapping("/vnpay/return")
+    public RedirectView returnPage(
+            @RequestParam Map<String, String> requestParams,
+            HttpServletRequest request) {
 
-    // Prepare fields for hash validation
-    Map<String, String> fields = new HashMap<>(requestParams);
-    String vnp_SecureHash = fields.get("vnp_SecureHash");
-    fields.remove("vnp_SecureHashType");
-    fields.remove("vnp_SecureHash");
+        // Prepare fields for hash validation
+        Map<String, String> fields = new HashMap<>(requestParams);
+        String vnp_SecureHash = fields.get("vnp_SecureHash");
+        fields.remove("vnp_SecureHashType");
+        fields.remove("vnp_SecureHash");
 
-    // Validate hash
-    boolean validHash = vnPayService.hashAllFields(fields).equals(vnp_SecureHash);
+        // Validate hash
+        boolean validHash = paymentServiceFactory.getDefaultPaymentService().generateSecureHash(fields)
+                .equals(vnp_SecureHash);
 
-    // Extract needed info
-    String txnRef = fields.get("vnp_TxnRef");
-    String responseCode = fields.get("vnp_ResponseCode");
-    String amount = fields.getOrDefault("vnp_Amount", "0");
-    String orderInfo = fields.get("vnp_OrderInfo");
-    String payDate = fields.get("vnp_PayDate");
+        // Extract needed info
+        String txnRef = fields.get("vnp_TxnRef");
+        String responseCode = fields.get("vnp_ResponseCode");
+        String amount = fields.getOrDefault("vnp_Amount", "0");
+        String orderInfo = fields.get("vnp_OrderInfo");
+        String payDate = fields.get("vnp_PayDate");
 
-    String status = "fail";
-    if (validHash && "00".equals(responseCode) && txnRef != null) {
-        status = "success";
-        try {
-            Long orderId = Long.parseLong(txnRef);
-            orderService.getOrderById(orderId).ifPresent(order -> {
-                emailService.sendOrderConfirmationEmail(order);
-            });
-        } catch (Exception e) {
-            // Log error if needed
+        String status = "fail";
+        if (validHash && "00".equals(responseCode) && txnRef != null) {
+            status = "success";
+            try {
+                Long orderId = Long.parseLong(txnRef);
+                orderService.getOrderById(orderId).ifPresent(order -> {
+                    emailService.sendOrderConfirmationEmail(order);
+                });
+
+                // Log successful payment
+                log.info("Payment successful for order ID: {}", txnRef);
+
+                // Update invoice status to paid
+                Optional<Invoice> invoice = invoiceService.getInvoiceByOrderId(Long.parseLong(txnRef));
+                if (invoice.isPresent()) {
+                    Invoice inv = invoice.get();
+                    inv.setPaymentStatus(Invoice.PaymentStatus.PAID);
+                    inv.setPaidAt(LocalDateTime.now());
+                    invoiceService.saveInvoice(inv);
+
+                    // Update payment transaction status
+                    PaymentTransaction paymentTransaction = paymentTransactionService
+                            .findPendingPaymentTransactionsByInvoiceId(inv.getInvoiceId());
+                    if (paymentTransaction != null) {
+                        paymentTransactionService.updatePaymentTransactionStatus(paymentTransaction,
+                                PaymentTransaction.TransactionStatus.SUCCESS);
+                    }
+                } else {
+                    // Handle case where invoice is not found
+                }
+            } catch (Exception e) {
+                // Log error if needed
+            }
+        } else {
+            try {
+                Long orderId = Long.parseLong(txnRef);
+                orderService.deleteOrderById(orderId);
+            } catch (Exception e) {
+                // Log error if needed
+            }
         }
-    } else if (validHash && txnRef != null) {
-        try {
-            Long orderId = Long.parseLong(txnRef);
-            orderService.deleteOrderById(orderId);
-        } catch (Exception e) {
-            // Log error if needed
-        }
+
+        // Build redirect URL with query params for frontend
+        String redirectUrl = String.format(
+                "http://localhost:5173/order-confirmation?status=%s&orderId=%s&amount=%s&orderInfo=%s&payDate=%s",
+                status,
+                txnRef != null ? txnRef : "",
+                amount,
+                orderInfo != null ? orderInfo : "",
+                payDate != null ? payDate : "");
+
+        return new RedirectView(redirectUrl);
     }
-
-    // Build redirect URL with query params for frontend
-    String redirectUrl = String.format(
-        "http://localhost:5173/order-confirmation?status=%s&orderId=%s&amount=%s&orderInfo=%s&payDate=%s",
-        status,
-        txnRef != null ? txnRef : "",
-        amount,
-        orderInfo != null ? orderInfo : "",
-        payDate != null ? payDate : ""
-    );
-
-    return new RedirectView(redirectUrl);
-}
 
     /**
      * Renders the IPN test page
@@ -182,7 +214,8 @@ public RedirectView returnPage(
     public ResponseEntity<PaymentResponse> createPayment(
             @RequestBody PaymentRequest request,
             HttpServletRequest servletRequest) {
-        PaymentResponse response = vnPayService.createPayment(request, servletRequest);
+        IPaymentService paymentService = paymentServiceFactory.getDefaultPaymentService();
+        PaymentResponse response = paymentService.createPayment(request, servletRequest);
         return ResponseEntity.ok(response);
     }
 
@@ -198,7 +231,8 @@ public RedirectView returnPage(
     public ResponseEntity<QueryResponse> queryTransaction(
             @RequestBody QueryRequest request,
             HttpServletRequest servletRequest) {
-        QueryResponse response = vnPayService.queryTransaction(request, servletRequest);
+        IPaymentService paymentService = paymentServiceFactory.getDefaultPaymentService();
+        QueryResponse response = paymentService.queryTransaction(request, servletRequest);
         return ResponseEntity.ok(response);
     }
 
@@ -214,7 +248,8 @@ public RedirectView returnPage(
     public ResponseEntity<RefundResponse> refundTransaction(
             @RequestBody RefundRequest request,
             HttpServletRequest servletRequest) {
-        RefundResponse response = vnPayService.refundTransaction(request, servletRequest);
+        IPaymentService paymentService = paymentServiceFactory.getDefaultPaymentService();
+        RefundResponse response = paymentService.refundTransaction(request, servletRequest);
         return ResponseEntity.ok(response);
     }
 
@@ -237,8 +272,8 @@ public RedirectView returnPage(
                 vnpParams.put(key, value.get(0));
             }
         });
-
-        IPNResponse response = vnPayService.handleIpnRequest(vnpParams);
+        IPaymentService paymentService = paymentServiceFactory.getDefaultPaymentService();
+        IPNResponse response = paymentService.handleIpnRequest(vnpParams);
         return ResponseEntity.ok(response);
     }
 }

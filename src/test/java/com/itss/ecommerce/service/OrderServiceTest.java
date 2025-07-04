@@ -40,6 +40,9 @@ class OrderServiceTest {
     @Mock
     private AuditLogService auditLogService;
     
+    @Mock
+    private PaymentTransactionRepository paymentTransactionRepository;
+    
     @InjectMocks
     private OrderService orderService;
     
@@ -106,7 +109,7 @@ class OrderServiceTest {
     void testProcessPendingOrderStatusUpdate() {
         // Given - Arrange test data
         Long orderId = 1L;
-        Order.OrderStatus newStatus = Order.OrderStatus.PROCESSING;
+        Order.OrderStatus newStatus = Order.OrderStatus.CONFIRMED;
         Order.OrderStatus oldStatus = Order.OrderStatus.PENDING;
         
         Order updatedOrder = new Order();
@@ -172,6 +175,7 @@ class OrderServiceTest {
         when(orderRepository.save(any(Order.class))).thenReturn(sampleOrder);
         when(productRepository.save(any(Product.class))).thenReturn(sampleProduct);
         when(invoiceRepository.save(any(Invoice.class))).thenReturn(new Invoice());
+        when(paymentTransactionRepository.save(any())).thenReturn(new PaymentTransaction());
         when(auditLogService.logOrderAction(anyLong(), any(), anyString(), anyString()))
             .thenReturn(new AuditLog());
         
@@ -220,7 +224,7 @@ class OrderServiceTest {
         when(orderRepository.findById(nonExistentOrderId)).thenReturn(Optional.empty());
         
         // When & Then - Act and assert exception
-        assertThatThrownBy(() -> orderService.updateOrderStatus(nonExistentOrderId, Order.OrderStatus.PROCESSING))
+        assertThatThrownBy(() -> orderService.updateOrderStatus(nonExistentOrderId, Order.OrderStatus.CONFIRMED))
             .isInstanceOf(RuntimeException.class)
             .hasMessageContaining("Order not found with ID: " + nonExistentOrderId);
         

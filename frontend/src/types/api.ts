@@ -116,6 +116,8 @@ export interface DeliveryInformationDTO {
   address: string;
   deliveryMessage?: string;
   deliveryFee?: number;
+  deliveryTime?: string;
+  rushDeliveryInstruction?: string;
 }
 
 // Invoice types

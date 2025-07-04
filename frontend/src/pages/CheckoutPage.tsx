@@ -21,6 +21,8 @@ interface CheckoutFormData {
   customerAddress: string;
   paymentMethod: 'CREDIT_CARD' | 'CASH_ON_DELIVERY' | 'VNPAY';
   rushDelivery: boolean;
+  deliveryTime: string;
+  rushDeliveryInstruction: string;
 }
 
 type LocationData = Record<string, Record<string, string[]>>;
@@ -53,6 +55,8 @@ const CheckoutPage: React.FC = () => {
       customerAddress: user?.address || '',
       paymentMethod: 'VNPAY',
       rushDelivery: false,
+      deliveryTime: '',
+      rushDeliveryInstruction: '',
     },
   });
 
@@ -62,6 +66,8 @@ const CheckoutPage: React.FC = () => {
     // Uncheck rushDelivery if province is not 'Hà Nội'
     if (watchedValues.customerProvince !== 'Hà Nội' && form.getValues('rushDelivery')) {
       form.setValue('rushDelivery', false);
+      form.setValue('deliveryTime', '');
+      form.setValue('rushDeliveryInstruction', '');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watchedValues.customerProvince]);
@@ -110,16 +116,18 @@ const CheckoutPage: React.FC = () => {
           ward: data.customerWard,
           address: data.customerAddress,
           deliveryFee: deliveryFee,
+          deliveryTime: data.rushDelivery ? data.deliveryTime : undefined,
+          rushDeliveryInstruction: data.rushDelivery ? data.rushDeliveryInstruction : undefined,
         },
       };
 
-      const response = await orderApi.create(orderData);
-      console.log('Response from Order creation request returns:', response);
-
       if (data.paymentMethod === 'VNPAY') {
+        const response = await orderApi.create(orderData);
+        console.log('Response from Order creation request:', response);
+
         const paymentRequest = {
           amount: finalTotal.toString(),
-          orderId: response.data.orderId.toString(),
+          orderId: response.data.orderId,
           language: 'vn',
           vnp_Version: '2.1.0',
           bankCode: "VNBANK"
@@ -386,7 +394,13 @@ const CheckoutPage: React.FC = () => {
                               <input
                                 type="checkbox"
                                 checked={field.value}
-                                onChange={field.onChange}
+                                onChange={(e) => {
+                                  field.onChange(e);
+                                  if (!e.target.checked) {
+                                    form.setValue('deliveryTime', '');
+                                    form.setValue('rushDeliveryInstruction', '');
+                                  }
+                                }}
                                 className="mt-1"
                                 disabled={
                                   watchedValues.customerProvince !== 'Hà Nội' ||
@@ -407,6 +421,56 @@ const CheckoutPage: React.FC = () => {
                           </FormItem>
                         )}
                       />
+
+                      {/* Rush Delivery Fields */}
+                      {watchedValues.rushDelivery && (
+                        <div className="space-y-4 p-4 bg-orange-50 rounded-lg border border-orange-200">
+                          <h4 className="font-medium text-orange-800">Rush Delivery Information</h4>
+                          
+                          <FormField
+                            control={form.control}
+                            name="deliveryTime"
+                            rules={{ required: watchedValues.rushDelivery ? 'Delivery time is required for rush delivery' : false }}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Preferred Delivery Time</FormLabel>
+                                <FormControl>
+                                  <select
+                                    {...field}
+                                    className="pl-3 pr-8 py-2 border rounded w-full"
+                                  >
+                                    <option value="">Select preferred time</option>
+                                    <option value="morning">Morning (8AM - 12PM)</option>
+                                    <option value="afternoon">Afternoon (12PM - 6PM)</option>
+                                    <option value="evening">Evening (6PM - 10PM)</option>
+                                    <option value="anytime">Anytime (8AM - 10PM)</option>
+                                  </select>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name="rushDeliveryInstruction"
+                            rules={{ required: watchedValues.rushDelivery ? 'Delivery instruction is required for rush delivery' : false }}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Delivery Instructions</FormLabel>
+                                <FormControl>
+                                  <textarea
+                                    {...field}
+                                    placeholder="Please provide specific delivery instructions (e.g., building entrance, floor number, contact person, etc.)"
+                                    className="pl-3 pr-3 py-2 border rounded w-full min-h-[80px] resize-none"
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 )}
@@ -500,7 +564,11 @@ const CheckoutPage: React.FC = () => {
                             <p>{watchedValues.customerProvince}</p>
                             <p>{watchedValues.customerAddress}</p>
                             {watchedValues.rushDelivery && (
-                              <p className="text-orange-600 font-medium">Rush Delivery Selected</p>
+                              <div className="text-orange-600 font-medium space-y-1">
+                                <p>Rush Delivery Selected</p>
+                                <p className="text-sm">Time: {watchedValues.deliveryTime}</p>
+                                <p className="text-sm">Instructions: {watchedValues.rushDeliveryInstruction}</p>
+                              </div>
                             )}
                           </div>
                         </div>

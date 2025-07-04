@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { 
   BarChart3, 
   Package, 
@@ -66,55 +66,13 @@ const AdminDashboard: React.FC = () => {
     user?: User;
   }>({ isOpen: false, mode: 'create' });
   const { user } = useAuthStore();
+  const queryClient = useQueryClient();
 
   // Helper function to get product icon
   const getProductIcon = (type: string) => {
     if (type === 'book') return '📚';
     if (type === 'cd') return '💿';
     return '📀';
-  };
-
-  // Helper function to transform Product to ProductFormData
-  const transformProductToFormData = (product?: Product): Partial<ProductFormData> | undefined => {
-    if (!product) return undefined;
-    return {
-      title: product.title,
-      price: product.price,
-      quantity: product.quantity,
-      barcode: product.barcode,
-      type: product.type as 'book' | 'cd' | 'dvd' | 'lp',
-      weight: product.weight,
-      rushOrderSupported: product.rushOrderSupported,
-      introduction: product.introduction
-    };
-  };
-
-  // Helper function to transform User to UserFormData
-  const transformUserToFormData = (user?: User): Partial<UserFormData> & { userId?: number; createdAt?: string; updatedAt?: string } | undefined => {
-    if (!user) return undefined;
-    
-    // Map CUSTOMER role to USER for the form
-    const mappedRole = user.role === 'CUSTOMER' ? 'USER' : user.role as 'ADMIN' | 'MANAGER' | 'USER';
-    
-    return {
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-      role: mappedRole,
-      isActive: user.isActive,
-      userId: user.userId,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt
-    };
-  };
-
-  // Helper function to transform Order for OrderModal
-  const transformOrderForModal = (order?: Order): any => {
-    if (!order) return null;
-    return {
-      ...order,
-      createdAt: order.createdAt ?? new Date().toISOString()
-    };
   };
 
   // Check if user is admin or manager
@@ -196,8 +154,13 @@ const AdminDashboard: React.FC = () => {
           {ordersError && <p>Orders: {ordersError.message}</p>}
           {usersError && <p>Users: {usersError.message}</p>}
         </div>
-        <Button onClick={() => window.location.reload()} className="mt-4">
-          Reload Page
+        <Button onClick={() => {
+          queryClient.invalidateQueries({ queryKey: ['products'] });
+          queryClient.invalidateQueries({ queryKey: ['orders'] });
+          queryClient.invalidateQueries({ queryKey: ['users'] });
+          queryClient.invalidateQueries({ queryKey: ['low-stock'] });
+        }} className="mt-4">
+          Retry Loading
         </Button>
       </div>
     );
@@ -233,7 +196,9 @@ const AdminDashboard: React.FC = () => {
   const handleConfirmOrder = async (orderId: number) => {
     try {
       await orderApi.confirm(orderId);
-      window.location.reload();
+      // Invalidate and refetch orders data
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['low-stock'] });
     } catch (error) {
       console.error('Failed to confirm order:', error);
       alert('Failed to confirm order. Please try again.');
@@ -244,7 +209,9 @@ const AdminDashboard: React.FC = () => {
   const handleCancelOrder = async (orderId: number) => {
     try {
       await orderApi.cancel(orderId);
-      window.location.reload();
+      // Invalidate and refetch orders data
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['low-stock'] });
     } catch (error) {
       console.error('Failed to cancel order:', error);
       alert('Failed to cancel order. Please try again.');
@@ -255,7 +222,8 @@ const AdminDashboard: React.FC = () => {
   const handleCreateUser = async (userData: any) => {
     try {
       await userApi.create(userData);
-      window.location.reload();
+      // Invalidate and refetch users data
+      queryClient.invalidateQueries({ queryKey: ['users'] });
     } catch (error) {
       console.error('Failed to create user:', error);
       alert('Failed to create user. Please try again.');
@@ -267,7 +235,8 @@ const AdminDashboard: React.FC = () => {
     try {
       if (userModalState.user) {
         await userApi.update(userModalState.user.userId, userData);
-        window.location.reload();
+        // Invalidate and refetch users data
+        queryClient.invalidateQueries({ queryKey: ['users'] });
       }
     } catch (error) {
       console.error('Failed to update user:', error);
@@ -279,7 +248,8 @@ const AdminDashboard: React.FC = () => {
   const handleDeleteUser = async (userId: number) => {
     try {
       await userApi.delete(userId);
-      window.location.reload();
+      // Invalidate and refetch users data
+      queryClient.invalidateQueries({ queryKey: ['users'] });
     } catch (error) {
       console.error('Failed to delete user:', error);
       alert('Failed to delete user. Please try again.');
@@ -289,8 +259,9 @@ const AdminDashboard: React.FC = () => {
 
   const handleBlockUser = async (userId: number, reason?: string) => {
     try {
-      await userApi.block(userId, reason, user?.name ?? 'Administrator');
-      window.location.reload();
+      await userApi.block(userId, reason, user?.name || 'Administrator');
+      // Invalidate and refetch users data
+      queryClient.invalidateQueries({ queryKey: ['users'] });
     } catch (error) {
       console.error('Failed to block user:', error);
       alert('Failed to block user. Please try again.');
@@ -300,8 +271,9 @@ const AdminDashboard: React.FC = () => {
 
   const handleUnblockUser = async (userId: number) => {
     try {
-      await userApi.unblock(userId, user?.name ?? 'Administrator');
-      window.location.reload();
+      await userApi.unblock(userId, user?.name || 'Administrator');
+      // Invalidate and refetch users data
+      queryClient.invalidateQueries({ queryKey: ['users'] });
     } catch (error) {
       console.error('Failed to unblock user:', error);
       alert('Failed to unblock user. Please try again.');
@@ -579,7 +551,9 @@ const AdminDashboard: React.FC = () => {
                             if (window.confirm('Are you sure you want to delete this product?')) {
                               try {
                                 await productApi.delete(product.productId);
-                                window.location.reload();
+                                // Invalidate and refetch products data
+                                queryClient.invalidateQueries({ queryKey: ['products'] });
+                                queryClient.invalidateQueries({ queryKey: ['low-stock'] });
                               } catch (error) {
                                 console.error('Error deleting product:', error);
                                 alert('Failed to delete product. Please try again.');
@@ -824,7 +798,16 @@ const AdminDashboard: React.FC = () => {
       <ProductModal
         isOpen={modalState.isOpen}
         mode={modalState.mode}
-        initialData={transformProductToFormData(modalState.product)}
+        initialData={modalState.product ? {
+          title: modalState.product.title,
+          price: modalState.product.price,
+          quantity: modalState.product.quantity,
+          barcode: modalState.product.barcode || '',
+          type: (modalState.product.type as 'book' | 'cd' | 'dvd' | 'lp') || 'book',
+          weight: modalState.product.weight,
+          rushOrderSupported: modalState.product.rushOrderSupported,
+          introduction: modalState.product.introduction
+        } : undefined}
         onClose={() => setModalState({ isOpen: false, mode: 'create' })}
         onSubmit={async (data) => {
           try {
@@ -833,7 +816,11 @@ const AdminDashboard: React.FC = () => {
             } else if (modalState.mode === 'edit' && modalState.product) {
               await productApi.update(modalState.product.productId, data);
             }
-            window.location.reload();
+            // Invalidate and refetch products data
+            queryClient.invalidateQueries({ queryKey: ['products'] });
+            queryClient.invalidateQueries({ queryKey: ['low-stock'] });
+            // Close modal
+            setModalState({ isOpen: false, mode: 'create' });
           } catch (error) {
             console.error('Failed to save product:', error);
             alert('Failed to save product. Please try again.');
@@ -844,7 +831,25 @@ const AdminDashboard: React.FC = () => {
       
       <OrderModal
         isOpen={orderModalState.isOpen}
-        order={transformOrderForModal(orderModalState.order)}
+        order={orderModalState.order ? {
+          ...orderModalState.order,
+          createdAt: orderModalState.order.createdAt || '',
+          orderLines: undefined,
+          orderItems: orderModalState.order.orderLines?.map(line => ({
+            orderItemId: line.orderLineId,
+            productId: line.product?.productId || 0,
+            title: line.product?.title || 'Unknown Product',
+            price: line.product?.price || 0,
+            quantity: line.quantity,
+            type: line.product?.type || 'unknown',
+            totalFee: line.totalFee,
+            rushOrder: line.rushOrder,
+            status: line.status,
+            deliveryTime: line.deliveryTime,
+            instructions: line.instructions,
+            product: line.product
+          }))
+        } : null}
         onClose={() => setOrderModalState({ isOpen: false })}
         onConfirmOrder={handleConfirmOrder}
         onCancelOrder={handleCancelOrder}
@@ -853,7 +858,16 @@ const AdminDashboard: React.FC = () => {
       <UserModal
         isOpen={userModalState.isOpen}
         mode={userModalState.mode}
-        initialData={transformUserToFormData(userModalState.user)}
+        initialData={userModalState.user ? {
+          userId: userModalState.user.userId,
+          name: userModalState.user.name,
+          email: userModalState.user.email,
+          phone: userModalState.user.phone,
+          role: userModalState.user.role as 'ADMIN' | 'MANAGER',
+          isActive: userModalState.user.isActive,
+          createdAt: userModalState.user.createdAt,
+          updatedAt: userModalState.user.updatedAt
+        } : undefined}
         onClose={() => setUserModalState({ isOpen: false, mode: 'create' })}
         onSubmit={async (data) => {
           try {
@@ -862,6 +876,8 @@ const AdminDashboard: React.FC = () => {
             } else if (userModalState.mode === 'edit') {
               await handleUpdateUser(data);
             }
+            // Close modal after successful operation
+            setUserModalState({ isOpen: false, mode: 'create' });
           } catch (error) {
             console.error('Failed to save user:', error);
             alert('Failed to save user. Please try again.');

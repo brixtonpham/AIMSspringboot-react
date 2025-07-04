@@ -43,6 +43,12 @@ public class DeliveryInformation {
     
     @Column(name = "delivery_fee")
     private Integer deliveryFee = 0;
+    
+    @Column(name = "delivery_time", length = 50)
+    private String deliveryTime;
+    
+    @Column(name = "rush_delivery_instruction", columnDefinition = "TEXT")
+    private String rushDeliveryInstruction;
 
     /**
      * Create delivery information
