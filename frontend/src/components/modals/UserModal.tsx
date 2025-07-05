@@ -12,12 +12,14 @@ interface UserFormData {
   role: 'ADMIN' | 'MANAGER';
   isActive: boolean;
   password?: string;
+  salary?: number;
 }
 
 interface UserModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: UserFormData) => Promise<void>;
+  onPasswordUpdate?: (userId: number, newPassword: string) => Promise<void>;
   mode: 'create' | 'edit' | 'view';
   initialData?: Partial<UserFormData> & {
     userId?: number;
@@ -32,6 +34,7 @@ export const UserModal: React.FC<UserModalProps> = ({
   isOpen,
   onClose,
   onSubmit,
+  onPasswordUpdate,
   mode,
   initialData = {},
   onBlockUser,
@@ -44,12 +47,16 @@ export const UserModal: React.FC<UserModalProps> = ({
     address: '',
     role: 'MANAGER',
     isActive: true,
-    password: ''
+    password: '',
+    salary: 0
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>('');
+  const [emailError, setEmailError] = useState<string>('');
   const [isBlocking, setIsBlocking] = useState(false);
   const [isUnblocking, setIsUnblocking] = useState(false);
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState<string>('');
 
   useEffect(() => {
     if (isOpen) {
@@ -61,7 +68,8 @@ export const UserModal: React.FC<UserModalProps> = ({
           address: initialData.address || '',
           role: initialData.role || 'MANAGER',
           isActive: initialData.isActive !== undefined ? initialData.isActive : true,
-          password: ''
+          password: '',
+          salary: initialData.salary || 0
         });
       } else if (mode === 'create') {
         setFormData({
@@ -71,47 +79,130 @@ export const UserModal: React.FC<UserModalProps> = ({
           address: '',
           role: 'MANAGER',
           isActive: true,
-          password: ''
+          password: '',
+          salary: 0
         });
       }
       setError('');
+      setEmailError('');
+      setPasswordError('');
     }
-  }, [isOpen, mode, initialData]);
+  }, [isOpen, mode, initialData?.userId, initialData?.name, initialData?.email, initialData?.phone, initialData?.address, initialData?.role, initialData?.isActive, initialData?.salary]);
+
+  const validateForm = () => {
+    const errors: string[] = [];
+
+    // Name validation
+    if (!formData.name.trim()) {
+      errors.push('Name is required');
+    } else if (formData.name.length > 255) {
+      errors.push('Name must not exceed 255 characters');
+    }
+
+    // Email validation
+    if (!formData.email.trim()) {
+      errors.push('Email is required');
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        errors.push('Please enter a valid email address');
+      } else if (formData.email.length > 255) {
+        errors.push('Email must not exceed 255 characters');
+      }
+    }
+
+    // Password validation
+    if (mode === 'create' && !formData.password?.trim()) {
+      errors.push('Password is required for new users');
+    } else if (formData.password && formData.password.length < 6) {
+      errors.push('Password must be at least 6 characters');
+    }
+
+    // Phone validation
+    if (formData.phone && formData.phone.trim()) {
+      const phoneRegex = /^[0-9]{10,11}$/;
+      if (!phoneRegex.test(formData.phone.replace(/[^0-9]/g, ''))) {
+        errors.push('Phone number must be 10-11 digits');
+      }
+    }
+
+    // Salary validation
+    if (formData.salary && formData.salary < 0) {
+      errors.push('Salary cannot be negative');
+    }
+
+    return errors;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+    setEmailError('');
 
     try {
-      // Validate required fields
-      if (!formData.name.trim()) {
-        throw new Error('Name is required');
-      }
-      if (!formData.email.trim()) {
-        throw new Error('Email is required');
-      }
-      if (mode === 'create' && !formData.password?.trim()) {
-        throw new Error('Password is required for new users');
+      const validationErrors = validateForm();
+      if (validationErrors.length > 0) {
+        throw new Error(validationErrors.join(', '));
       }
 
-      // Validate email format
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email)) {
-        throw new Error('Please enter a valid email address');
-      }
-
-      await onSubmit(formData);
+      // Exclude password from regular form submission in edit mode
+      const submitData = mode === 'edit' 
+        ? { ...formData, password: undefined }
+        : formData;
+      
+      await onSubmit(submitData);
       onClose();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save user');
+    } catch (err: any) {
+      const errorMessage = err?.response?.data?.message || err?.message || 'Failed to save user';
+      
+      // Check if it's an email-related error
+      if (errorMessage.toLowerCase().includes('email') && errorMessage.toLowerCase().includes('exists')) {
+        setEmailError('This email address is already in use. Please try another email address.');
+      } else {
+        setError(errorMessage);
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleInputChange = (field: keyof UserFormData, value: string | boolean) => {
+  const handleInputChange = (field: keyof UserFormData, value: string | boolean | number) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    
+    // Clear email error when user changes email
+    if (field === 'email') {
+      setEmailError('');
+    }
+    
+    // Clear password error when user changes password
+    if (field === 'password') {
+      setPasswordError('');
+    }
+  };
+
+  const handlePasswordUpdate = async () => {
+    if (!onPasswordUpdate || !initialData.userId || !formData.password) return;
+    
+    // Validate password
+    if (formData.password.length < 6) {
+      setPasswordError('Password must be at least 6 characters long');
+      return;
+    }
+    
+    setIsUpdatingPassword(true);
+    setPasswordError('');
+    
+    try {
+      await onPasswordUpdate(initialData.userId, formData.password);
+      // Clear password field after successful update
+      setFormData(prev => ({ ...prev, password: '' }));
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to update password';
+      setPasswordError(errorMessage);
+    } finally {
+      setIsUpdatingPassword(false);
+    }
   };
 
   const handleBlockUser = async () => {
@@ -248,6 +339,7 @@ export const UserModal: React.FC<UserModalProps> = ({
                 placeholder="Enter full name"
                 disabled={isReadOnly}
                 required
+                maxLength={255}
               />
             </div>
 
@@ -262,9 +354,14 @@ export const UserModal: React.FC<UserModalProps> = ({
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
                 placeholder="Enter email address"
-                disabled={isReadOnly}
+                disabled={isReadOnly || mode === 'edit'}
                 required
+                maxLength={255}
+                className={emailError ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}
               />
+              {emailError && (
+                <p className="text-sm text-red-600 mt-1">{emailError}</p>
+              )}
             </div>
 
             {/* Password Field (only for create mode) */}
@@ -275,9 +372,10 @@ export const UserModal: React.FC<UserModalProps> = ({
                   type="password"
                   value={formData.password || ''}
                   onChange={(e) => handleInputChange('password', e.target.value)}
-                  placeholder="Enter password"
+                  placeholder="Enter password (min 6 characters)"
                   disabled={isReadOnly}
                   required
+                  minLength={6}
                 />
               </div>
             )}
@@ -286,15 +384,40 @@ export const UserModal: React.FC<UserModalProps> = ({
             {mode === 'edit' && (
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  New Password (leave blank to keep current)
+                  New Password
                 </label>
-                <Input
-                  type="password"
-                  value={formData.password || ''}
-                  onChange={(e) => handleInputChange('password', e.target.value)}
-                  placeholder="Enter new password (optional)"
-                  disabled={isReadOnly}
-                />
+                <div className="flex gap-2">
+                  <Input
+                    type="password"
+                    value={formData.password || ''}
+                    onChange={(e) => handleInputChange('password', e.target.value)}
+                    placeholder="Enter new password (min 6 characters)"
+                    disabled={isReadOnly}
+                    minLength={6}
+                    className={passwordError ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}
+                  />
+                  <Button
+                    type="button"
+                    onClick={handlePasswordUpdate}
+                    disabled={isReadOnly || !formData.password || isUpdatingPassword}
+                    className="whitespace-nowrap"
+                  >
+                    {isUpdatingPassword ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Updating...
+                      </>
+                    ) : (
+                      'Update Password'
+                    )}
+                  </Button>
+                </div>
+                {passwordError && (
+                  <p className="text-sm text-red-600 mt-1">{passwordError}</p>
+                )}
+                <p className="text-sm text-gray-500 mt-1">
+                  Password updates are processed separately and will send a confirmation email.
+                </p>
               </div>
             )}
 
@@ -308,8 +431,9 @@ export const UserModal: React.FC<UserModalProps> = ({
                 type="tel"
                 value={formData.phone || ''}
                 onChange={(e) => handleInputChange('phone', e.target.value)}
-                placeholder="Enter phone number"
+                placeholder="Enter phone number (10-11 digits)"
                 disabled={isReadOnly}
+                pattern="[0-9]{10,11}"
               />
             </div>
 
@@ -326,6 +450,22 @@ export const UserModal: React.FC<UserModalProps> = ({
                 disabled={isReadOnly}
                 rows={2}
                 className="w-full px-3 py-2 border border-input bg-background rounded-md text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
+              />
+            </div>
+
+            {/* Salary Field */}
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Salary (VND)
+              </label>
+              <Input
+                type="number"
+                value={formData.salary || 0}
+                onChange={(e) => handleInputChange('salary', parseFloat(e.target.value) || 0)}
+                placeholder="Enter salary"
+                disabled={isReadOnly}
+                min="0"
+                step="1000"
               />
             </div>
 
@@ -365,8 +505,8 @@ export const UserModal: React.FC<UserModalProps> = ({
 
             <div className="flex justify-between pt-4 border-t">
               <div className="flex gap-2">
-                {/* Block/Unblock buttons for view mode */}
-                {mode === 'view' && initialData.userId && onBlockUser && onUnblockUser && (
+                {/* Block/Unblock buttons for edit mode */}
+                {mode === 'edit' && initialData.userId && onBlockUser && onUnblockUser && (
                   <>
                     {initialData.isActive ? (
                       <Button 

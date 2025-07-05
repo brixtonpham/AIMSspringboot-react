@@ -152,4 +152,61 @@ public class NotificationMessageBuilder {
         
         return message.toString();
     }
+    
+    /**
+     * Builds user registration welcome message
+     */
+    public static String buildUserRegistrationMessage(User user) {
+        StringBuilder message = new StringBuilder();
+        message.append("Dear ").append(user.getName()).append(",\n\n");
+        message.append("Welcome to ITSS E-commerce! Your account has been created successfully.\n\n");
+        
+        message.append("Account Details:\n");
+        message.append("Email: ").append(user.getEmail()).append("\n");
+        message.append("Account ID: ").append(user.getUserId()).append("\n");
+        message.append("Role: ").append(user.getRole()).append("\n");
+        message.append("Created: ").append(java.time.LocalDateTime.now()).append("\n\n");
+        
+        message.append("What you can do with your account:\n");
+        if (user.getRole() == User.UserRole.ADMIN) {
+            message.append("- Full administrative access to the system\n");
+            message.append("- Manage users, products, and orders\n");
+            message.append("- View system analytics and reports\n");
+            message.append("- Configure system settings\n");
+        } else if (user.getRole() == User.UserRole.MANAGER) {
+            message.append("- Manage products and inventory\n");
+            message.append("- Process and manage orders\n");
+            message.append("- View sales reports\n");
+            message.append("- Assist customers with their queries\n");
+        } else {
+            message.append("- Browse our extensive product catalog\n");
+            message.append("- Place orders and track deliveries\n");
+            message.append("- Manage your profile and preferences\n");
+            message.append("- Access exclusive member offers\n");
+        }
+        message.append("\n");
+        
+        message.append("Getting Started:\n");
+        message.append("1. Log in to your account using your email and password\n");
+        message.append("2. Complete your profile information\n");
+        message.append("3. Explore our features and start using the platform\n\n");
+        
+        message.append("Security Reminder:\n");
+        message.append("- Keep your login credentials secure\n");
+        message.append("- Use a strong password for your account\n");
+        message.append("- Log out when using shared computers\n\n");
+        
+        message.append("Need Help?\n");
+        message.append("If you have any questions or need assistance, our support team is here to help.\n\n");
+        
+        message.append("Contact Information:\n");
+        message.append("Email: support@itss-ecommerce.com\n");
+        message.append("Phone: +84 123 456 789\n\n");
+        
+        message.append("Thank you for joining ITSS E-commerce!\n\n");
+        message.append("Best regards,\n");
+        message.append("ITSS E-commerce Team");
+        
+        return message.toString();
+    }
 }

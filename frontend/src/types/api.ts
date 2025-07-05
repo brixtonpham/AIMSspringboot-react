@@ -186,8 +186,9 @@ export interface CreateUserRequest {
   email: string;
   password: string;
   phone?: string;
-  role?: string;
   address?: string;
+  role: string;
+  salary?: number;
   isActive?: boolean;
 }
 

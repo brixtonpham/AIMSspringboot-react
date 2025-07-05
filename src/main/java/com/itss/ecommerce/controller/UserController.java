@@ -2,6 +2,8 @@ package com.itss.ecommerce.controller;
 
 import com.itss.ecommerce.dto.*;
 import com.itss.ecommerce.dto.mapper.UserMapper;
+import com.itss.ecommerce.dto.user.CreateUserDTO;
+import com.itss.ecommerce.dto.user.UserDTO;
 import com.itss.ecommerce.entity.User;
 import com.itss.ecommerce.service.admin.UserService;
 
@@ -83,10 +85,10 @@ public class UserController {
      */
     @PostMapping
     public ResponseEntity<ApiResponse<UserDTO>> createUser(
-            @Valid @RequestBody UserDTO userDTO) {
-        log.info("POST /api/users - Creating new user: {}", userDTO.getEmail());
+            @Valid @RequestBody CreateUserDTO createUserDTO) {
+        log.info("POST /api/users - Creating new user: {}", createUserDTO.getEmail());
         
-        User user = UserMapper.toEntity(userDTO);
+        User user = UserMapper.toEntity(createUserDTO);
         User savedUser = userService.createUser(user);
         UserDTO savedUserDTO = UserMapper.toDTO(savedUser);
         
@@ -219,6 +221,21 @@ public class UserController {
         UserDTO userDTO = UserMapper.toDTO(updatedUser);
         
         return ResponseEntity.ok(ApiResponse.success(userDTO, "User email updated successfully"));
+    }
+    
+    /**
+     * Update user password
+     */
+    @PatchMapping("/{id}/password")
+    public ResponseEntity<ApiResponse<UserDTO>> updateUserPassword(
+            @PathVariable @Positive Long id,
+            @RequestParam String newPassword) {
+        log.info("PATCH /api/users/{}/password - Updating user password", id);
+        
+        User updatedUser = userService.updatePasswordWithNotification(id, newPassword);
+        UserDTO userDTO = UserMapper.toDTO(updatedUser);
+        
+        return ResponseEntity.ok(ApiResponse.success(userDTO, "Password updated successfully. Confirmation email sent."));
     }
     
     /**

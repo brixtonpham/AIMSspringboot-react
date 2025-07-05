@@ -239,7 +239,6 @@ const AdminDashboard: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['low-stock'] });
     } catch (error) {
       console.error('Failed to confirm order:', error);
-      alert('Failed to confirm order. Please try again.');
       throw error;
     }
   };
@@ -252,19 +251,29 @@ const AdminDashboard: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['low-stock'] });
     } catch (error) {
       console.error('Failed to cancel order:', error);
-      alert('Failed to cancel order. Please try again.');
       throw error;
     }
   };
 
   const handleCreateUser = async (userData: any) => {
     try {
+      // Format data to match CreateUserRequest interface
+      const createUserData = {
+        name: userData.name,
+        email: userData.email,
+        password: userData.password,
+        phone: userData.phone || undefined,
+        role: userData.role, // Should be 'ADMIN' or 'MANAGER' string
+        salary: userData.salary || 0.0,
+        isActive: userData.isActive !== undefined ? userData.isActive : true
+      };
+      
       await userApi.create(userData);
+      console.log('User created successfully:', createUserData);
       // Invalidate and refetch users data
       queryClient.invalidateQueries({ queryKey: ['users'] });
     } catch (error) {
       console.error('Failed to create user:', error);
-      alert('Failed to create user. Please try again.');
       throw error;
     }
   };
@@ -278,7 +287,6 @@ const AdminDashboard: React.FC = () => {
       }
     } catch (error) {
       console.error('Failed to update user:', error);
-      alert('Failed to update user. Please try again.');
       throw error;
     }
   };
@@ -290,7 +298,6 @@ const AdminDashboard: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
     } catch (error) {
       console.error('Failed to delete user:', error);
-      alert('Failed to delete user. Please try again.');
       throw error;
     }
   };
@@ -302,7 +309,6 @@ const AdminDashboard: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
     } catch (error) {
       console.error('Failed to block user:', error);
-      alert('Failed to block user. Please try again.');
       throw error;
     }
   };
@@ -314,7 +320,17 @@ const AdminDashboard: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
     } catch (error) {
       console.error('Failed to unblock user:', error);
-      alert('Failed to unblock user. Please try again.');
+      throw error;
+    }
+  };
+
+  const handleUpdatePassword = async (userId: number, newPassword: string) => {
+    try {
+      await userApi.updatePassword(userId, newPassword);
+      // Invalidate and refetch users data
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    } catch (error) {
+      console.error('Failed to update password:', error);
       throw error;
     }
   };
@@ -642,9 +658,6 @@ const AdminDashboard: React.FC = () => {
                         <span className={`px-2 py-1 text-xs font-medium rounded-full ${getOrderStatusColor(order?.status)}`}>
                           {order?.status ?? 'Unknown'}
                         </span>
-                        <span className="font-medium">
-                          {(order?.totalAmount ?? 0).toLocaleString()} VND
-                        </span>
                         <Button 
                           variant="outline" 
                           size="sm"
@@ -664,7 +677,6 @@ const AdminDashboard: React.FC = () => {
                                   await handleConfirmOrder(order.orderId);
                                 } catch (error) {
                                   console.error('Error confirming order:', error);
-                                  alert('Failed to confirm order. Please try again.');
                                 }
                               }
                             }}
@@ -684,7 +696,6 @@ const AdminDashboard: React.FC = () => {
                                   await handleCancelOrder(order.orderId);
                                 } catch (error) {
                                   console.error('Error cancelling order:', error);
-                                  alert('Failed to cancel order. Please try again.');
                                 }
                               }
                             }}
@@ -771,7 +782,6 @@ const AdminDashboard: React.FC = () => {
                                   await handleBlockUser(user.userId, reason);
                                 } catch (error) {
                                   console.error('Error blocking user:', error);
-                                  alert('Failed to block user. Please try again.');
                                 }
                               }
                             }}
@@ -790,7 +800,6 @@ const AdminDashboard: React.FC = () => {
                                   await handleUnblockUser(user.userId);
                                 } catch (error) {
                                   console.error('Error unblocking user:', error);
-                                  alert('Failed to unblock user. Please try again.');
                                 }
                               }
                             }}
@@ -809,7 +818,6 @@ const AdminDashboard: React.FC = () => {
                                 await handleDeleteUser(user.userId);
                               } catch (error) {
                                 console.error('Error deleting user:', error);
-                                alert('Failed to delete user. Please try again.');
                               }
                             }
                           }}
@@ -930,7 +938,6 @@ const AdminDashboard: React.FC = () => {
             
             // Show more detailed error message
             const errorMessage = error?.response?.data?.message || error?.response?.data?.error || error?.message || 'Unknown error';
-            alert(`Failed to save product: ${errorMessage}`);
             throw error;
           }
         }}
@@ -987,10 +994,10 @@ const AdminDashboard: React.FC = () => {
             setUserModalState({ isOpen: false, mode: 'create' });
           } catch (error) {
             console.error('Failed to save user:', error);
-            alert('Failed to save user. Please try again.');
             throw error;
           }
         }}
+        onPasswordUpdate={handleUpdatePassword}
         onBlockUser={handleBlockUser}
         onUnblockUser={handleUnblockUser}
       />

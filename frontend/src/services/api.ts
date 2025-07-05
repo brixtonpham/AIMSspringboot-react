@@ -203,6 +203,10 @@ export const userApi = {
   updateEmail: (id: number, email: string): Promise<ApiResponse<User>> => 
     api.patch(`/users/${id}/email`, null, { params: { email } }),
 
+  // Update user password
+  updatePassword: (id: number, newPassword: string): Promise<ApiResponse<User>> => 
+    api.patch(`/users/${id}/password`, null, { params: { newPassword } }),
+
   // Get user count
   getCount: (): Promise<ApiResponse<number>> => 
     api.get('/users/count'),

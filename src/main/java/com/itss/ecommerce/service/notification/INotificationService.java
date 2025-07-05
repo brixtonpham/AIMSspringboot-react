@@ -47,6 +47,24 @@ public interface INotificationService {
     boolean sendUserUnblockedNotification(User user, String unblockedBy, NotificationServiceProvider provider);
 
     /**
+     * Sends user registration welcome notification
+     *
+     * @param user the newly registered user
+     * @param provider the notification service provider to use
+     * @return true if sent successfully, false otherwise
+     */
+    boolean sendUserRegistrationNotification(User user, NotificationServiceProvider provider);
+
+    /**
+     * Sends password update notification
+     *
+     * @param user the user whose password was updated
+     * @param provider the notification service provider to use
+     * @return true if sent successfully, false otherwise
+     */
+    boolean sendPasswordUpdateNotification(User user, NotificationServiceProvider provider);
+
+    /**
      * Gets all available notification providers
      *
      * @return list of available provider types

@@ -1,4 +1,4 @@
-package com.itss.ecommerce.dto;
+package com.itss.ecommerce.dto.user;
 
 public class UserProfileDTO {
     private Long userId;

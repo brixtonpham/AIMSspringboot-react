@@ -6,7 +6,8 @@ package com.itss.ecommerce.service.notification.type;
 public enum NotificationType {
     PAYMENT_NOTIFICATION("Payment Notification"),
     PASSWORD_UPDATE("Password Update"),
-    ACCOUNT_STATUS_UPDATE("Account Status Update");
+    ACCOUNT_STATUS_UPDATE("Account Status Update"),
+    ACCOUNT_REGISTRATION("Account Registration");
     
     private final String displayName;
     

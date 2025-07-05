@@ -119,9 +119,28 @@ public class NotificationService implements INotificationService {
         return sendNotification(notification, NotificationServiceProvider.EMAIL);
     }
 
+    @Override
+    public boolean sendUserRegistrationNotification(User user, NotificationServiceProvider provider) {
+        if (user == null) {
+            System.err.println("Cannot send registration notification: User is null");
+            return false;
+        }
+        
+        String content = NotificationMessageBuilder.buildUserRegistrationMessage(user);
+        Notification notification = new Notification(
+                user.getEmail(),
+                "Welcome to ITSS E-commerce - Account Created Successfully",
+                content,
+                NotificationType.ACCOUNT_REGISTRATION
+        );
+        
+        return sendNotification(notification, provider);
+    }
+
     /**
      * Sends password update notification
      */
+    @Override
     public boolean sendPasswordUpdateNotification(User user, NotificationServiceProvider provider) {
         if (user == null) {
             System.err.println("Cannot send password update notification: User is null");

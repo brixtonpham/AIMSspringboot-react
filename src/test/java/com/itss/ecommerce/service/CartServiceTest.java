@@ -1,7 +1,7 @@
 package com.itss.ecommerce.service;
 
-import com.itss.ecommerce.dto.CartCheckRequest;
-import com.itss.ecommerce.dto.CartCheckResponse;
+import com.itss.ecommerce.dto.cart.CartCheckRequest;
+import com.itss.ecommerce.dto.cart.CartCheckResponse;
 import com.itss.ecommerce.entity.Product;
 import com.itss.ecommerce.entity.Book;
 import com.itss.ecommerce.repository.ProductRepository;

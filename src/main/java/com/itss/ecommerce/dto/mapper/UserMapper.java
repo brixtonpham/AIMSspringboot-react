@@ -1,6 +1,9 @@
 package com.itss.ecommerce.dto.mapper;
 
 import com.itss.ecommerce.dto.*;
+import com.itss.ecommerce.dto.user.CreateUserDTO;
+import com.itss.ecommerce.dto.user.UserDTO;
+import com.itss.ecommerce.dto.user.UserProfileDTO;
 import com.itss.ecommerce.entity.User;
 
 import org.springframework.stereotype.Component;
@@ -97,5 +100,23 @@ public class UserMapper {
         profileDTO.setPhone(userDTO.getPhone());
         profileDTO.setRole(userDTO.getRole());
         return profileDTO;  
+    }
+    
+    /**
+     * Convert CreateUserDTO to User entity
+     */
+    public static User toEntity(CreateUserDTO dto) {
+        if (dto == null) return null;
+        
+        User user = new User();
+        user.setName(dto.getName());
+        user.setEmail(dto.getEmail());
+        user.setPassword(dto.getPassword());
+        user.setPhone(dto.getPhone());
+        user.setRole(dto.getRole() != null ? User.UserRole.valueOf(dto.getRole()) : null);
+        user.setIsActive(dto.getIsActive());
+        user.setSalary(dto.getSalary());
+        
+        return user;
     }
 }
