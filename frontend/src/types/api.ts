@@ -21,6 +21,9 @@ export interface Product {
   type: string;
   createdAt?: string;
   updatedAt?: string;
+  dimensions?: string;
+  condition?: string;
+  stockStatus?: string;
 }
 
 export interface Book extends Product {
@@ -31,6 +34,10 @@ export interface Book extends Product {
   authors?: string;
   publishers?: string;
   coverType?: string;
+  language?: string;
+  pages?: number;
+  author?: string;
+  publisher?: string;
 }
 
 export interface CD extends Product {
@@ -40,6 +47,9 @@ export interface CD extends Product {
   recordLabel?: string;
   artists?: string;
   releaseDate?: string;
+  artist?: string;
+  musicType?: string;
+  tracklist?: string;
 }
 
 export interface DVD extends Product {
@@ -51,6 +61,11 @@ export interface DVD extends Product {
   directors?: string;
   durationMinutes?: number;
   rating?: string;
+  director?: string;
+  runtime?: number;
+  discType?: string;
+  subtitles?: string;
+  languageDvd?: string;
 }
 
 export interface LP extends Product {

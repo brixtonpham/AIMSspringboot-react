@@ -7,7 +7,7 @@ import { Input } from '../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { useCartStore } from '../stores/cartStore';
 import { productApi } from '../services/api';
-import { Book, CD, DVD } from '../types/api';
+import { Book, CD, DVD, LP } from '../types/api';
 
 const ProductDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -73,6 +73,8 @@ const ProductDetailPage: React.FC = () => {
         return '📚';
       case 'cd':
         return '💿';
+      case 'lp':
+        return '🎵';
       default:
         return '📀';
     }
@@ -88,16 +90,16 @@ const ProductDetailPage: React.FC = () => {
               <CardTitle>Book Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {book.authors && (
+              {(book.authors || book.author) && (
                 <div>
                   <span className="font-medium">Authors: </span>
-                  <span className="text-muted-foreground">{book.authors}</span>
+                  <span className="text-muted-foreground">{book.authors || book.author}</span>
                 </div>
               )}
-              {book.publishers && (
+              {(book.publishers || book.publisher) && (
                 <div>
                   <span className="font-medium">Publishers: </span>
-                  <span className="text-muted-foreground">{book.publishers}</span>
+                  <span className="text-muted-foreground">{book.publishers || book.publisher}</span>
                 </div>
               )}
               {book.genre && (
@@ -106,16 +108,30 @@ const ProductDetailPage: React.FC = () => {
                   <span className="text-muted-foreground">{book.genre}</span>
                 </div>
               )}
-              {book.pageCount && (
+              {(book.pageCount || book.pages) && (
                 <div>
                   <span className="font-medium">Pages: </span>
-                  <span className="text-muted-foreground">{book.pageCount}</span>
+                  <span className="text-muted-foreground">{book.pageCount || book.pages}</span>
                 </div>
               )}
               {book.coverType && (
                 <div>
                   <span className="font-medium">Cover: </span>
                   <span className="text-muted-foreground">{book.coverType}</span>
+                </div>
+              )}
+              {book.language && (
+                <div>
+                  <span className="font-medium">Language: </span>
+                  <span className="text-muted-foreground">{book.language}</span>
+                </div>
+              )}
+              {book.publicationDate && (
+                <div>
+                  <span className="font-medium">Publication Date: </span>
+                  <span className="text-muted-foreground">
+                    {new Date(book.publicationDate).toLocaleDateString()}
+                  </span>
                 </div>
               )}
             </CardContent>
@@ -125,23 +141,36 @@ const ProductDetailPage: React.FC = () => {
 
       case 'cd': {
         const cd = product as CD;
-        const trackList = cd.trackList ? cd.trackList.split(',').map((track: string) => track.trim()) : [];
+        const trackList = (cd.trackList || cd.tracklist) ? 
+          (cd.trackList || cd.tracklist)!.split(',').map((track: string) => track.trim()) : [];
         return (
           <Card>
             <CardHeader>
               <CardTitle>CD Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {cd.artists && (
+              {(cd.artists || cd.artist) && (
                 <div>
                   <span className="font-medium">Artists: </span>
-                  <span className="text-muted-foreground">{cd.artists}</span>
+                  <span className="text-muted-foreground">{cd.artists || cd.artist}</span>
                 </div>
               )}
               {cd.recordLabel && (
                 <div>
                   <span className="font-medium">Record Label: </span>
                   <span className="text-muted-foreground">{cd.recordLabel}</span>
+                </div>
+              )}
+              {cd.genre && (
+                <div>
+                  <span className="font-medium">Genre: </span>
+                  <span className="text-muted-foreground">{cd.genre}</span>
+                </div>
+              )}
+              {cd.musicType && (
+                <div>
+                  <span className="font-medium">Music Type: </span>
+                  <span className="text-muted-foreground">{cd.musicType}</span>
                 </div>
               )}
               {cd.releaseDate && (
@@ -175,10 +204,10 @@ const ProductDetailPage: React.FC = () => {
               <CardTitle>DVD Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {dvd.directors && (
+              {(dvd.directors || dvd.director) && (
                 <div>
                   <span className="font-medium">Directors: </span>
-                  <span className="text-muted-foreground">{dvd.directors}</span>
+                  <span className="text-muted-foreground">{dvd.directors || dvd.director}</span>
                 </div>
               )}
               {dvd.studio && (
@@ -187,22 +216,122 @@ const ProductDetailPage: React.FC = () => {
                   <span className="text-muted-foreground">{dvd.studio}</span>
                 </div>
               )}
+              {dvd.genre && (
+                <div>
+                  <span className="font-medium">Genre: </span>
+                  <span className="text-muted-foreground">{dvd.genre}</span>
+                </div>
+              )}
               {dvd.rating && (
                 <div>
                   <span className="font-medium">Rating: </span>
                   <span className="text-muted-foreground">{dvd.rating}</span>
                 </div>
               )}
-              {dvd.durationMinutes && (
+              {(dvd.durationMinutes || dvd.runtime) && (
                 <div>
                   <span className="font-medium">Duration: </span>
-                  <span className="text-muted-foreground">{dvd.durationMinutes} minutes</span>
+                  <span className="text-muted-foreground">{dvd.durationMinutes || dvd.runtime} minutes</span>
                 </div>
               )}
-              {dvd.dvdType && (
+              {(dvd.dvdType || dvd.discType) && (
                 <div>
                   <span className="font-medium">Type: </span>
-                  <span className="text-muted-foreground">{dvd.dvdType}</span>
+                  <span className="text-muted-foreground">{dvd.dvdType || dvd.discType}</span>
+                </div>
+              )}
+              {dvd.subtitles && (
+                <div>
+                  <span className="font-medium">Subtitles: </span>
+                  <span className="text-muted-foreground">{dvd.subtitles}</span>
+                </div>
+              )}
+              {dvd.languageDvd && (
+                <div>
+                  <span className="font-medium">Language: </span>
+                  <span className="text-muted-foreground">{dvd.languageDvd}</span>
+                </div>
+              )}
+              {dvd.releaseDate && (
+                <div>
+                  <span className="font-medium">Release Date: </span>
+                  <span className="text-muted-foreground">
+                    {new Date(dvd.releaseDate).toLocaleDateString()}
+                  </span>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        );
+      }
+
+      case 'lp': {
+        const lp = product as LP;
+        const trackList = lp.tracklist ? lp.tracklist.split(',').map((track: string) => track.trim()) : [];
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle>LP Details</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {lp.artist && (
+                <div>
+                  <span className="font-medium">Artist: </span>
+                  <span className="text-muted-foreground">{lp.artist}</span>
+                </div>
+              )}
+              {lp.recordLabel && (
+                <div>
+                  <span className="font-medium">Record Label: </span>
+                  <span className="text-muted-foreground">{lp.recordLabel}</span>
+                </div>
+              )}
+              {lp.musicType && (
+                <div>
+                  <span className="font-medium">Music Type: </span>
+                  <span className="text-muted-foreground">{lp.musicType}</span>
+                </div>
+              )}
+              {lp.releaseDate && (
+                <div>
+                  <span className="font-medium">Release Date: </span>
+                  <span className="text-muted-foreground">
+                    {new Date(lp.releaseDate).toLocaleDateString()}
+                  </span>
+                </div>
+              )}
+              {lp.rpm && (
+                <div>
+                  <span className="font-medium">RPM: </span>
+                  <span className="text-muted-foreground">{lp.rpm}</span>
+                </div>
+              )}
+              {lp.sizeInches && (
+                <div>
+                  <span className="font-medium">Size: </span>
+                  <span className="text-muted-foreground">{lp.sizeInches}"</span>
+                </div>
+              )}
+              {lp.vinylCondition && (
+                <div>
+                  <span className="font-medium">Vinyl Condition: </span>
+                  <span className="text-muted-foreground">{lp.vinylCondition}</span>
+                </div>
+              )}
+              {lp.sleeveCondition && (
+                <div>
+                  <span className="font-medium">Sleeve Condition: </span>
+                  <span className="text-muted-foreground">{lp.sleeveCondition}</span>
+                </div>
+              )}
+              {trackList.length > 0 && (
+                <div>
+                  <span className="font-medium">Track List:</span>
+                  <ul className="mt-2 space-y-1 text-sm text-muted-foreground ml-4">
+                    {trackList.map((track: string, index: number) => (
+                      <li key={`track-${index}-${track.substring(0, 10)}`}>{index + 1}. {track}</li>
+                    ))}
+                  </ul>
                 </div>
               )}
             </CardContent>
@@ -270,6 +399,12 @@ const ProductDetailPage: React.FC = () => {
             </div>
             {product.weight && (
               <p className="text-sm text-muted-foreground">Weight: {product.weight}g</p>
+            )}
+            {product.dimensions && (
+              <p className="text-sm text-muted-foreground">Dimensions: {product.dimensions}</p>
+            )}
+            {product.condition && (
+              <p className="text-sm text-muted-foreground">Condition: {product.condition}</p>
             )}
           </div>
 
@@ -373,10 +508,48 @@ const ProductDetailPage: React.FC = () => {
                   <span className="text-muted-foreground">{product.weight}g</span>
                 </div>
               )}
+              {product.dimensions && (
+                <div>
+                  <span className="font-medium">Dimensions: </span>
+                  <span className="text-muted-foreground">{product.dimensions}</span>
+                </div>
+              )}
+              {product.condition && (
+                <div>
+                  <span className="font-medium">Condition: </span>
+                  <span className="text-muted-foreground">{product.condition}</span>
+                </div>
+              )}
+              {product.importDate && (
+                <div>
+                  <span className="font-medium">Import Date: </span>
+                  <span className="text-muted-foreground">
+                    {new Date(product.importDate).toLocaleDateString()}
+                  </span>
+                </div>
+              )}
+              {product.createdAt && (
+                <div>
+                  <span className="font-medium">Added: </span>
+                  <span className="text-muted-foreground">
+                    {new Date(product.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
+              )}
               <div>
                 <span className="font-medium">Rush Delivery: </span>
                 <span className="text-muted-foreground">
                   {product.rushOrderSupported ? 'Available' : 'Not Available'}
+                </span>
+              </div>
+              <div>
+                <span className="font-medium">Stock Status: </span>
+                <span className={`font-medium ${
+                  product.quantity > 10 ? 'text-green-600' : 
+                  product.quantity > 0 ? 'text-orange-600' : 'text-red-600'
+                }`}>
+                  {product.stockStatus || (product.quantity > 10 ? 'In Stock' : 
+                    product.quantity > 0 ? 'Low Stock' : 'Out of Stock')}
                 </span>
               </div>
             </div>
