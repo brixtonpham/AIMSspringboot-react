@@ -66,11 +66,11 @@ export const productApi = {
     api.get('/products/search', { params }),
 
   // Create product
-  create: (product: Partial<Product>): Promise<ApiResponse<Product>> => 
+  create: (product: any): Promise<ApiResponse<Product>> => 
     api.post('/products', product),
 
   // Update product
-  update: (id: number, product: Partial<Product>): Promise<ApiResponse<Product>> => 
+  update: (id: number, product: any): Promise<ApiResponse<Product>> => 
     api.put(`/products/${id}`, product),
 
   // Delete product

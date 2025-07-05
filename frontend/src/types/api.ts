@@ -53,6 +53,19 @@ export interface DVD extends Product {
   rating?: string;
 }
 
+export interface LP extends Product {
+  lpId?: number;
+  artist?: string;
+  recordLabel?: string;
+  musicType?: string;
+  releaseDate?: string;
+  tracklist?: string;
+  rpm?: number;
+  sizeInches?: number;
+  vinylCondition?: string;
+  sleeveCondition?: string;
+}
+
 // User types
 export interface User {
   userId: number;

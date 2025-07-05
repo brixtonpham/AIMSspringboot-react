@@ -27,7 +27,7 @@ import { OrderModal } from '../components/modals/OrderModal';
 import { UserModal } from '../components/modals/UserModal';
 import { Product, Order, User } from '../types/api';
 
-// Define form data types to match modal interfaces
+// Define form data types to match modal interfaces  
 interface ProductFormData {
   title: string;
   price: number;
@@ -37,6 +37,42 @@ interface ProductFormData {
   weight?: number;
   rushOrderSupported?: boolean;
   introduction?: string;
+  // Type-specific fields
+  bookData?: {
+    genre?: string;
+    pageCount?: number;
+    publicationDate?: string;
+    authors?: string;
+    publishers?: string;
+    coverType?: string;
+  };
+  cdData?: {
+    trackList?: string;
+    genre?: string;
+    recordLabel?: string;
+    artists?: string;
+    releaseDate?: string;
+  };
+  dvdData?: {
+    releaseDate?: string;
+    dvdType?: string;
+    genre?: string;
+    studio?: string;
+    directors?: string;
+    durationMinutes?: number;
+    rating?: string;
+  };
+  lpData?: {
+    artist?: string;
+    recordLabel?: string;
+    musicType?: string;
+    releaseDate?: string;
+    tracklist?: string;
+    rpm?: number;
+    sizeInches?: number;
+    vinylCondition?: string;
+    sleeveCondition?: string;
+  };
 }
 
 interface UserFormData {
@@ -72,7 +108,9 @@ const AdminDashboard: React.FC = () => {
   const getProductIcon = (type: string) => {
     if (type === 'book') return '📚';
     if (type === 'cd') return '💿';
-    return '📀';
+    if (type === 'dvd') return '📀';
+    if (type === 'lp') return '🎵';
+    return '📦';
   };
 
   // Check if user is admin or manager
@@ -796,6 +834,7 @@ const AdminDashboard: React.FC = () => {
       </div>
       
       <ProductModal
+        key={`${modalState.mode}-${modalState.product?.productId || 'new'}`}
         isOpen={modalState.isOpen}
         mode={modalState.mode}
         initialData={modalState.product ? {
@@ -806,24 +845,92 @@ const AdminDashboard: React.FC = () => {
           type: (modalState.product.type as 'book' | 'cd' | 'dvd' | 'lp') || 'book',
           weight: modalState.product.weight,
           rushOrderSupported: modalState.product.rushOrderSupported,
-          introduction: modalState.product.introduction
+          introduction: modalState.product.introduction,
+          bookData: modalState.product.type === 'book' ? {
+            genre: (modalState.product as any).genre,
+            pageCount: (modalState.product as any).pageCount,
+            publicationDate: (modalState.product as any).publicationDate,
+            authors: (modalState.product as any).authors,
+            publishers: (modalState.product as any).publishers,
+            coverType: (modalState.product as any).coverType
+          } : {},
+          cdData: modalState.product.type === 'cd' ? {
+            trackList: (modalState.product as any).trackList,
+            genre: (modalState.product as any).genre,
+            recordLabel: (modalState.product as any).recordLabel,
+            artists: (modalState.product as any).artists,
+            releaseDate: (modalState.product as any).releaseDate
+          } : {},
+          dvdData: modalState.product.type === 'dvd' ? {
+            releaseDate: (modalState.product as any).releaseDate,
+            dvdType: (modalState.product as any).dvdType,
+            genre: (modalState.product as any).genre,
+            studio: (modalState.product as any).studio,
+            directors: (modalState.product as any).directors,
+            durationMinutes: (modalState.product as any).durationMinutes,
+            rating: (modalState.product as any).rating
+          } : {},
+          lpData: modalState.product.type === 'lp' ? {
+            artist: (modalState.product as any).artist,
+            recordLabel: (modalState.product as any).recordLabel,
+            musicType: (modalState.product as any).musicType,
+            releaseDate: (modalState.product as any).releaseDate,
+            tracklist: (modalState.product as any).tracklist,
+            rpm: (modalState.product as any).rpm,
+            sizeInches: (modalState.product as any).sizeInches,
+            vinylCondition: (modalState.product as any).vinylCondition,
+            sleeveCondition: (modalState.product as any).sleeveCondition
+          } : {}
         } : undefined}
         onClose={() => setModalState({ isOpen: false, mode: 'create' })}
         onSubmit={async (data) => {
+          console.log('Form data received:', data);
+          
+          // Create wrapped data structure for backend
+          const submitData = {
+            productData: {
+              title: data.title,
+              price: data.price,
+              quantity: data.quantity,
+              barcode: data.barcode,
+              type: data.type,
+              weight: data.weight || 0,
+              rushOrderSupported: data.rushOrderSupported || false,
+              introduction: data.introduction || ''
+            },
+            // Add type-specific data based on product type (only include non-empty data)
+            ...(data.type === 'book' && data.bookData && Object.keys(data.bookData).length > 0 ? { bookData: data.bookData } : {}),
+            ...(data.type === 'cd' && data.cdData && Object.keys(data.cdData).length > 0 ? { cdData: data.cdData } : {}),
+            ...(data.type === 'dvd' && data.dvdData && Object.keys(data.dvdData).length > 0 ? { dvdData: data.dvdData } : {}),
+            ...(data.type === 'lp' && data.lpData && Object.keys(data.lpData).length > 0 ? { lpData: data.lpData } : {})
+          };
+          
+          console.log('Submitting data:', submitData);
+
           try {
+
             if (modalState.mode === 'create') {
-              await productApi.create(data);
+              await productApi.create(submitData);
             } else if (modalState.mode === 'edit' && modalState.product) {
-              await productApi.update(modalState.product.productId, data);
+              await productApi.update(modalState.product.productId, submitData);
             }
             // Invalidate and refetch products data
             queryClient.invalidateQueries({ queryKey: ['products'] });
             queryClient.invalidateQueries({ queryKey: ['low-stock'] });
             // Close modal
             setModalState({ isOpen: false, mode: 'create' });
-          } catch (error) {
+          } catch (error: any) {
             console.error('Failed to save product:', error);
-            alert('Failed to save product. Please try again.');
+            console.error('Request data:', submitData);
+            if (error?.response) {
+              console.error('Response data:', error.response.data);
+              console.error('Response status:', error.response.status);
+              console.error('Response headers:', error.response.headers);
+            }
+            
+            // Show more detailed error message
+            const errorMessage = error?.response?.data?.message || error?.response?.data?.error || error?.message || 'Unknown error';
+            alert(`Failed to save product: ${errorMessage}`);
             throw error;
           }
         }}

@@ -1,6 +1,10 @@
 package com.itss.ecommerce.dto.mapper;
 
 import com.itss.ecommerce.dto.*;
+import com.itss.ecommerce.dto.product.BookDTO;
+import com.itss.ecommerce.dto.product.CDDTO;
+import com.itss.ecommerce.dto.product.DVDDTO;
+import com.itss.ecommerce.dto.product.LPDTO;
 import com.itss.ecommerce.entity.*;
 
 import org.springframework.stereotype.Component;
@@ -105,6 +109,32 @@ public class ProductMapper {
     }
     
     /**
+     * Convert LP entity to LPDTO
+     */
+    public static LPDTO toDTO(LP lp) {
+        if (lp == null) return null;
+        
+        LPDTO dto = new LPDTO();
+        
+        // Copy product fields
+        copyProductFields(lp, dto);
+        
+        // Copy LP-specific fields
+        dto.setLpId(lp.getProductId());
+        dto.setArtist(lp.getArtist());
+        dto.setRecordLabel(lp.getRecordLabel());
+        dto.setMusicType(lp.getMusicType());
+        dto.setReleaseDate(lp.getReleaseDate());
+        dto.setTracklist(lp.getTracklist());
+        dto.setRpm(lp.getRpm());
+        dto.setSizeInches(lp.getSizeInches());
+        dto.setVinylCondition(lp.getVinylCondition());
+        dto.setSleeveCondition(lp.getSleeveCondition());
+        
+        return dto;
+    }
+    
+    /**
      * Convert ProductDTO to Product entity (for polymorphic handling)
      */
     public static Product toEntity(ProductDTO dto, String productType) {
@@ -114,6 +144,7 @@ public class ProductMapper {
             case "book" -> new Book();
             case "cd" -> new CD();
             case "dvd" -> new DVD();
+            case "lp" -> new LP();
             default -> throw new IllegalArgumentException("Unknown product type: " + productType);
         };
         
@@ -182,6 +213,29 @@ public class ProductMapper {
     }
     
     /**
+     * Convert LPDTO to LP entity
+     */
+    public static LP toEntity(LPDTO dto) {
+        if (dto == null) return null;
+        
+        LP lp = new LP();
+        copyDTOToEntity(dto, lp);
+        
+        lp.setProductId(dto.getLpId());
+        lp.setArtist(dto.getArtist());
+        lp.setRecordLabel(dto.getRecordLabel());
+        lp.setMusicType(dto.getMusicType());
+        lp.setReleaseDate(dto.getReleaseDate());
+        lp.setTracklist(dto.getTracklist());
+        lp.setRpm(dto.getRpm());
+        lp.setSizeInches(dto.getSizeInches());
+        lp.setVinylCondition(dto.getVinylCondition());
+        lp.setSleeveCondition(dto.getSleeveCondition());
+        
+        return lp;
+    }
+    
+    /**
      * Convert list of Product entities to ProductDTOs
      */
     public static List<ProductDTO> toDTOList(List<Product> products) {
@@ -222,6 +276,16 @@ public class ProductMapper {
     }
     
     /**
+     * Convert list of LP entities to LPDTOs
+     */
+    public static List<LPDTO> toLPDTOList(List<LP> lps) {
+        if (lps == null) return null;
+        return lps.stream()
+                .map(ProductMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+    
+    /**
      * Copy common product fields from entity to DTO
      */
     private static void copyProductFields(Product entity, ProductDTO dto) {
@@ -256,5 +320,77 @@ public class ProductMapper {
         entity.setQuantity(dto.getQuantity());
         entity.setCreatedAt(dto.getCreatedAt());
         entity.setUpdatedAt(dto.getUpdatedAt());
+    }
+    
+    /**
+     * Create Product entity from ProductFormRequest
+     */
+    public static Product createProductFromRequest(ProductFormRequest request) {
+        if (request == null || request.getProductData() == null) {
+            throw new IllegalArgumentException("Product data is required");
+        }
+        
+        ProductDTO productData = request.getProductData();
+        
+        if (request.isBook()) {
+            BookDTO bookDTO = request.getBookData() != null ? request.getBookData() : new BookDTO();
+            copyBaseDataToSpecificDTO(productData, bookDTO);
+            return toEntity(bookDTO);
+            
+        } else if (request.isCD()) {
+            CDDTO cdDTO = request.getCdData() != null ? request.getCdData() : new CDDTO();
+            copyBaseDataToSpecificDTO(productData, cdDTO);
+            return toEntity(cdDTO);
+            
+        } else if (request.isDVD()) {
+            DVDDTO dvdDTO = request.getDvdData() != null ? request.getDvdData() : new DVDDTO();
+            copyBaseDataToSpecificDTO(productData, dvdDTO);
+            return toEntity(dvdDTO);
+            
+        } else if (request.isLP()) {
+            LPDTO lpDTO = request.getLpData() != null ? request.getLpData() : new LPDTO();
+            copyBaseDataToSpecificDTO(productData, lpDTO);
+            return toEntity(lpDTO);
+            
+        } else {
+            // Fallback to base product if unknown type
+            return toEntity(productData, productData.getType());
+        }
+    }
+    
+    /**
+     * Copy base product data to specific DTO
+     */
+    public static void copyBaseDataToSpecificDTO(ProductDTO source, ProductDTO target) {
+        target.setProductId(source.getProductId());
+        target.setTitle(source.getTitle());
+        target.setPrice(source.getPrice());
+        target.setWeight(source.getWeight());
+        target.setRushOrderSupported(source.getRushOrderSupported());
+        target.setImageUrl(source.getImageUrl());
+        target.setBarcode(source.getBarcode());
+        target.setImportDate(source.getImportDate());
+        target.setIntroduction(source.getIntroduction());
+        target.setQuantity(source.getQuantity());
+        target.setType(source.getType());
+        target.setCreatedAt(source.getCreatedAt());
+        target.setUpdatedAt(source.getUpdatedAt());
+    }
+    
+    /**
+     * Map Product to appropriate specific DTO
+     */
+    public static ProductDTO mapToSpecificDTO(Product product) {
+        if (product instanceof Book) {
+            return toDTO((Book) product);
+        } else if (product instanceof CD) {
+            return toDTO((CD) product);
+        } else if (product instanceof DVD) {
+            return toDTO((DVD) product);
+        } else if (product instanceof LP) {
+            return toDTO((LP) product);
+        } else {
+            return toDTO(product);
+        }
     }
 }

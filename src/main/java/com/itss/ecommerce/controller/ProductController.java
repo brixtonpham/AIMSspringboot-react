@@ -2,6 +2,10 @@ package com.itss.ecommerce.controller;
 
 import com.itss.ecommerce.dto.*;
 import com.itss.ecommerce.dto.mapper.ProductMapper;
+import com.itss.ecommerce.dto.product.BookDTO;
+import com.itss.ecommerce.dto.product.CDDTO;
+import com.itss.ecommerce.dto.product.DVDDTO;
+import com.itss.ecommerce.dto.product.LPDTO;
 import com.itss.ecommerce.entity.*;
 import com.itss.ecommerce.service.admin.ProductService;
 
@@ -34,7 +38,9 @@ public class ProductController {
         log.info("GET /api/products - Fetching all products");
         
         List<Product> products = productService.getAllProducts();
-        List<ProductDTO> productDTOs = ProductMapper.toDTOList(products);
+        List<ProductDTO> productDTOs = products.stream()
+            .map(ProductMapper::mapToSpecificDTO)
+            .toList();
         
         return ResponseEntity.ok(ApiResponse.success(productDTOs, 
             String.format("Retrieved %d products", productDTOs.size())));
@@ -54,7 +60,7 @@ public class ProductController {
                 .body(ApiResponse.notFound("Product not found with ID: " + id));
         }
         
-        ProductDTO productDTO = ProductMapper.toDTO(product.get());
+        ProductDTO productDTO = ProductMapper.mapToSpecificDTO(product.get());
         return ResponseEntity.ok(ApiResponse.success(productDTO));
     }
     
@@ -72,7 +78,7 @@ public class ProductController {
                 .body(ApiResponse.notFound("Product not found with barcode: " + barcode));
         }
         
-        ProductDTO productDTO = ProductMapper.toDTO(product.get());
+        ProductDTO productDTO = ProductMapper.mapToSpecificDTO(product.get());
         return ResponseEntity.ok(ApiResponse.success(productDTO));
     }
     
@@ -85,7 +91,9 @@ public class ProductController {
         log.info("GET /api/products/type/{} - Fetching products", type);
         
         List<Product> products = productService.getProductsByType(type);
-        List<ProductDTO> productDTOs = ProductMapper.toDTOList(products);
+        List<ProductDTO> productDTOs = products.stream()
+            .map(ProductMapper::mapToSpecificDTO)
+            .toList();
         
         return ResponseEntity.ok(ApiResponse.success(productDTOs,
             String.format("Retrieved %d %s products", productDTOs.size(), type)));
@@ -104,42 +112,63 @@ public class ProductController {
         log.info("GET /api/products/search - Searching products with criteria");
         
         List<Product> products = productService.searchProducts(title, type, minPrice, maxPrice, inStock);
-        List<ProductDTO> productDTOs = ProductMapper.toDTOList(products);
+        List<ProductDTO> productDTOs = products.stream()
+            .map(ProductMapper::mapToSpecificDTO)
+            .toList();
         
         return ResponseEntity.ok(ApiResponse.success(productDTOs,
             String.format("Found %d products matching criteria", productDTOs.size())));
     }
     
     /**
-     * Create new product
+     * Create new product with type-specific fields
      */
     @PostMapping
     public ResponseEntity<ApiResponse<ProductDTO>> createProduct(
-            @Valid @RequestBody ProductDTO productDTO) {
-        log.info("POST /api/products - Creating new product: {}", productDTO.getTitle());
+            @Valid @RequestBody ProductFormRequest request) {
+        log.info("POST /api/products - Creating new product: {}", request.getProductData().getTitle());
+        log.debug("Received request: {}", request);
+        log.debug("Product type: {}", request.getProductType());
+        log.debug("Book data: {}", request.getBookData());
+        log.debug("CD data: {}", request.getCdData());
+        log.debug("DVD data: {}", request.getDvdData());
+        log.debug("LP data: {}", request.getLpData());
         
-        Product product = ProductMapper.toEntity(productDTO, productDTO.getType());
-        Product savedProduct = productService.saveProduct(product);
-        ProductDTO savedProductDTO = ProductMapper.toDTO(savedProduct);
-        
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .body(ApiResponse.success(savedProductDTO, "Product created successfully"));
+        try {
+            Product product = ProductMapper.createProductFromRequest(request);
+            Product savedProduct = productService.saveProduct(product);
+            ProductDTO savedProductDTO = ProductMapper.mapToSpecificDTO(savedProduct);
+            
+            return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success(savedProductDTO, "Product created successfully"));
+        } catch (Exception e) {
+            log.error("Error creating product: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error("Failed to create product: " + e.getMessage()));
+        }
     }
     
     /**
-     * Update product
+     * Update product with type-specific fields
      */
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<ProductDTO>> updateProduct(
             @PathVariable @Positive Long id,
-            @Valid @RequestBody ProductDTO productDTO) {
+            @Valid @RequestBody ProductFormRequest request) {
         log.info("PUT /api/products/{} - Updating product", id);
         
-        Product updatedProduct = ProductMapper.toEntity(productDTO, productDTO.getType());
-        Product savedProduct = productService.updateProduct(id, updatedProduct);
-        ProductDTO savedProductDTO = ProductMapper.toDTO(savedProduct);
-        
-        return ResponseEntity.ok(ApiResponse.success(savedProductDTO, "Product updated successfully"));
+        try {
+            Product updatedProduct = ProductMapper.createProductFromRequest(request);
+            updatedProduct.setProductId(id); // Ensure the ID is set for update
+            Product savedProduct = productService.updateProduct(id, updatedProduct);
+            ProductDTO savedProductDTO = ProductMapper.mapToSpecificDTO(savedProduct);
+            
+            return ResponseEntity.ok(ApiResponse.success(savedProductDTO, "Product updated successfully"));
+        } catch (Exception e) {
+            log.error("Error updating product: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error("Failed to update product: " + e.getMessage()));
+        }
     }
     
     /**
@@ -165,7 +194,7 @@ public class ProductController {
         log.info("PATCH /api/products/{}/stock - Updating stock by {}", id, quantity);
         
         Product updatedProduct = productService.updateStock(id, quantity);
-        ProductDTO productDTO = ProductMapper.toDTO(updatedProduct);
+        ProductDTO productDTO = ProductMapper.mapToSpecificDTO(updatedProduct);
         
         return ResponseEntity.ok(ApiResponse.success(productDTO, 
             String.format("Stock updated. New quantity: %d", updatedProduct.getQuantity())));
@@ -195,7 +224,9 @@ public class ProductController {
         log.info("GET /api/products/low-stock - Fetching products with stock below {}", threshold);
         
         List<Product> products = productService.getLowStockProducts(threshold);
-        List<ProductDTO> productDTOs = ProductMapper.toDTOList(products);
+        List<ProductDTO> productDTOs = products.stream()
+            .map(ProductMapper::mapToSpecificDTO)
+            .toList();
         
         return ResponseEntity.ok(ApiResponse.success(productDTOs,
             String.format("Found %d products with low stock", productDTOs.size())));
@@ -209,7 +240,9 @@ public class ProductController {
         log.info("GET /api/products/rush-order - Fetching products with rush order support");
         
         List<Product> products = productService.getRushOrderProducts();
-        List<ProductDTO> productDTOs = ProductMapper.toDTOList(products);
+        List<ProductDTO> productDTOs = products.stream()
+            .map(ProductMapper::mapToSpecificDTO)
+            .toList();
         
         return ResponseEntity.ok(ApiResponse.success(productDTOs,
             String.format("Found %d products with rush order support", productDTOs.size())));
@@ -304,4 +337,35 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiResponse.success(savedDVDDTO, "DVD created successfully"));
     }
+    
+    /**
+     * Get all LPs
+     */
+    @GetMapping("/lps")
+    public ResponseEntity<ApiResponse<List<LPDTO>>> getAllLPs() {
+        log.info("GET /api/products/lps - Fetching all LPs");
+        
+        List<LP> lps = productService.getAllLPs();
+        List<LPDTO> lpDTOs = ProductMapper.toLPDTOList(lps);
+        
+        return ResponseEntity.ok(ApiResponse.success(lpDTOs,
+            String.format("Retrieved %d LPs", lpDTOs.size())));
+    }
+    
+    /**
+     * Create new LP
+     */
+    @PostMapping("/lps")
+    public ResponseEntity<ApiResponse<LPDTO>> createLP(
+            @Valid @RequestBody LPDTO lpDTO) {
+        log.info("POST /api/products/lps - Creating new LP: {}", lpDTO.getTitle());
+        
+        LP lp = ProductMapper.toEntity(lpDTO);
+        Product savedProduct = productService.saveProduct(lp);
+        LPDTO savedLPDTO = ProductMapper.toDTO((LP) savedProduct);
+        
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(ApiResponse.success(savedLPDTO, "LP created successfully"));
+    }
+    
 }

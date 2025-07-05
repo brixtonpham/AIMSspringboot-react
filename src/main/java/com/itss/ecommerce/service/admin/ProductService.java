@@ -4,10 +4,12 @@ import com.itss.ecommerce.entity.AuditLog;
 import com.itss.ecommerce.entity.Book;
 import com.itss.ecommerce.entity.CD;
 import com.itss.ecommerce.entity.DVD;
+import com.itss.ecommerce.entity.LP;
 import com.itss.ecommerce.entity.Product;
 import com.itss.ecommerce.repository.BookRepository;
 import com.itss.ecommerce.repository.CDRepository;
 import com.itss.ecommerce.repository.DVDRepository;
+import com.itss.ecommerce.repository.LPRepository;
 import com.itss.ecommerce.repository.ProductRepository;
 import com.itss.ecommerce.service.log.AuditLogService;
 
@@ -29,23 +31,52 @@ public class ProductService {
     private final BookRepository bookRepository;
     private final CDRepository cdRepository;
     private final DVDRepository dvdRepository;
+    private final LPRepository lpRepository;
     private final AuditLogService auditLogService;
     
     /**
-     * Get all products
+     * Get all products with type-specific data
      */
     @Transactional(readOnly = true)
     public List<Product> getAllProducts() {
-        log.debug("Fetching all products");
-        return productRepository.findAll();
+        log.debug("Fetching all products with type-specific data");
+        
+        List<Product> allProducts = new java.util.ArrayList<>();
+        
+        // Fetch all specific product types to get complete data
+        allProducts.addAll(bookRepository.findAll());
+        allProducts.addAll(cdRepository.findAll());
+        allProducts.addAll(dvdRepository.findAll());
+        allProducts.addAll(lpRepository.findAll());
+        
+        // Sort by product ID to maintain consistent ordering
+        allProducts.sort((p1, p2) -> Long.compare(p1.getProductId(), p2.getProductId()));
+        
+        log.debug("Fetched {} products with complete data", allProducts.size());
+        return allProducts;
     }
     
     /**
-     * Get product by ID
+     * Get product by ID with type-specific data
      */
     @Transactional(readOnly = true)
     public Optional<Product> getProductById(Long id) {
-        log.debug("Fetching product by ID: {}", id);
+        log.debug("Fetching product by ID with type-specific data: {}", id);
+        
+        // Try to find in specific repositories first to get complete data
+        Optional<Product> product = bookRepository.findById(id).map(Product.class::cast);
+        if (product.isPresent()) return product;
+        
+        product = cdRepository.findById(id).map(Product.class::cast);
+        if (product.isPresent()) return product;
+        
+        product = dvdRepository.findById(id).map(Product.class::cast);
+        if (product.isPresent()) return product;
+        
+        product = lpRepository.findById(id).map(Product.class::cast);
+        if (product.isPresent()) return product;
+        
+        // Fallback to base repository if not found in specific repositories
         return productRepository.findById(id);
     }
     
@@ -96,6 +127,8 @@ public class ProductService {
             savedProduct = cdRepository.save((CD) product);
         } else if (product instanceof DVD) {
             savedProduct = dvdRepository.save((DVD) product);
+        } else if (product instanceof LP) {
+            savedProduct = lpRepository.save((LP) product);
         } else {
             throw new IllegalArgumentException("Unknown product type: " + product.getClass().getSimpleName());
         }
@@ -133,7 +166,23 @@ public class ProductService {
         existingProduct.setIntroduction(updatedProduct.getIntroduction());
         existingProduct.setQuantity(updatedProduct.getQuantity());
         
-        Product savedProduct = productRepository.save(existingProduct);
+        // Update type-specific fields
+        updateTypeSpecificFields(existingProduct, updatedProduct);
+        
+        Product savedProduct;
+        
+        // Save based on actual type
+        if (existingProduct instanceof Book) {
+            savedProduct = bookRepository.save((Book) existingProduct);
+        } else if (existingProduct instanceof CD) {
+            savedProduct = cdRepository.save((CD) existingProduct);
+        } else if (existingProduct instanceof DVD) {
+            savedProduct = dvdRepository.save((DVD) existingProduct);
+        } else if (existingProduct instanceof LP) {
+            savedProduct = lpRepository.save((LP) existingProduct);
+        } else {
+            savedProduct = productRepository.save(existingProduct);
+        }
         
         // Log the action
         auditLogService.logAction(
@@ -285,5 +334,67 @@ public class ProductService {
     @Transactional(readOnly = true)
     public List<DVD> getAllDVDs() {
         return dvdRepository.findAll();
+    }
+    
+    /**
+     * Get all LPs
+     */
+    @Transactional(readOnly = true)
+    public List<LP> getAllLPs() {
+        return lpRepository.findAll();
+    }
+    
+    /**
+     * Update type-specific fields based on product type
+     */
+    private void updateTypeSpecificFields(Product existingProduct, Product updatedProduct) {
+        if (existingProduct instanceof Book && updatedProduct instanceof Book) {
+            Book existingBook = (Book) existingProduct;
+            Book updatedBook = (Book) updatedProduct;
+            
+            existingBook.setGenre(updatedBook.getGenre());
+            existingBook.setPageCount(updatedBook.getPageCount());
+            existingBook.setPublicationDate(updatedBook.getPublicationDate());
+            existingBook.setAuthors(updatedBook.getAuthors());
+            existingBook.setPublishers(updatedBook.getPublishers());
+            existingBook.setCoverType(updatedBook.getCoverType());
+            System.out.println("Updating book: " + existingBook.getTitle());
+            
+        } else if (existingProduct instanceof CD && updatedProduct instanceof CD) {
+            CD existingCD = (CD) existingProduct;
+            CD updatedCD = (CD) updatedProduct;
+            
+            existingCD.setTrackList(updatedCD.getTrackList());
+            existingCD.setGenre(updatedCD.getGenre());
+            existingCD.setRecordLabel(updatedCD.getRecordLabel());
+            existingCD.setArtists(updatedCD.getArtists());
+            existingCD.setReleaseDate(updatedCD.getReleaseDate());
+            
+        } else if (existingProduct instanceof DVD && updatedProduct instanceof DVD) {
+            DVD existingDVD = (DVD) existingProduct;
+            DVD updatedDVD = (DVD) updatedProduct;
+            
+            existingDVD.setReleaseDate(updatedDVD.getReleaseDate());
+            existingDVD.setDvdType(updatedDVD.getDvdType());
+            existingDVD.setGenre(updatedDVD.getGenre());
+            existingDVD.setStudio(updatedDVD.getStudio());
+            existingDVD.setDirectors(updatedDVD.getDirectors());
+            existingDVD.setDurationMinutes(updatedDVD.getDurationMinutes());
+            existingDVD.setRating(updatedDVD.getRating());
+            
+        } else if (existingProduct instanceof LP && updatedProduct instanceof LP) {
+            LP existingLP = (LP) existingProduct;
+            LP updatedLP = (LP) updatedProduct;
+            
+            existingLP.setArtist(updatedLP.getArtist());
+            existingLP.setRecordLabel(updatedLP.getRecordLabel());
+            existingLP.setMusicType(updatedLP.getMusicType());
+            existingLP.setReleaseDate(updatedLP.getReleaseDate());
+            existingLP.setTracklist(updatedLP.getTracklist());
+            existingLP.setRpm(updatedLP.getRpm());
+            existingLP.setSizeInches(updatedLP.getSizeInches());
+            existingLP.setVinylCondition(updatedLP.getVinylCondition());
+            existingLP.setSleeveCondition(updatedLP.getSleeveCondition());
+        }
     }
 }

@@ -3,6 +3,10 @@ import { X } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { BookFields, BookFormData } from '../forms/BookFields';
+import { CDFields, CDFormData } from '../forms/CDFields';
+import { DVDFields, DVDFormData } from '../forms/DVDFields';
+import { LPFields, LPFormData } from '../forms/LPFields';
 
 interface ProductFormData {
   title: string;
@@ -13,6 +17,11 @@ interface ProductFormData {
   weight?: number;
   rushOrderSupported?: boolean;
   introduction?: string;
+  // Type-specific fields
+  bookData?: BookFormData;
+  cdData?: CDFormData;
+  dvdData?: DVDFormData;
+  lpData?: LPFormData;
 }
 
 interface ProductModalProps {
@@ -38,7 +47,11 @@ export const ProductModal: React.FC<ProductModalProps> = ({
     type: 'book',
     weight: 0,
     rushOrderSupported: false,
-    introduction: ''
+    introduction: '',
+    bookData: {},
+    cdData: {},
+    dvdData: {},
+    lpData: {}
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>('');
@@ -54,9 +67,13 @@ export const ProductModal: React.FC<ProductModalProps> = ({
           type: initialData.type || 'book',
           weight: initialData.weight || 0,
           rushOrderSupported: initialData.rushOrderSupported || false,
-          introduction: initialData.introduction || ''
+          introduction: initialData.introduction || '',
+          bookData: initialData.bookData || {},
+          cdData: initialData.cdData || {},
+          dvdData: initialData.dvdData || {},
+          lpData: initialData.lpData || {}
         });
-      } else if (mode === 'create') {
+      } else {
         setFormData({
           title: '',
           price: 0,
@@ -65,12 +82,16 @@ export const ProductModal: React.FC<ProductModalProps> = ({
           type: 'book',
           weight: 0,
           rushOrderSupported: false,
-          introduction: ''
+          introduction: '',
+          bookData: {},
+          cdData: {},
+          dvdData: {},
+          lpData: {}
         });
       }
       setError('');
     }
-  }, [isOpen, mode]);
+  }, [isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,6 +110,25 @@ export const ProductModal: React.FC<ProductModalProps> = ({
 
   const handleInputChange = (field: keyof ProductFormData, value: string | number | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleTypeSpecificChange = (
+    type: 'book' | 'cd' | 'dvd' | 'lp',
+    field: string,
+    value: string | number
+  ) => {
+    setFormData(prev => {
+      const dataKey = `${type}Data` as keyof ProductFormData;
+      const currentData = prev[dataKey] as Record<string, any> || {};
+      
+      return {
+        ...prev,
+        [dataKey]: {
+          ...currentData,
+          [field]: value
+        }
+      };
+    });
   };
 
   if (!isOpen) return null;
@@ -192,7 +232,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                 <select
                   value={formData.type}
                   onChange={(e) => handleInputChange('type', e.target.value)}
-                  disabled={isReadOnly}
+                  disabled={isReadOnly || mode === 'edit'} // Lock type during edit
                   className="w-full px-3 py-2 border border-input bg-background rounded-md text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   required
                 >
@@ -201,6 +241,9 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                   <option value="dvd">📀 DVD</option>
                   <option value="lp">🎵 LP</option>
                 </select>
+                {mode === 'edit' && (
+                  <p className="text-xs text-gray-500 mt-1">Product type cannot be changed during edit</p>
+                )}
               </div>
             </div>
 
@@ -227,6 +270,38 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                 rows={2}
                 className="w-full px-3 py-2 border border-input bg-background rounded-md text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
               />
+            </div>
+
+            {/* Type-specific fields */}
+            <div className="border-t pt-4">
+              {formData.type === 'book' && (
+                <BookFields
+                  data={formData.bookData || {}}
+                  onChange={(field, value) => handleTypeSpecificChange('book', field, value)}
+                  isReadOnly={isReadOnly}
+                />
+              )}
+              {formData.type === 'cd' && (
+                <CDFields
+                  data={formData.cdData || {}}
+                  onChange={(field, value) => handleTypeSpecificChange('cd', field, value)}
+                  isReadOnly={isReadOnly}
+                />
+              )}
+              {formData.type === 'dvd' && (
+                <DVDFields
+                  data={formData.dvdData || {}}
+                  onChange={(field, value) => handleTypeSpecificChange('dvd', field, value)}
+                  isReadOnly={isReadOnly}
+                />
+              )}
+              {formData.type === 'lp' && (
+                <LPFields
+                  data={formData.lpData || {}}
+                  onChange={(field, value) => handleTypeSpecificChange('lp', field, value)}
+                  isReadOnly={isReadOnly}
+                />
+              )}
             </div>
 
             <div className="flex justify-end gap-2 pt-4">
