@@ -29,7 +29,7 @@ import java.util.Optional;
 @CrossOrigin(origins = "*")
 public class ProductController {
     
-    private final ProductService productService;    
+    private final ProductService productService;
     /**
      * Get all products
      */
@@ -256,7 +256,7 @@ public class ProductController {
         log.info("GET /api/products/books - Fetching all books");
         
         List<Book> books = productService.getAllBooks();
-        List<BookDTO> bookDTOs = ProductMapper.toBookDTOList(books);
+        List<com.itss.ecommerce.dto.product.BookDTO> bookDTOs = ProductMapper.toBookDTOList(books);
         
         return ResponseEntity.ok(ApiResponse.success(bookDTOs,
             String.format("Retrieved %d books", bookDTOs.size())));

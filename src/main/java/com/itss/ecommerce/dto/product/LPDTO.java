@@ -1,11 +1,11 @@
 package com.itss.ecommerce.dto.product;
 
-import com.itss.ecommerce.dto.ProductDTO;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+
+import com.itss.ecommerce.dto.ProductDTO;
 
 import jakarta.validation.constraints.*;
 

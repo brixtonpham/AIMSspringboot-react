@@ -11,6 +11,7 @@ import com.itss.ecommerce.repository.CDRepository;
 import com.itss.ecommerce.repository.DVDRepository;
 import com.itss.ecommerce.repository.LPRepository;
 import com.itss.ecommerce.repository.ProductRepository;
+import com.itss.ecommerce.service.handler.ProductTypeHandler;
 import com.itss.ecommerce.service.log.AuditLogService;
 
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ public class ProductService {
     private final DVDRepository dvdRepository;
     private final LPRepository lpRepository;
     private final AuditLogService auditLogService;
+    private final List<ProductTypeHandler> productTypeHandlers;
     
     /**
      * Get all products with type-specific data
@@ -118,20 +120,9 @@ public class ProductService {
         // Validate product
         validateProduct(product);
         
-        Product savedProduct;
-        
-        // Save based on actual type
-        if (product instanceof Book) {
-            savedProduct = bookRepository.save((Book) product);
-        } else if (product instanceof CD) {
-            savedProduct = cdRepository.save((CD) product);
-        } else if (product instanceof DVD) {
-            savedProduct = dvdRepository.save((DVD) product);
-        } else if (product instanceof LP) {
-            savedProduct = lpRepository.save((LP) product);
-        } else {
-            throw new IllegalArgumentException("Unknown product type: " + product.getClass().getSimpleName());
-        }
+        // Find appropriate handler and save
+        ProductTypeHandler handler = findHandlerForProduct(product);
+        Product savedProduct = handler.save(product);
         
         // Log the action
         auditLogService.logAction(
@@ -166,23 +157,10 @@ public class ProductService {
         existingProduct.setIntroduction(updatedProduct.getIntroduction());
         existingProduct.setQuantity(updatedProduct.getQuantity());
         
-        // Update type-specific fields
-        updateTypeSpecificFields(existingProduct, updatedProduct);
-        
-        Product savedProduct;
-        
-        // Save based on actual type
-        if (existingProduct instanceof Book) {
-            savedProduct = bookRepository.save((Book) existingProduct);
-        } else if (existingProduct instanceof CD) {
-            savedProduct = cdRepository.save((CD) existingProduct);
-        } else if (existingProduct instanceof DVD) {
-            savedProduct = dvdRepository.save((DVD) existingProduct);
-        } else if (existingProduct instanceof LP) {
-            savedProduct = lpRepository.save((LP) existingProduct);
-        } else {
-            savedProduct = productRepository.save(existingProduct);
-        }
+        // Update type-specific fields and save
+        ProductTypeHandler handler = findHandlerForProduct(existingProduct);
+        handler.updateTypeSpecificFields(existingProduct, updatedProduct);
+        Product savedProduct = handler.save(existingProduct);
         
         // Log the action
         auditLogService.logAction(
@@ -345,56 +323,13 @@ public class ProductService {
     }
     
     /**
-     * Update type-specific fields based on product type
+     * Find the appropriate handler for a product
      */
-    private void updateTypeSpecificFields(Product existingProduct, Product updatedProduct) {
-        if (existingProduct instanceof Book && updatedProduct instanceof Book) {
-            Book existingBook = (Book) existingProduct;
-            Book updatedBook = (Book) updatedProduct;
-            
-            existingBook.setGenre(updatedBook.getGenre());
-            existingBook.setPageCount(updatedBook.getPageCount());
-            existingBook.setPublicationDate(updatedBook.getPublicationDate());
-            existingBook.setAuthors(updatedBook.getAuthors());
-            existingBook.setPublishers(updatedBook.getPublishers());
-            existingBook.setCoverType(updatedBook.getCoverType());
-            System.out.println("Updating book: " + existingBook.getTitle());
-            
-        } else if (existingProduct instanceof CD && updatedProduct instanceof CD) {
-            CD existingCD = (CD) existingProduct;
-            CD updatedCD = (CD) updatedProduct;
-            
-            existingCD.setTrackList(updatedCD.getTrackList());
-            existingCD.setGenre(updatedCD.getGenre());
-            existingCD.setRecordLabel(updatedCD.getRecordLabel());
-            existingCD.setArtists(updatedCD.getArtists());
-            existingCD.setReleaseDate(updatedCD.getReleaseDate());
-            
-        } else if (existingProduct instanceof DVD && updatedProduct instanceof DVD) {
-            DVD existingDVD = (DVD) existingProduct;
-            DVD updatedDVD = (DVD) updatedProduct;
-            
-            existingDVD.setReleaseDate(updatedDVD.getReleaseDate());
-            existingDVD.setDvdType(updatedDVD.getDvdType());
-            existingDVD.setGenre(updatedDVD.getGenre());
-            existingDVD.setStudio(updatedDVD.getStudio());
-            existingDVD.setDirectors(updatedDVD.getDirectors());
-            existingDVD.setDurationMinutes(updatedDVD.getDurationMinutes());
-            existingDVD.setRating(updatedDVD.getRating());
-            
-        } else if (existingProduct instanceof LP && updatedProduct instanceof LP) {
-            LP existingLP = (LP) existingProduct;
-            LP updatedLP = (LP) updatedProduct;
-            
-            existingLP.setArtist(updatedLP.getArtist());
-            existingLP.setRecordLabel(updatedLP.getRecordLabel());
-            existingLP.setMusicType(updatedLP.getMusicType());
-            existingLP.setReleaseDate(updatedLP.getReleaseDate());
-            existingLP.setTracklist(updatedLP.getTracklist());
-            existingLP.setRpm(updatedLP.getRpm());
-            existingLP.setSizeInches(updatedLP.getSizeInches());
-            existingLP.setVinylCondition(updatedLP.getVinylCondition());
-            existingLP.setSleeveCondition(updatedLP.getSleeveCondition());
-        }
+    private ProductTypeHandler findHandlerForProduct(Product product) {
+        return productTypeHandlers.stream()
+            .filter(handler -> handler.canHandle(product))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException(
+                "No handler found for product type: " + product.getClass().getSimpleName()));
     }
 }

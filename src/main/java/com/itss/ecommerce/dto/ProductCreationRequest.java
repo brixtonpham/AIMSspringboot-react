@@ -1,13 +1,13 @@
 package com.itss.ecommerce.dto;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+
 import com.itss.ecommerce.dto.product.BookDTO;
 import com.itss.ecommerce.dto.product.CDDTO;
 import com.itss.ecommerce.dto.product.DVDDTO;
 import com.itss.ecommerce.dto.product.LPDTO;
-
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;

@@ -1,10 +1,10 @@
 package com.itss.ecommerce.service;
 
-import com.itss.ecommerce.entity.Product;
-import com.itss.ecommerce.repository.ProductRepository;
 import com.itss.ecommerce.dto.cart.CartCheckRequest;
 import com.itss.ecommerce.dto.cart.CartCheckResponse;
 import com.itss.ecommerce.dto.cart.CartCheckResponse.InsufficientProduct;
+import com.itss.ecommerce.entity.Product;
+import com.itss.ecommerce.repository.ProductRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
