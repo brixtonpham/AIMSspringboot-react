@@ -4,7 +4,7 @@ import com.itss.ecommerce.dto.*;
 import com.itss.ecommerce.dto.mapper.OrderMapper;
 import com.itss.ecommerce.entity.*;
 import com.itss.ecommerce.service.admin.OrderService;
-import com.itss.ecommerce.service.admin.ProductService;
+import com.itss.ecommerce.service.product.ProductService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

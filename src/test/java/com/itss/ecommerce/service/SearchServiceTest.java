@@ -2,8 +2,8 @@ package com.itss.ecommerce.service;
 
 import com.itss.ecommerce.entity.*;
 import com.itss.ecommerce.repository.*;
-import com.itss.ecommerce.service.admin.ProductService;
 import com.itss.ecommerce.service.log.AuditLogService;
+import com.itss.ecommerce.service.product.ProductService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

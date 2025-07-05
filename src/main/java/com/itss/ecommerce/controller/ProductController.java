@@ -7,7 +7,7 @@ import com.itss.ecommerce.dto.product.CDDTO;
 import com.itss.ecommerce.dto.product.DVDDTO;
 import com.itss.ecommerce.dto.product.LPDTO;
 import com.itss.ecommerce.entity.*;
-import com.itss.ecommerce.service.admin.ProductService;
+import com.itss.ecommerce.service.product.ProductService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

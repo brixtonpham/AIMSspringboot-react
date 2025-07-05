@@ -1,4 +1,4 @@
-package com.itss.ecommerce.service.handler;
+package com.itss.ecommerce.service.product.handler;
 
 import com.itss.ecommerce.entity.CD;
 import com.itss.ecommerce.entity.Product;
