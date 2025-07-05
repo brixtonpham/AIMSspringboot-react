@@ -3,6 +3,9 @@ package com.itss.ecommerce.service;
 import com.itss.ecommerce.entity.AuditLog;
 import com.itss.ecommerce.entity.User;
 import com.itss.ecommerce.repository.UserRepository;
+import com.itss.ecommerce.service.admin.UserService;
+import com.itss.ecommerce.service.log.AuditLogService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

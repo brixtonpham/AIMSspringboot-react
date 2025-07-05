@@ -1,9 +1,10 @@
-package com.itss.ecommerce.service;
+package com.itss.ecommerce.service.admin;
 
 import com.itss.ecommerce.entity.*;
 import com.itss.ecommerce.exception.InsufficientStockException;
 import com.itss.ecommerce.exception.PaymentProcessingException;
 import com.itss.ecommerce.repository.*;
+import com.itss.ecommerce.service.log.AuditLogService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -99,13 +100,13 @@ public class OrderService {
         return orderRepository.findById(orderId);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public boolean deleteOrderById(Long orderId) {
         log.info("Deleting order with ID: {}", orderId);
         
         Order order = orderRepository.findById(orderId)
             .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
-        
+        System.out.println("Order ID to delete: " + order.getOrderId());
         // Restore product stock
         for (OrderItem orderItem : order.getOrderItems()) {
             Product product = orderItem.getProduct();
@@ -114,7 +115,7 @@ public class OrderService {
         }
         
         // Delete the order
-        orderRepository.delete(order);
+        orderRepository.deleteById(orderId);
         
         auditLogService.logOrderAction(
             orderId,
@@ -344,6 +345,36 @@ public class OrderService {
                 );
             }
         }
+    }
+    
+    /**
+     * Recover product quantities for a specific order
+     */
+    @Transactional
+    public void recoverProductQuantity(Long orderId) {
+        log.info("Recovering product quantities for order: {}", orderId);
+        
+        Order order = orderRepository.findById(orderId)
+            .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
+        
+        // Restore product stock for each order item
+        for (OrderItem orderItem : order.getOrderItems()) {
+            Product product = orderItem.getProduct();
+            product.addStock(orderItem.getQuantity());
+            productRepository.save(product);
+            
+            log.debug("Recovered {} units for product: {}", 
+                orderItem.getQuantity(), product.getTitle());
+        }
+        
+        auditLogService.logOrderAction(
+            orderId,
+            null,
+            "Quantity Recovered",
+            "Product quantities recovered for order"
+        );
+        
+        log.info("Product quantities recovered successfully for order: {}", orderId);
     }
     
     /**

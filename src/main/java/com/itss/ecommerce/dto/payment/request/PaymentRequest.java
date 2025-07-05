@@ -4,6 +4,7 @@
  */
 package com.itss.ecommerce.dto.payment.request;
 
+import com.itss.ecommerce.service.payment.type.PaymentMethod;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
@@ -33,6 +34,9 @@ public class PaymentRequest {
     
     /** Payment expiry date in yyyyMMddHHmmss format */
     private String vnp_ExpireDate;
+    
+    /** Payment method (VNPAY, MOMO, PAYPAL) */
+    private PaymentMethod paymentMethod = PaymentMethod.VNPAY; // Default to VNPAY
 
     public String getAmount() {
         return amount;
@@ -79,5 +83,13 @@ public class PaymentRequest {
 
     public void setVnp_ExpireDate(String vnp_ExpireDate) {
         this.vnp_ExpireDate = vnp_ExpireDate;
+    }
+    
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+    
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 }

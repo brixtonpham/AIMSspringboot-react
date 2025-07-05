@@ -3,7 +3,7 @@ package com.itss.ecommerce.controller;
 import com.itss.ecommerce.dto.*;
 import com.itss.ecommerce.dto.mapper.UserMapper;
 import com.itss.ecommerce.entity.User;
-import com.itss.ecommerce.service.UserService;
+import com.itss.ecommerce.service.admin.UserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

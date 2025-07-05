@@ -1,4 +1,4 @@
-package com.itss.ecommerce.service;
+package com.itss.ecommerce.service.admin;
 
 import com.itss.ecommerce.entity.AuditLog;
 import com.itss.ecommerce.entity.Book;
@@ -9,6 +9,7 @@ import com.itss.ecommerce.repository.BookRepository;
 import com.itss.ecommerce.repository.CDRepository;
 import com.itss.ecommerce.repository.DVDRepository;
 import com.itss.ecommerce.repository.ProductRepository;
+import com.itss.ecommerce.service.log.AuditLogService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

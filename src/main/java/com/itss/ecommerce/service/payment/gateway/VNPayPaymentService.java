@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.itss.ecommerce.config.VNPayConfig;
+import com.itss.ecommerce.dto.payment.PaymentReturnResponse;
 import com.itss.ecommerce.dto.payment.request.PaymentRequest;
 import com.itss.ecommerce.dto.payment.request.QueryRequest;
 import com.itss.ecommerce.dto.payment.request.RefundRequest;
@@ -22,6 +23,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -267,6 +270,73 @@ public class VNPayPaymentService implements IPaymentService {
 
         return vnPayConfig.hmacSHA512(vnPayConfig.getSecretKey(), hashData.toString());
 
+    }
+
+    @Override
+    public PaymentReturnResponse processPaymentReturn(Map<String, String> params) {
+        PaymentReturnResponse response = new PaymentReturnResponse();
+        
+        try {
+            // Extract VNPay specific parameters
+            Map<String, String> fields = new HashMap<>(params);
+            String secureHash = fields.get("vnp_SecureHash");
+            fields.remove("vnp_SecureHashType");
+            fields.remove("vnp_SecureHash");
+            
+            // Validate hash
+            boolean validHash = generateSecureHash(fields).equals(secureHash);
+            response.setValidHash(validHash);
+            System.out.println("Valid hash: " + validHash);
+            // Extract payment information
+            String txnRef = fields.get("vnp_TxnRef");
+            String responseCode = fields.get("vnp_ResponseCode");
+            String amount = fields.getOrDefault("vnp_Amount", "0");
+            String orderInfo = fields.get("vnp_OrderInfo");
+            String payDate = fields.get("vnp_PayDate");
+            String vnpayTransactionId = fields.get("vnp_TransactionNo");
+            String bankCode = fields.get("vnp_BankCode");
+            
+            // Set response fields
+            response.setTransactionId(txnRef);
+            response.setResponseCode(responseCode);
+            response.setAmount(Long.parseLong(amount) / 100);
+            response.setOrderInfo(orderInfo);
+            response.setPaymentTransactionId(vnpayTransactionId);
+            response.setBankCode(bankCode);
+            
+            // Parse payment date
+            if (payDate != null && !payDate.isEmpty()) {
+                try {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+                    response.setPaymentDate(LocalDateTime.parse(payDate, formatter));
+                } catch (Exception e) {
+                    // If date parsing fails, set to current time
+                    response.setPaymentDate(LocalDateTime.now());
+                }
+            }
+            
+            // Determine success status
+            boolean isSuccess = validHash && "00".equals(responseCode) && txnRef != null;
+            response.setSuccess(isSuccess);
+            
+            // Set status message
+            if (isSuccess) {
+                response.setTransactionStatus("SUCCESS");
+                response.setMessage("Payment successful");
+            } else {
+                response.setTransactionStatus("FAILED");
+                response.setMessage("Payment failed");
+            }
+            
+        } catch (Exception e) {
+            // Handle any errors
+            response.setSuccess(false);
+            response.setValidHash(false);
+            response.setTransactionStatus("ERROR");
+            response.setMessage("Error processing payment return: " + e.getMessage());
+        }
+        
+        return response;
     }
 
     @Override

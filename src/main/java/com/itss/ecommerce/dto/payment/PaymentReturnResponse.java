@@ -1,6 +1,6 @@
 /**
- * DTO class for handling VNPAY payment return response
- * Contains all fields returned by VNPAY after payment processing
+ * DTO class for handling payment return response from any payment gateway
+ * Contains normalized fields returned by payment gateways after payment processing
  */
 package com.itss.ecommerce.dto.payment;
 
@@ -8,19 +8,20 @@ import java.time.LocalDateTime;
 
 /**
  * Payment return response data transfer object
- * Holds all information returned by VNPAY after payment completion
+ * Holds normalized information returned by payment gateways after payment completion
  */
 public class PaymentReturnResponse {
     private String transactionId;
     private long amount;
     private String orderInfo;
     private String responseCode;
-    private String vnpayTransactionId;
+    private String paymentTransactionId;
     private String bankCode;
     private LocalDateTime paymentDate;
     private String transactionStatus;
     private String message;
     private boolean isValidHash;
+    private boolean isSuccess;
 
     public String getTransactionId() {
         return transactionId;
@@ -55,12 +56,12 @@ public class PaymentReturnResponse {
         this.message = getMessageFromResponseCode(responseCode);
     }
 
-    public String getVnpayTransactionId() {
-        return vnpayTransactionId;
+    public String getPaymentTransactionId() {
+        return paymentTransactionId;
     }
 
-    public void setVnpayTransactionId(String vnpayTransactionId) {
-        this.vnpayTransactionId = vnpayTransactionId;
+    public void setPaymentTransactionId(String paymentTransactionId) {
+        this.paymentTransactionId = paymentTransactionId;
     }
 
     public String getBankCode() {
@@ -101,6 +102,14 @@ public class PaymentReturnResponse {
 
     public void setValidHash(boolean validHash) {
         isValidHash = validHash;
+    }
+
+    public boolean isSuccess() {
+        return isSuccess;
+    }
+
+    public void setSuccess(boolean success) {
+        isSuccess = success;
     }
 
     private String getMessageFromResponseCode(String responseCode) {

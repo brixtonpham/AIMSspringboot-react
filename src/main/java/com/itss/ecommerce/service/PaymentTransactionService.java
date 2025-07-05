@@ -44,9 +44,21 @@ public class PaymentTransactionService {
         paymentTransactionRepository.save(paymentTransaction);
     }
 
-    public void updatePendingPaymentTransactionStatus(Long invoiceId, PaymentTransaction.TransactionStatus status) {
-        PaymentTransaction pendingPaymentTransaction = this.findPendingPaymentTransactionsByInvoiceId(invoiceId);
-        log.debug("Pending transaction found: {}", pendingPaymentTransaction);
-        pendingPaymentTransaction.setStatus(status);
+    
+    /**
+     * Update payment transaction status to success for successful payment
+     */
+    public void updatePaymentTransactionStatusToSuccess(Long invoiceId) {
+        log.info("Updating payment transaction status to SUCCESS for invoice ID: {}", invoiceId);
+        
+        PaymentTransaction paymentTransaction = findPendingPaymentTransactionsByInvoiceId(invoiceId);
+        if (paymentTransaction != null) {
+            paymentTransaction.setStatus(PaymentTransaction.TransactionStatus.SUCCESS);
+            paymentTransactionRepository.save(paymentTransaction);
+            
+            log.info("Payment transaction status updated to SUCCESS for invoice ID: {}", invoiceId);
+        } else {
+            log.warn("Payment transaction not found for invoice ID: {}", invoiceId);
+        }
     }   
 }

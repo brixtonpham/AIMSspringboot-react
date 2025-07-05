@@ -1,8 +1,9 @@
-package com.itss.ecommerce.service;
+package com.itss.ecommerce.service.auth;
 
 import com.itss.ecommerce.dto.UserDTO;
 import com.itss.ecommerce.dto.mapper.UserMapper;
 import com.itss.ecommerce.entity.User;
+import com.itss.ecommerce.service.admin.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

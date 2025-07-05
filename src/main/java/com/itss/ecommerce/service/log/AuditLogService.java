@@ -1,4 +1,4 @@
-package com.itss.ecommerce.service;
+package com.itss.ecommerce.service.log;
 
 import com.itss.ecommerce.entity.AuditLog;
 import com.itss.ecommerce.repository.AuditLogRepository;

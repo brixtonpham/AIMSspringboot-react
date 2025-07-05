@@ -12,13 +12,13 @@ import com.itss.ecommerce.entity.Invoice;
 import com.itss.ecommerce.entity.PaymentTransaction;
 import com.itss.ecommerce.service.EmailService;
 import com.itss.ecommerce.service.InvoiceService;
-import com.itss.ecommerce.service.OrderService;
 import com.itss.ecommerce.dto.payment.response.PaymentResponse;
 import com.itss.ecommerce.dto.payment.response.QueryResponse;
 import com.itss.ecommerce.dto.payment.response.RefundResponse;
 import com.itss.ecommerce.service.payment.PaymentServiceFactory;
 import com.itss.ecommerce.service.payment.gateway.IPaymentService;
 import com.itss.ecommerce.service.PaymentTransactionService;
+import com.itss.ecommerce.service.admin.OrderService;
 import com.itss.ecommerce.service.notification.INotificationService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,7 +39,6 @@ import java.util.Optional;
 
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
-
 
 //@CrossOrigin(origins = "http://localhost:5173")
 //@RequestMapping("/api/payment")
@@ -170,7 +169,7 @@ public class VNPayController {
         } else {
             try {
                 Long orderId = Long.parseLong(txnRef);
-                orderService.deleteOrderById(orderId);
+                orderService.cancelOrder(orderId, "Payment failed");
             } catch (Exception e) {
                 // Log error if needed
             }

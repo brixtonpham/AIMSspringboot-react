@@ -4,7 +4,7 @@ import com.itss.ecommerce.dto.ApiResponse;
 import com.itss.ecommerce.dto.UserDTO;
 import com.itss.ecommerce.dto.UserProfileDTO;
 import com.itss.ecommerce.dto.mapper.UserMapper;
-import com.itss.ecommerce.service.AuthService;
+import com.itss.ecommerce.service.auth.AuthService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

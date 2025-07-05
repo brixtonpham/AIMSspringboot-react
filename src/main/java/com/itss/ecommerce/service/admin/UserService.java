@@ -1,8 +1,10 @@
-package com.itss.ecommerce.service;
+package com.itss.ecommerce.service.admin;
 
 import com.itss.ecommerce.entity.AuditLog;
 import com.itss.ecommerce.entity.User;
 import com.itss.ecommerce.repository.UserRepository;
+import com.itss.ecommerce.service.EmailService;
+import com.itss.ecommerce.service.log.AuditLogService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -7,6 +7,8 @@ import com.itss.ecommerce.entity.PaymentTransaction;
 import com.itss.ecommerce.repository.InvoiceRepository;
 import com.itss.ecommerce.repository.OrderRepository;
 import com.itss.ecommerce.repository.PaymentTransactionRepository;
+import com.itss.ecommerce.service.log.AuditLogService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ import java.util.Optional;
 public class InvoiceService {
 
     private final PaymentTransactionRepository paymentTransactionRepository;
+    private final PaymentTransactionService paymentTransactionService;
     
     private final InvoiceRepository invoiceRepository;
     private final OrderRepository orderRepository;
@@ -257,13 +260,6 @@ public class InvoiceService {
         }
         
         try {
-            // Here you would integrate with actual payment gateways
-            // For demo purposes, we'll simulate success
-            
-            // String transactionId = generateTransactionId();
-            //invoice.markAsPaid(paymentTransactionRepository.save(
-            //    new PaymentTransaction(transactionId, invoice, paymentMethod, transactionData)
-            //));
             
             Invoice savedInvoice = invoiceRepository.save(invoice);
             
@@ -333,5 +329,60 @@ public class InvoiceService {
     public void saveInvoice(Invoice invoice) {
         log.debug("Saving invoice: {}", invoice);
         invoiceRepository.save(invoice);
+    }
+    
+    /**
+     * Update invoice status to paid for successful payment
+     */
+    public void updateInvoiceStatusToPaid(Long orderId) {
+        log.info("Updating invoice status to PAID for order ID: {}", orderId);
+        
+        Optional<Invoice> invoice = invoiceRepository.findByOrderOrderId(orderId);
+        if (invoice.isPresent()) {
+            Invoice inv = invoice.get();
+            inv.setPaymentStatus(Invoice.PaymentStatus.PAID);
+            inv.setPaidAt(LocalDateTime.now());
+            invoiceRepository.save(inv);
+            
+            auditLogService.logPayment(
+                orderId,
+                null,
+                inv.getTotalAmount().toString(),
+                "PAID"
+            );
+            
+            log.info("Invoice status updated to PAID for order ID: {}", orderId);
+        } else {
+            log.warn("Invoice not found for order ID: {}", orderId);
+        }
+    }
+    public Invoice updateInvoiceStatus(Long orderId, Invoice.PaymentStatus status) {
+        log.info("Updating invoice status for order ID: {} to {}", orderId, status);
+        
+        Optional<Invoice> invoiceOpt = invoiceRepository.findByOrderOrderId(orderId);
+        if (invoiceOpt.isPresent()) {
+            Invoice invoice = invoiceOpt.get();
+            invoice.setPaymentStatus(status);
+            if (status == Invoice.PaymentStatus.PAID) {
+                invoice.setPaidAt(LocalDateTime.now());
+            }
+            
+            invoice.setPaidAt(LocalDateTime.now());
+            Invoice updatedInvoice = invoiceRepository.save(invoice);
+            
+            auditLogService.logAction(
+                "Invoice Status Updated",
+                "Invoice",
+                updatedInvoice.getInvoiceId(),
+                AuditLog.ActionType.UPDATE,
+                null
+            );
+            
+            log.info("Invoice status updated successfully for order ID: {}", orderId);
+            return updatedInvoice;
+        } else {
+            log.warn("No invoice found for order ID: {}", orderId);
+            return null;
+        }
     }
 }

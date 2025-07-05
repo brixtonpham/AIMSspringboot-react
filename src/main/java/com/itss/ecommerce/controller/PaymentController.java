@@ -1,9 +1,7 @@
 package com.itss.ecommerce.controller;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,18 +14,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.view.RedirectView;
 
+import com.itss.ecommerce.dto.payment.PaymentReturnResponse;
 import com.itss.ecommerce.dto.payment.request.PaymentRequest;
 import com.itss.ecommerce.dto.payment.response.PaymentResponse;
 import com.itss.ecommerce.entity.Invoice;
 import com.itss.ecommerce.entity.PaymentTransaction;
-import com.itss.ecommerce.service.EmailService;
 import com.itss.ecommerce.service.InvoiceService;
-import com.itss.ecommerce.service.OrderService;
 import com.itss.ecommerce.service.PaymentTransactionService;
+import com.itss.ecommerce.service.admin.OrderService;
 import com.itss.ecommerce.service.notification.INotificationService;
 import com.itss.ecommerce.service.notification.type.NotificationServiceProvider;
 import com.itss.ecommerce.service.payment.PaymentServiceFactory;
 import com.itss.ecommerce.service.payment.gateway.IPaymentService;
+import com.itss.ecommerce.service.payment.type.PaymentMethod;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -41,19 +40,21 @@ import lombok.extern.slf4j.Slf4j;
 public class PaymentController {
 
     private final PaymentServiceFactory paymentServiceFactory;
-    private final EmailService emailService;
     private final OrderService orderService;
     private final PaymentTransactionService paymentTransactionService;
     private final InvoiceService invoiceService;
     private final INotificationService notificationService;
+
     /**
-     * REST API Controllers for VNPAY integration
+     * REST API Controllers for Payment Gateway integration
+     * Supports multiple payment gateways through PaymentServiceFactory
      */
     /**
      * API endpoint for creating a new payment
-     * Generates payment URL with VNPAY signature
+     * Generates payment URL with gateway-specific signature
      *
-     * @param request        Payment request with amount and other details
+     * @param request        Payment request with amount, payment method, and other
+     *                       details
      * @param servletRequest HTTP request for client IP
      * @return ResponseEntity with payment URL and status
      */
@@ -62,7 +63,8 @@ public class PaymentController {
     public ResponseEntity<PaymentResponse> createPayment(
             @RequestBody PaymentRequest request,
             HttpServletRequest servletRequest) {
-        IPaymentService paymentService = paymentServiceFactory.getDefaultPaymentService();
+        // Get payment service based on requested payment method
+        IPaymentService paymentService = paymentServiceFactory.getPaymentService(request.getPaymentMethod());
         PaymentResponse response = paymentService.createPayment(request, servletRequest);
         return ResponseEntity.ok(response);
     }
@@ -70,65 +72,53 @@ public class PaymentController {
     @GetMapping("/return")
     public RedirectView returnPage(
             @RequestParam Map<String, String> requestParams,
+            @RequestParam(required = false, defaultValue = "VNPAY") String paymentMethod,
             HttpServletRequest request) {
 
-        // Prepare fields for hash validation
-        Map<String, String> fields = new HashMap<>(requestParams);
-        String vnp_SecureHash = fields.get("vnp_SecureHash");
-        fields.remove("vnp_SecureHashType");
-        fields.remove("vnp_SecureHash");
+        // Get the appropriate payment service based on the payment method
+        IPaymentService paymentService = paymentServiceFactory.getPaymentService(
+                PaymentMethod.valueOf(paymentMethod.toUpperCase()));
 
-        // Validate hash
-        boolean validHash = paymentServiceFactory.getDefaultPaymentService().generateSecureHash(fields)
-                .equals(vnp_SecureHash);
+        // Remove paymentMethod parameter to avoid contaminating payment gateway validation
+        Map<String, String> cleanParams = new HashMap<>(requestParams);
+        cleanParams.remove("paymentMethod");
 
-        // Extract needed info
-        String txnRef = fields.get("vnp_TxnRef");
-        String responseCode = fields.get("vnp_ResponseCode");
-        String amount = fields.getOrDefault("vnp_Amount", "0");
-        String orderInfo = fields.get("vnp_OrderInfo");
-        String payDate = fields.get("vnp_PayDate");
+        // Process payment return using the specific payment service
+        PaymentReturnResponse paymentReturn = paymentService.processPaymentReturn(cleanParams);
 
-        String status = "fail";
-        if (validHash && "00".equals(responseCode) && txnRef != null) {
-            status = "success";
-            try {
-                Long orderId = Long.parseLong(txnRef);
-                orderService.getOrderById(orderId).ifPresent(order -> {
-                    notificationService.sendPaymentConfirmation(order, NotificationServiceProvider.EMAIL);
-                    System.out.println("Payment confirmation sent to email: " + order.getDeliveryInformation().getEmail());
-                });
+        String status = paymentReturn.isSuccess() ? "success" : "fail";
 
-                // Log successful payment
-                log.info("Payment successful for order ID: {}", txnRef);
+        if (paymentReturn.isSuccess() && paymentReturn.getTransactionId() != null) {
 
-                // Update invoice status to paid
-                Optional<Invoice> invoice = invoiceService.getInvoiceByOrderId(Long.parseLong(txnRef));
-                if (invoice.isPresent()) {
-                    Invoice inv = invoice.get();
-                    inv.setPaymentStatus(Invoice.PaymentStatus.PAID);
-                    inv.setPaidAt(LocalDateTime.now());
-                    invoiceService.saveInvoice(inv);
+            Long orderId = Long.parseLong(paymentReturn.getTransactionId());
+            orderService.getOrderById(orderId).ifPresent(order -> {
+                notificationService.sendPaymentConfirmation(order, NotificationServiceProvider.EMAIL);
+            });
 
-                    // Update payment transaction status
-                    PaymentTransaction paymentTransaction = paymentTransactionService
-                            .findPendingPaymentTransactionsByInvoiceId(inv.getInvoiceId());
-                    if (paymentTransaction != null) {
-                        paymentTransactionService.updatePaymentTransactionStatus(paymentTransaction,
-                                PaymentTransaction.TransactionStatus.SUCCESS);
-                    }
-                } else {
-                    // Handle case where invoice is not found
+            // Log successful payment
+            log.info("Payment successful for order ID: {}", paymentReturn.getTransactionId());
+
+            // Update invoice status to paid
+            Invoice invoice = invoiceService.updateInvoiceStatus(orderId, Invoice.PaymentStatus.PAID);
+
+            if (invoice != null) {
+                // Update payment transaction status to success
+                PaymentTransaction paymentTransaction = paymentTransactionService
+                        .findPendingPaymentTransactionsByInvoiceId(invoice.getInvoiceId());
+                if (paymentTransaction != null) {
+                    paymentTransactionService.updatePaymentTransactionStatus(paymentTransaction,
+                            PaymentTransaction.TransactionStatus.SUCCESS);
                 }
-            } catch (Exception e) {
-                // Log error if needed
             }
+
         } else {
             try {
-                Long orderId = Long.parseLong(txnRef);
-                orderService.deleteOrderById(orderId);
+                if (paymentReturn.getTransactionId() != null) {
+                    Long orderId = Long.parseLong(paymentReturn.getTransactionId());
+                    orderService.cancelOrder(orderId, "Payment failed or cancelled");
+                }
             } catch (Exception e) {
-                // Log error if needed
+                log.error("Error processing failed payment for order ID: {}", paymentReturn.getTransactionId(), e);
             }
         }
 
@@ -136,10 +126,10 @@ public class PaymentController {
         String redirectUrl = String.format(
                 "http://localhost:5173/order-confirmation?status=%s&orderId=%s&amount=%s&orderInfo=%s&payDate=%s",
                 status,
-                txnRef != null ? txnRef : "",
-                amount,
-                orderInfo != null ? orderInfo : "",
-                payDate != null ? payDate : "");
+                paymentReturn.getTransactionId() != null ? paymentReturn.getTransactionId() : "",
+                paymentReturn.getAmount(),
+                paymentReturn.getOrderInfo() != null ? paymentReturn.getOrderInfo() : "",
+                paymentReturn.getPaymentDate() != null ? paymentReturn.getPaymentDate().toString() : "");
 
         return new RedirectView(redirectUrl);
     }

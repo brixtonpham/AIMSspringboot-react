@@ -21,8 +21,8 @@ import com.itss.ecommerce.dto.mapper.OrderMapper;
 import com.itss.ecommerce.entity.DeliveryInformation;
 import com.itss.ecommerce.entity.Order;
 import com.itss.ecommerce.entity.Product;
-import com.itss.ecommerce.service.OrderService;
-import com.itss.ecommerce.service.ProductService;
+import com.itss.ecommerce.service.admin.OrderService;
+import com.itss.ecommerce.service.admin.ProductService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

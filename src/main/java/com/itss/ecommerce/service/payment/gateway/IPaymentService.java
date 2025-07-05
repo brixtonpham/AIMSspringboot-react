@@ -1,6 +1,7 @@
 package com.itss.ecommerce.service.payment.gateway;
 
 
+import com.itss.ecommerce.dto.payment.PaymentReturnResponse;
 import com.itss.ecommerce.dto.payment.request.PaymentRequest;
 import com.itss.ecommerce.dto.payment.request.QueryRequest;
 import com.itss.ecommerce.dto.payment.request.RefundRequest;
@@ -23,6 +24,8 @@ public interface IPaymentService {
     IPNResponse handleIpnRequest(Map<String, String> params);
     
     String generateSecureHash(Map<String, String> params);
+    
+    PaymentReturnResponse processPaymentReturn(Map<String, String> params);
     
     PaymentMethod getPaymentMethod();
 }
