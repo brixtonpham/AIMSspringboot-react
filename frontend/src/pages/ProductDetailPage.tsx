@@ -67,9 +67,20 @@ const ProductDetailPage: React.FC = () => {
     }
   };
 
-  const renderTypeSpecificInfo = () => {
+  const getProductIcon = () => {
     switch (product.type) {
       case 'book':
+        return '📚';
+      case 'cd':
+        return '💿';
+      default:
+        return '📀';
+    }
+  };
+
+  const renderTypeSpecificInfo = () => {
+    switch (product.type) {
+      case 'book': {
         const book = product as Book;
         return (
           <Card>
@@ -80,13 +91,13 @@ const ProductDetailPage: React.FC = () => {
               {book.authors && (
                 <div>
                   <span className="font-medium">Authors: </span>
-                  <span className="text-muted-foreground">{book.authors.join(', ')}</span>
+                  <span className="text-muted-foreground">{book.authors}</span>
                 </div>
               )}
               {book.publishers && (
                 <div>
                   <span className="font-medium">Publishers: </span>
-                  <span className="text-muted-foreground">{book.publishers.join(', ')}</span>
+                  <span className="text-muted-foreground">{book.publishers}</span>
                 </div>
               )}
               {book.genre && (
@@ -110,9 +121,11 @@ const ProductDetailPage: React.FC = () => {
             </CardContent>
           </Card>
         );
+      }
 
-      case 'cd':
+      case 'cd': {
         const cd = product as CD;
+        const trackList = cd.trackList ? cd.trackList.split(',').map((track: string) => track.trim()) : [];
         return (
           <Card>
             <CardHeader>
@@ -122,7 +135,7 @@ const ProductDetailPage: React.FC = () => {
               {cd.artists && (
                 <div>
                   <span className="font-medium">Artists: </span>
-                  <span className="text-muted-foreground">{cd.artists.join(', ')}</span>
+                  <span className="text-muted-foreground">{cd.artists}</span>
                 </div>
               )}
               {cd.recordLabel && (
@@ -139,12 +152,12 @@ const ProductDetailPage: React.FC = () => {
                   </span>
                 </div>
               )}
-              {cd.trackList && cd.trackList.length > 0 && (
+              {trackList.length > 0 && (
                 <div>
                   <span className="font-medium">Track List:</span>
                   <ul className="mt-2 space-y-1 text-sm text-muted-foreground ml-4">
-                    {cd.trackList.map((track, index) => (
-                      <li key={index}>{index + 1}. {track}</li>
+                    {trackList.map((track: string, index: number) => (
+                      <li key={`track-${index}-${track.substring(0, 10)}`}>{index + 1}. {track}</li>
                     ))}
                   </ul>
                 </div>
@@ -152,8 +165,9 @@ const ProductDetailPage: React.FC = () => {
             </CardContent>
           </Card>
         );
+      }
 
-      case 'dvd':
+      case 'dvd': {
         const dvd = product as DVD;
         return (
           <Card>
@@ -164,7 +178,7 @@ const ProductDetailPage: React.FC = () => {
               {dvd.directors && (
                 <div>
                   <span className="font-medium">Directors: </span>
-                  <span className="text-muted-foreground">{dvd.directors.join(', ')}</span>
+                  <span className="text-muted-foreground">{dvd.directors}</span>
                 </div>
               )}
               {dvd.studio && (
@@ -194,6 +208,7 @@ const ProductDetailPage: React.FC = () => {
             </CardContent>
           </Card>
         );
+      }
 
       default:
         return null;
@@ -219,8 +234,7 @@ const ProductDetailPage: React.FC = () => {
             />
           ) : (
             <span className="text-8xl">
-              {product.type === 'book' ? '📚' : 
-               product.type === 'cd' ? '💿' : '📀'}
+              {getProductIcon()}
             </span>
           )}
         </div>
@@ -232,15 +246,15 @@ const ProductDetailPage: React.FC = () => {
               <span className="px-2 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full capitalize">
                 {product.type}
               </span>
-              {product.rushDeliverySupported && (
+              {product.rushOrderSupported && (
                 <span className="px-2 py-1 bg-orange-100 text-orange-600 text-xs font-medium rounded-full">
                   Rush Delivery
                 </span>
               )}
             </div>
             <h1 className="text-3xl font-bold mb-2">{product.title}</h1>
-            {product.description && (
-              <p className="text-muted-foreground">{product.description}</p>
+            {product.introduction && (
+              <p className="text-muted-foreground">{product.introduction}</p>
             )}
           </div>
 
@@ -362,7 +376,7 @@ const ProductDetailPage: React.FC = () => {
               <div>
                 <span className="font-medium">Rush Delivery: </span>
                 <span className="text-muted-foreground">
-                  {product.rushDeliverySupported ? 'Available' : 'Not Available'}
+                  {product.rushOrderSupported ? 'Available' : 'Not Available'}
                 </span>
               </div>
             </div>

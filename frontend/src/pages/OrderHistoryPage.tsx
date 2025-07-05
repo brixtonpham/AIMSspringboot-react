@@ -15,7 +15,7 @@ const OrderHistoryPage: React.FC = () => {
 
   const { data: ordersResponse, isLoading, error } = useQuery({
     queryKey: ['orders', user?.email],
-    queryFn: () => orderApi.getByCustomerEmail(user?.email || ''),
+    queryFn: () => orderApi.getByCustomerEmail(user?.email ?? ''),
     enabled: !!user?.email,
   });
 
@@ -172,7 +172,7 @@ const OrderHistoryPage: React.FC = () => {
                         <CardTitle className="text-lg">Order #{order.orderId}</CardTitle>
                         <p className="text-sm text-muted-foreground flex items-center gap-1">
                           <Calendar className="w-3 h-3" />
-                          {new Date(order.orderDate).toLocaleDateString('en-US', {
+                          {new Date(order.createdAt ?? order.updatedAt ?? Date.now()).toLocaleDateString('en-US', {
                             weekday: 'long',
                             year: 'numeric',
                             month: 'long',
@@ -198,7 +198,7 @@ const OrderHistoryPage: React.FC = () => {
                       <div>
                         <p className="text-sm font-medium">Items</p>
                         <p className="text-xs text-muted-foreground">
-                          {order.orderLines.length} item(s)
+                          {order.orderLines?.length ?? 0} item(s)
                         </p>
                       </div>
                     </div>
@@ -208,7 +208,7 @@ const OrderHistoryPage: React.FC = () => {
                       <div>
                         <p className="text-sm font-medium">Payment</p>
                         <p className="text-xs text-muted-foreground">
-                          {getPaymentMethodDisplay(order.paymentMethod)}
+                          {getPaymentMethodDisplay(order.invoice?.paymentMethod ?? 'N/A')}
                         </p>
                       </div>
                     </div>
@@ -218,8 +218,8 @@ const OrderHistoryPage: React.FC = () => {
                       <div>
                         <p className="text-sm font-medium">Delivery</p>
                         <p className="text-xs text-muted-foreground">
-                          {order.deliveryInformation?.customerAddress ? 
-                            order.deliveryInformation.customerAddress.substring(0, 30) + '...' : 
+                          {order.deliveryInfo?.address ? 
+                            order.deliveryInfo.address.substring(0, 30) + '...' : 
                             'Standard delivery'
                           }
                         </p>
@@ -230,19 +230,19 @@ const OrderHistoryPage: React.FC = () => {
                   {/* Order Items Preview */}
                   <div className="border-t pt-4">
                     <div className="space-y-2">
-                      {order.orderLines.slice(0, 3).map((line, index) => (
-                        <div key={index} className="flex justify-between items-center text-sm">
+                      {order.orderLines?.slice(0, 3).map((line) => (
+                        <div key={line.orderLineId} className="flex justify-between items-center text-sm">
                           <span className="text-muted-foreground">
-                            Product ID: {line.productId} × {line.quantity}
+                            {line.product?.title ?? `Product ID: ${line.product?.productId ?? 'N/A'}`} × {line.quantity}
                           </span>
                           <span className="font-medium">
-                            {line.subtotal.toLocaleString()} VND
+                            {line.totalFee.toLocaleString()} VND
                           </span>
                         </div>
                       ))}
-                      {order.orderLines.length > 3 && (
+                      {(order.orderLines?.length ?? 0) > 3 && (
                         <p className="text-xs text-muted-foreground">
-                          +{order.orderLines.length - 3} more items
+                          +{(order.orderLines?.length ?? 0) - 3} more items
                         </p>
                       )}
                     </div>

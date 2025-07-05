@@ -2,12 +2,12 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ProductCard } from './ProductCard';
 import { productApi } from '../services/api';
-import { Product } from '../types/api';
+import { Product, ProductSearchParams } from '../types/api';
 import { Loader2 } from 'lucide-react';
 
 interface ProductGridProps {
   type?: string;
-  searchParams?: Record<string, unknown>;
+  searchParams?: ProductSearchParams;
 }
 
 export const ProductGrid: React.FC<ProductGridProps> = ({ type, searchParams }) => {
